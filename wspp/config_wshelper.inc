@@ -1,0 +1,20 @@
+MoodleWS=array(){
+	"affectRecord"=>"affectRecord",
+	"profileitemRecord"=>"profileitemRecord",
+	"userRecord"=>"userRecord",
+	"loginReturn"=>"loginReturn",
+	"cohortDatum"=>"cohortDatum",
+	"cohortRecord"=>"cohortRecord",
+	"courseRecord"=>"courseRecord",
+	"courseDatum"=>"courseDatum",
+	"userDatum"=>"userDatum",
+	"categoryDatum"=>"categoryDatum",
+	"categoryRecord"=>"categoryRecord",
+	"backupPreferences"=>"backupPreferences",
+	"restorePreferences"=>"restorePreferences",
+	"userEnrolmentItem"=>"userEnrolmentItem",
+	"userEnrolmentUserItem"=>"userEnrolmentUserItem",
+	"editedRecord"=>"editedRecord",
+	"userCohortEnrolmentItem"=>"userCohortEnrolmentItem",
+
+}

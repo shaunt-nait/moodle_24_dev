@@ -1,0 +1,929 @@
+/**
+* Custom Styles
+**/
+
+html {
+	padding:0;
+	margin:0;
+	background: transparent;	
+}
+
+body#tinymce {
+	background-color:#FAFAFA;
+}
+
+
+
+body {
+	font-family:Tahoma,Verdana,sans-serif;
+	padding: 0;
+	background: #ebebeb; /*url([[pix:theme|bg]]) repeat-x;*/
+	margin: 0;	
+}
+
+body.lang-vi {
+	font-family:Arial, Verdana, Helvetica, sans-serif !important;
+}
+
+#page {
+	position:relative;
+	min-width: 870px;
+	width: auto;
+	height: 100%;
+	background: #FFFFFF; /*url([[pix:theme|bgLeft]]) repeat-y top left;*/
+	margin: 0;
+	padding: 0;
+	display: block;
+}
+
+#innerPage {
+	background: #FFFFFF;
+}
+
+/** 
+ * Links
+ */
+
+a, a:link {
+	text-decoration:none;
+	color:#004A8D;
+}
+
+a:active {
+	color:#004A8D;	
+}
+
+a:visited {
+	color:#004A8D;	
+}
+
+a.autolink {
+	color:#000000;
+	background: #DDDDDD;
+}
+
+a:hover {
+	text-decoration:underline;
+	color:#009ddc;
+}
+
+.homelink a {
+	color: #000;
+	text-decoration: none;
+	border-top: 1px solid #cecece;
+	border-bottom: 2px solid #4a4a4a;
+	border-left: 1px solid #cecece;
+	border-right: 2px solid #4a4a4a;
+}
+
+.homelink a:hover {
+	text-decoration: none;
+	border-bottom: 1px solid #cecece;
+	border-top: 2px solid #4a4a4a;
+	border-right: 1px solid #cecece;
+	border-left: 2px solid #4a4a4a;
+}
+
+a.dimmed, a.dimmed_text, .dimmed_text, .dimmed_text a, .dimmed_category, .dimmed_category a {
+	color:#AAAAAA;
+}
+
+/** 
+ * Headings
+ */
+
+h1.main,
+h2.main,
+h3.main,
+h4.main,
+h5.main,
+h6.main {
+	text-align:center;
+	font-weight:bold;
+}
+
+th.header,
+td.header,
+div.header,
+.navbar {
+	border-color:#DDDDDD;
+}
+
+h2.headingblock {
+	color: #FFFFFF;
+	background: #0c60a1;
+	border: none 0;
+	font-size: 1em;
+}
+
+.path-course-view .headingblock {
+	margin-top:0;
+	margin-bottom:5px;
+	padding: 5px 5px 3px 5px;
+}
+
+#page-site-index .headingblock {
+	margin-bottom:5px;
+	color: #000000;
+	background: #FFFFFF;
+	font-size: 1.2em;
+}
+
+/**
+* Header
+**/
+.pagelayout-frontpage #page-header, #page-header {
+	float: none;
+	height: 85px;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: none 0;
+	background: #FFFFFF url([[pix:theme|bannerShadow]]) repeat-x bottom left;
+	display: block;	
+}
+
+#headerLeft {
+	background: #FFFFFF url([[pix:theme|headerLeftBg]]) no-repeat bottom left;
+	float: left;
+	clear:both;
+	height: 87px;
+	margin: 0px;
+	padding: 0px;
+	width: 25px;	
+}
+
+#headerRight {
+	background: #FFFFFF url([[pix:theme|headerRightBg]]) no-repeat bottom right;
+	float: right;
+	height: 87px;
+	margin: 0px;
+	padding: 0px;
+	width: 25px;	
+}
+
+.headermain {
+	float: left;
+	margin: 0;
+	padding:0;
+	background: #004a8d; /* url([[pix:theme|headerBg]]) repeat-y right top;*/
+	width: 100%;
+	height: 61px;	
+}
+
+.headermain a.mainlogo{
+	margin: 0;
+	width: 466px;
+	float: left;	
+}
+
+.headermain a.mainlogo img{
+	margin: 0;
+	padding: 0;	
+}
+
+.headermenu{
+	margin: 38px 10px 0 10px;
+	float:right;
+	width: auto;
+	font-size: 10px;
+	color: #B4CFF4;
+}
+
+.headermenu a, .headermenu a:active, .headermenu a:visited, .headermenu a:link{
+	color: #FFFFFF;
+}
+
+.headermenu a:hover {
+   color: #FFFFFF;
+}
+
+.headermenu .logininfo{
+	float: left;	
+}
+
+/**
+ * Custom menu
+ */
+ 
+.pagelayout-frontpage #custommenu, #custommenu { 
+	padding:0;
+	float: none;
+	clear: none;
+	width: auto;
+	height:23px;
+	border: none 0;
+	border-top: solid 1px;
+	background: #001a32;	
+}
+
+/* menu main color */
+.yui3-skin-sam #custommenu .yui3-menu {
+	background: transparent;
+	border: none 0;
+}
+
+/* need to put bg color in here for IE */
+#custommenu .yui3-menu-content {
+	border: none 0;
+	background: transparent;
+}
+
+/* need to put text color in here for IE */
+#custommenu .yui3-menu .yui3-menu-label{
+	border: none 0;
+	color:#FFFFFF;	
+}
+
+/* menus main text with children. BG of item with child*/
+.yui3-skin-sam .yui3-menu-label, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-label{
+	border:0 none;
+	color:#FFFFFF;
+	background: transparent url([[pix:theme|vertical-menu-submenu-indicator]]) no-repeat right center !important;
+	cursor:default;
+	float:none;
+	margin:0;
+	padding:0 20px;
+	text-decoration:none;
+}
+
+/* first parent */
+.yui3-skin-sam .yui3-menu-label {
+	background: transparent !important;
+}
+
+
+/* hover/active for the main */
+.yui3-menu-content li:hover, #custommenu .yui3-menu .yui3-menuitem-active, 
+#custommenu .yui3-menu .yui3-menu-label-menuvisible {
+    background: #666666;
+}
+
+/* active of the sub menu bg holding box */
+#custommenu .yui3-menu .yui3-menu {
+	background: #666666;	
+}
+
+/* active of the sub menu bg holding box */
+.yui3-skin-sam .yui3-menu-content, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-content {
+	background: transparent;
+}
+
+
+/* active/visible state of the subs main bg*/
+
+div.yui3-menu.custom_menu_submenu .yui3-menu-content li a {
+    background: #666666 !important;
+    color: #FFFFFF !important;
+}
+
+/* hover of the sub items bg */
+
+div.yui3-menu.custom_menu_submenu .yui3-menu-content li a:hover {
+    background: #333333 !important;
+    color: #FFFFFF !important;
+}
+
+/* hover of the subs items bg with child */
+
+.yui3-skin-sam .yui3-menu .yui3-menu a.yui3-menu-label:hover {
+	background: #333333 url([[pix:theme|vertical-menu-submenu-indicator-hover]]) no-repeat right center !important;
+}
+
+/* for a submenu parent item while their children are active */ 
+.yui3-skin-sam .yui3-menu .yui3-menu  .yui3-menu-label-menuvisible {
+	background: #333333 url([[pix:theme|vertical-menu-submenu-indicator-hover]]) no-repeat right center !important;
+	color: #FFFFFF !important;
+}
+
+
+/**
+* NavBar
+*/
+
+.navbar{
+	background: transparent;
+	border-bottom-style: none;
+	border-width: 0px;
+	border-style: none;
+	height: 28px;
+	margin: 0;
+	padding: 0px 15px 0px 15px;
+	width: auto;	
+}
+
+.navbarInnerRight{
+	background: #B6121B url([[pix:theme|navbarRight]]) no-repeat top right;
+	float: right;
+	height: 37px;
+	margin: 0px;
+	padding: 0px;
+	width: 11px;
+	border-bottom-style: none;
+	border-width: 0px;
+	border-style: none;
+}
+
+.arrow {
+	color: #7aafe2;	
+}
+
+/**
+** Heading Name
+*/
+
+#headingName{
+	padding: 0 15px 0 18px;
+	margin: 0;
+	color:#0C60A1;
+	font-size: 1.4em;
+	font-weight: bold;
+}
+
+/**
+ * breadcrumb
+ **/
+.navbar .breadcrumb {
+	color: #000000;
+	font-weight: bold;
+	padding: 1px 0 0 0;	
+}
+
+.breadcrumb a, .breadcrumb a:link, .breadcrumb a:visited, .breadcrumb a:active {
+	/*color: #FFFFFF;*/
+}
+
+.breadcrumb a:hover{
+	background: #FFFFFF;
+	text-decoration: none;
+}
+
+.navbar .navbutton {
+	margin:2px;
+}
+
+/**
+ * page content
+ * deppending on how the blocks are setup
+ * there is a different class
+ * 3 col (normal) #page-content
+ * just left block and content .side-pre-only
+ * just right block and content .side-post-only
+ * just content content-only
+ */
+
+#page-content {
+	min-width:0;
+	background: #FFFFFF; /*url([[pix:theme|bannerShadow]]) repeat-x top left;*/
+	margin: 0;
+	padding: 15px 0 0 0;
+	overflow: hidden;
+	clear: both;
+	display: block;
+	/* float none to fix the page holder height issue */
+	float: none;
+}
+
+#innerPageContent {
+	/*background: url([[pix:theme|bgRight]]) repeat-y top right;*/
+	float:left;
+	width:100%;
+	margin:0;
+	padding:0;
+}
+
+/** removed the float and set width to auto
+ * padding responds vs. pushing the layout
+ */
+#page-content #region-main-box {
+	float:left;
+	left:220px;
+	position:relative;
+	width:200%;
+	margin: 0;
+	padding:0;
+}
+
+.side-post-only #page-content #region-main-box {
+	float:left;
+	left:220px;
+	position:relative;
+	width:200%;
+	margin: 0;
+	padding:0;
+}
+
+#page-content #region-post-box {
+	float:left;
+	left:50%;
+	padding: 0;
+	margin:0;
+	margin-left:-440px;
+	position:relative;
+	width:100%;
+}
+
+.side-pre-only #page-content #region-main-box div#region-post-box {
+	float:left;
+	left:50%;
+	padding: 0;
+	margin:0;
+	margin-left:-220px;
+	position:relative;
+	width:100%;
+}
+
+/* add an extra 10px to give padding */
+.side-post-only #page-content #region-main-box #region-post-box {
+	margin-left:-440px;
+}
+
+.content-only #page-content #region-main-box div#region-post-box {
+	left:50%;
+	padding: 0;
+	margin:0;
+	margin-left:0;
+}
+
+#page-content #region-main-wrap {
+	float:right;
+	position:relative;
+	right:100%;
+	width:50%;
+	margin: 0;
+	padding: 0;
+}
+
+#region-main-holder {
+	margin:0 10px 0 450px;	
+}
+
+.side-pre-only #region-main-holder {
+	margin:0 10px 0 230px;
+}
+
+/* added extra here to get left padding
+ for the content area */ 
+.side-post-only #region-main-holder {
+	margin:0 10px 0 230px;
+}
+
+.content-only #region-main-holder {
+	margin:0 10px;
+}
+
+#page-content #region-main {
+	margin-left:0;
+	margin-right:0;
+	overflow:hidden;
+	width:100%;
+}
+
+.side-pre-only #page-content #region-main {
+	margin-left:0;
+}
+
+.side-post-only #page-content #region-main {
+	margin-left:0;
+}
+
+/*
+#page-content .region-content {
+	padding: 0 1%;
+	width: 98%;
+}*/
+
+
+
+#page-content #region-pre {
+	float:left;
+	left:225px;
+	margin: 0;
+	margin-left:-50%;
+	overflow:hidden;
+	position:relative;
+	width:210px;
+}
+
+/* added 10px to give padding from the left edge */
+.side-pre-only #page-content #region-pre {
+	left:10px;
+	margin-left:-50%;
+	width:210px;
+}
+
+.side-post-only #page-content #region-pre {
+	left:0;
+	width:0;
+}
+
+#page-content #region-post {
+	float:left;
+	left:5px;
+	overflow:hidden;
+	position:relative;
+	width:210px;
+}
+
+.side-pre-only #page-content #region-post {
+	left:0;
+	width:0;
+}
+
+.side-post-only #page-content #region-post {
+	left:0;
+	width:210px;
+}
+
+/**
+ * Boxes/blocks
+ */
+
+/* used to get a continous background */
+#region-pre .region-content {
+	/* (background: url([[pix:theme|sideblockBg]]) repeat-y center top;*/
+	padding: 0 10px 0 10px;
+	margin-top:10px;
+
+}
+
+#region-post .region-content {
+	/* background: url([[pix:theme|sideblockBg]]) repeat-y center top; */
+	padding: 0 10px 0 10px;
+	margin-top:10px;
+}
+ 
+#region-pre .region-content .block {
+		
+}
+
+#region-post .region-content .block {
+		
+}
+
+.region-content .block {
+	border: 1px none #65a0c8;
+	color: #212182;
+}
+
+.region-content .block .commands{
+	background: #FFFFFF;
+}
+
+.region-content .block div.header {
+	border-color:#0c60a1;
+	border-bottom:1px none #0c60a1;
+	color: #FFFFFF;
+	background: #0c60a1; /* url([[pix:theme|sideblockHeaderBg]]) repeat-x left top;*/
+	padding: 5px 0 3px 0;
+}
+
+.block .header div.commands {
+	background: #0c60a1;
+	padding: 2px 5px 0 5px;
+}
+
+.block .header h2 {
+	margin: 0 0 0 10px;
+}
+
+.region-content .block .header, .block h2.header {
+	border-bottom-width:0;
+	margin:0;
+	padding:0 4px 4px;
+	text-align:left;
+	color: #ffffff;
+}
+
+.region-content .block .content {
+	background: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	
+}
+
+.block a:link, .block a:visited, .block a:active {
+	/*color: #FFFFFF;*/
+}
+
+.block a:active {
+	/*color: #FFFFFF;*/
+}
+
+.block a:hover {
+	/*color: #FFFFFF;*/
+}
+
+/**
+* Box
+**/
+
+/* used for many display pages content areas 
+   check the upcoming events area
+   check the course calendar page
+*/
+.header {
+	background: #E1E1DF;
+}
+
+/* error box */
+
+.box.errorbox {
+	/*background: #990000; */
+	background: #d09090;	
+}
+
+
+/** 
+ * Login
+ */
+
+
+
+/**
+ * Blog
+ */
+
+
+/**
+ * My Moodle
+ */
+
+
+/**
+ * Tiny MCE
+ */
+ 
+.mceContentBody  {
+	background-color:#FAFAFA;
+	color:#000;
+}
+
+/**
+ * General
+ */
+#layout-table {margin-top: 8px;}
+
+#layout-table #content {
+	padding-left:12px;
+	padding-right:12px;
+}
+
+.noticebox {
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+#notice.generalbox {
+	width: 60%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.generalbox {
+	border-width:1px;
+	border-style:solid;
+	margin-bottom: 15px;
+	padding:10px;
+}
+
+.generalbox#intro {
+	width:70%;
+	margin-left:auto;
+	margin-right:auto;
+	padding-bottom:15px;
+}
+
+/**
+ * Footer
+ */
+#page-footer {
+	/* page container fix */
+	float: none;
+	width: 100%;
+	margin: 25px 0 0 0;
+	padding: 10px 0 15px 0;
+	background: #ebebeb url([[pix:theme|footerShadow]]) repeat-x top left;
+	border-top: 1px none #000000;	
+}
+
+#innerFooter {
+	float: none;
+	clear: none;
+	width: 100%;
+	margin: 0;
+	padding: 5px 0 5px 0;
+	/*background: url([[pix:theme|footerBg]]) repeat-y top right;*/
+}
+
+#page-footer a, #page-footer a:link, #page-footer a:active {
+	text-decoration:underline;
+}
+
+#page-footer a:visited {
+}
+
+#page-footer a:hover {
+	text-decoration:underline;
+}
+
+/**
+ * Sections
+ **/
+ 
+.course-content ul li.section.main {
+	border:1px solid #e7e7e7;
+	background: #e7e7e7; 
+}
+
+.course-content ul li.section.main.current {
+	background: #0c60a1; 
+}
+
+.course-content ul li.section.main.hidden {
+	background: #AAAAAA; 
+}
+
+.course-content ul li.section.main .left.side{
+	
+}
+
+.course-content ul li.section.main .right.side{
+	
+}
+
+.course-content ul li.section.main .content{
+	background: #FFFFFF; 
+}
+
+.course-content ul li.section.main .content .section{
+	background: transparent; 
+}
+
+
+
+/**
+ * Calendar
+ **/
+
+.block .calendar_filters.filters, .region-content .block_calendar_month .filters {
+	/*background-color:#0e4473;*/
+}
+
+/**
+ * Front Page Course Listings
+ **/
+ 
+#page div.coursebox {
+	-moz-border-radius-bottomleft:1px;
+	-moz-border-radius-bottomright:1px;
+	-moz-border-radius-topleft:1px;
+	-moz-border-radius-topright:1px;
+	border:1px none #DDDDDD;
+	border-bottom: 1.25px dotted #DDDDDD;	
+}
+
+.course_category_tree .category {
+	background: #FFFFFF;
+	border:1px none #DDDDDD;
+	margin-bottom:20px;
+}
+
+.course_category_tree .category.with_children .category_label{
+	border-bottom:1.25px dotted #DDDDDD;	
+}
+
+.categorybox{
+	border:1px none #DDDDDD;		
+}	
+
+/**
+ * Report Page
+ **/
+
+.pagelayout-report #report-region-pre {
+	margin-left: 10px;
+	width: 210px;
+	width:210px;
+}
+
+#report-region-pre .region-content {
+	/*background: url([[pix:theme|sideblockBg]]) repeat-y center top;*/
+	padding: 0 10px 0 10px;
+	margin-top:10px;
+}
+
+.pagelayout-report #report-main-content .region-content {
+	overflow:auto;
+}
+
+.pagelayout-report #report-main-content .region-content {
+	margin-left:225px;
+	margin-right:25px;
+	padding: 10px 0 10px 0;
+}
+
+.pagelayout-report #report-main-content .region-content .gradeparent {
+	padding-bottom: 35px;	
+}
+
+
+/**
+ * DOCK
+ **/
+ 
+#dockeditempanel .dockeditempanel_content {
+	border:#0c60a1 none;
+}
+
+#dockeditempanel .dockeditempanel_hd {
+	background-image: none;
+	background: #0c60a1;/*url(image.php?theme=nait&image=hgradient&component=theme);*/
+	border-bottom-color:#0c60a1;
+	border-top-color:#0c60a1;
+	padding:3px 5px;
+}
+
+#dockeditempanel .dockeditempanel_hd h2 {
+	color:#FFFFFF;
+	font-size:80%;
+}
+
+#dockeditempanel .dockeditempanel_bd {
+	border: 1px solid #DDDDDD;
+	border-top: none;
+}
+
+#categoryquestions .questionname {
+	width:55%;
+}
+
+/**
+ * User
+ **/
+
+
+
+/**
+ * Moodle Forms
+ */
+
+
+/**
+ * Filters
+ */
+
+/**
+ * Groups
+ */
+
+/**
+ * Notes
+ */
+
+/**
+ * Logs
+ */
+
+/**
+ * Help
+ */
+
+/**
+ * Tags
+ */
+
+/** 
+ * Overriding base
+ */
+
+/**
+ * Tabs
+ */
+
+/**
+ * Comment
+ */
+
+/*
+ * Backup CSS
+ */
+
+/**
+ * Site registration
+ */
+
+
+
+ /**
+ * Course publication
+ */
+
+
+/**
+ * Enrol
+ */
+
+/* Registration */
+
+/* Portfolio */

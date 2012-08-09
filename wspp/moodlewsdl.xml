@@ -1,0 +1,1041 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:si="http://soapinterop.org/xsd"
+	xmlns:tns="http://www.nait.ca/moodle/wspp/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+	targetNamespace="http://www.nait.ca/moodle/wspp/wsdl">
+  <types>
+    <xsd:schema targetNamespace="http://www.nait.ca/moodle/wspp/wsdl">
+      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+
+      <!-- simple record returned by get and edit operations  -->
+
+      <!-- general -->
+
+      <xsd:complexType name="affectRecord">
+        <xsd:all>
+          <xsd:element name="error" type="xsd:string" />
+          <xsd:element name="status" type="xsd:boolean" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <!-- /general -->
+      <xsd:complexType name="profileitemRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:profileitemRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="profileitemRecord">
+        <xsd:all>
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="value" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="userRecord">
+        <xsd:all>
+          <xsd:element name="error" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="confirmed" type="xsd:int" />
+          <xsd:element name="policyagreed" type="xsd:int" />
+          <xsd:element name="deleted" type="xsd:int" />
+          <xsd:element name="username" type="xsd:string" />
+          <xsd:element name="auth" type="xsd:string" />
+          <xsd:element name="password" type="xsd:string" />
+          <!--<xsd:element name="passwordmd5" type="xsd:string" />-->
+          <xsd:element name="idnumber" type="xsd:string" />
+          <xsd:element name="firstname" type="xsd:string" />
+          <xsd:element name="lastname" type="xsd:string" />
+          <xsd:element name="email" type="xsd:string" />
+          <xsd:element name="emailstop" type="xsd:int" />
+          <xsd:element name="icq" type="xsd:string" />
+          <xsd:element name="skype" type="xsd:string" />
+          <xsd:element name="yahoo" type="xsd:string" />
+          <xsd:element name="aim" type="xsd:string" />
+          <xsd:element name="msn" type="xsd:string" />
+          <xsd:element name="phone1" type="xsd:string" />
+          <xsd:element name="phone2" type="xsd:string" />
+          <xsd:element name="institution" type="xsd:string" />
+          <xsd:element name="department" type="xsd:string" />
+          <xsd:element name="address" type="xsd:string" />
+          <xsd:element name="city" type="xsd:string" />
+          <xsd:element name="country" type="xsd:string" />
+          <xsd:element name="lang" type="xsd:string" />
+          <xsd:element name="timezone" type="xsd:int" />
+          <xsd:element name="lastip" type="xsd:string" />
+          <xsd:element name="theme" type="xsd:string" />
+          <xsd:element name="description" type="xsd:string" />
+          <xsd:element name="mnethostid" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+
+
+      <xsd:complexType name="userRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:userRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="simpleUserRecord">
+        <xsd:all>
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="username" type="xsd:string" />
+          <xsd:element name="idnumber" type="xsd:string" />
+          <xsd:element name="firstname" type="xsd:string" />
+          <xsd:element name="lastname" type="xsd:string" />
+          <xsd:element name="email" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+
+      <xsd:complexType name="simpleUserRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:simpleUserRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+
+      <xsd:complexType name="loginReturn">
+        <xsd:all>
+          <xsd:element name="client" type="xsd:int" />
+          <xsd:element name="sessionkey" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="cohortDatum">
+        <xsd:all>
+          <xsd:element name="action" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="categoryid" type="xsd:int" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="description" type="xsd:string" />
+          <xsd:element name="component" type="xsd:string" />
+          <xsd:element name="idnumber" type="xsd:string" />
+
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="cohortData">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:cohortDatum[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="cohortRecord">
+        <xsd:all>
+          <xsd:element name="error" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="contextid" type="xsd:int" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="description" type="xsd:string" />
+          <xsd:element name="idnumber" type="xsd:string" />
+          <xsd:element name="component" type="xsd:string" />
+          <xsd:element name="timecreated" type="xsd:int" />
+          <xsd:element name="timemodified" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="cohortRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:cohortRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="courseRecord">
+        <xsd:all>
+          <xsd:element name="error" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="category" type="xsd:int" />
+          <xsd:element name="sortorder" type="xsd:int" />
+          <xsd:element name="fullname" type="xsd:string" />
+          <xsd:element name="shortname" type="xsd:string" />
+          <xsd:element name="idnumber" type="xsd:string" />
+          <xsd:element name="summary" type="xsd:string" />
+          <xsd:element name="format" type="xsd:string" />
+          <xsd:element name="showgrades" type="xsd:int" />
+          <xsd:element name="newsitems" type="xsd:int" />
+          <xsd:element name="numsections" type="xsd:int" />
+          <xsd:element name="marker" type="xsd:int" />
+          <xsd:element name="maxbytes" type="xsd:int" />
+          <xsd:element name="visible" type="xsd:int" />
+          <xsd:element name="hiddensections" type="xsd:int" />
+          <xsd:element name="groupmode" type="xsd:int" />
+          <xsd:element name="groupmodeforce" type="xsd:int" />
+          <xsd:element name="lang" type="xsd:string" />
+          <xsd:element name="theme" type="xsd:string" />
+          <xsd:element name="timecreated" type="xsd:int" />
+          <xsd:element name="timemodified" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="courseRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:courseRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="courseDatum">
+        <xsd:all>
+          <xsd:element name="action" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="category" type="xsd:int" />
+          <xsd:element name="sortorder" type="xsd:int" />
+          <xsd:element name="fullname" type="xsd:string" />
+          <xsd:element name="shortname" type="xsd:string" />
+          <xsd:element name="idnumber" type="xsd:string" />
+          <xsd:element name="summary" type="xsd:string" />
+          <xsd:element name="format" type="xsd:string" />
+          <xsd:element name="showgrades" type="xsd:int" />
+          <xsd:element name="newsitems" type="xsd:int" />
+          <xsd:element name="numsections" type="xsd:int" />
+          <xsd:element name="marker" type="xsd:int" />
+          <xsd:element name="maxbytes" type="xsd:int" />
+          <xsd:element name="visible" type="xsd:int" />
+          <xsd:element name="hiddensections" type="xsd:int" />
+          <xsd:element name="groupmode" type="xsd:int" />
+          <xsd:element name="groupmodeforce" type="xsd:int" />
+          <xsd:element name="lang" type="xsd:string" />
+          <xsd:element name="theme" type="xsd:string" />
+          <xsd:element name="timecreated" type="xsd:int" />
+          <xsd:element name="timemodified" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="courseData">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:courseDatum[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="userDatum">
+        <xsd:all>
+          <xsd:element name="action" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="confirmed" type="xsd:int" />
+          <xsd:element name="policyagreed" type="xsd:int" />
+          <xsd:element name="deleted" type="xsd:int" />
+          <xsd:element name="username" type="xsd:string" />
+          <xsd:element name="auth" type="xsd:string" />
+          <xsd:element name="password" type="xsd:string" />
+          <xsd:element name="passwordmd5" type="xsd:string" />
+          <xsd:element name="idnumber" type="xsd:string" />
+          <xsd:element name="firstname" type="xsd:string" />
+          <xsd:element name="lastname" type="xsd:string" />
+          <xsd:element name="email" type="xsd:string" />
+          <xsd:element name="emailstop" type="xsd:int" />
+          <xsd:element name="icq" type="xsd:string" />
+          <xsd:element name="skype" type="xsd:string" />
+          <xsd:element name="yahoo" type="xsd:string" />
+          <xsd:element name="aim" type="xsd:string" />
+          <xsd:element name="msn" type="xsd:string" />
+          <xsd:element name="phone1" type="xsd:string" />
+          <xsd:element name="phone2" type="xsd:string" />
+          <xsd:element name="institution" type="xsd:string" />
+          <xsd:element name="department" type="xsd:string" />
+          <xsd:element name="address" type="xsd:string" />
+          <xsd:element name="city" type="xsd:string" />
+          <xsd:element name="country" type="xsd:string" />
+          <xsd:element name="lang" type="xsd:string" />
+          <xsd:element name="timezone" type="xsd:int" />
+          <xsd:element name="lastip" type="xsd:string" />
+          <xsd:element name="theme" type="xsd:string" />
+          <xsd:element name="description" type="xsd:string" />
+          <xsd:element name="mnethostid" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="userData">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:userDatum[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="categoryDatum">
+        <xsd:all>
+          <xsd:element name="action" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="description" type="xsd:string" />
+          <xsd:element name="parent" type="xsd:int" />
+          <xsd:element name="sortorder" type="xsd:int" />
+          <xsd:element name="visible" type="xsd:int" />
+          <xsd:element name="depth" type="xsd:int" />
+          <xsd:element name="path" type="xsd:string" />
+          <xsd:element name="theme" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="categoryData">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:categoryDatum[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="categoryRecord">
+        <xsd:all>
+          <xsd:element name="error" type="xsd:string" />
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="description" type="xsd:string"
+						nillable="true" />
+          <xsd:element name="parent" type="xsd:int" />
+          <xsd:element name="sortorder" type="xsd:int" />
+          <xsd:element name="coursecount" type="xsd:int" />
+          <xsd:element name="visible" type="xsd:int" />
+          <xsd:element name="timemodified" type="xsd:int" />
+          <xsd:element name="depth" type="xsd:int" />
+          <xsd:element name="path" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="categoryRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:categoryRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <!-- Custom -->
+      <xsd:complexType name="backupPreferences">
+        <xsd:all>
+          <xsd:element name="metacourse" type="xsd:boolean" />
+          <xsd:element name="users" type="xsd:boolean" />
+          <xsd:element name="logs" type="xsd:boolean" />
+          <xsd:element name="user_files" type="xsd:boolean" />
+          <xsd:element name="course_files" type="xsd:boolean" />
+          <xsd:element name="site_files" type="xsd:boolean" />
+          <xsd:element name="messages" type="xsd:boolean" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="restorePreferences">
+        <xsd:all>
+          <xsd:element name="emptyfirst" type="xsd:boolean" />
+          <xsd:element name="userdata" type="xsd:boolean" />
+          <xsd:element name="metacourse" type="xsd:boolean" />
+          <xsd:element name="logs" type="xsd:boolean" />
+          <xsd:element name="course_files" type="xsd:boolean" />
+          <xsd:element name="messages" type="xsd:boolean" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="userEnrolmentInput">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:userEnrolmentItem[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="userEnrolmentItem">
+        <xsd:all>
+          <xsd:element name="courseId" type="xsd:int" />
+          <xsd:element name="user" type="tns:simpleUserRecord" />
+          <xsd:element name="roleName" type="xsd:string" />
+          <xsd:element name="addUser" type="xsd:boolean" />
+          <xsd:element name="sectionString" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="courseUsers">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:courseUser[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="courseUser">
+        <xsd:all>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="username" type="xsd:string" />
+          <xsd:element name="firstname" type="xsd:string" />
+          <xsd:element name="lastname" type="xsd:string" />
+          <xsd:element name="rolename" type="xsd:string" />
+          <xsd:element name="isFromCohort" type="xsd:boolean" />
+          <xsd:element name="sectionString" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="userEnrolmentUserItem">
+        <xsd:all>
+          <xsd:element name="userName" type="xsd:string" />
+          <xsd:element name="firstName" type="xsd:string" />
+          <xsd:element name="lastName" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="affectedRecords">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:affectRecord[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="editedRecord">
+        <xsd:all>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="error" type="xsd:string" />
+          <xsd:element name="status" type="xsd:boolean" />
+        </xsd:all>
+      </xsd:complexType>
+
+      <xsd:complexType name="userCohortEnrolmentInput">
+        <xsd:complexContent>
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute ref="SOAP-ENC:arrayType"
+							wsdl:arrayType="tns:userCohortEnrolmentItem[]" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="userCohortEnrolmentItem">
+        <xsd:all>
+          <xsd:element name="user" type="tns:simpleUserRecord" />
+          <xsd:element name="addUser" type="xsd:boolean" />
+        </xsd:all>
+      </xsd:complexType>
+
+    </xsd:schema>
+  </types>
+
+
+  <message name="loginRequest">
+    <part name="username" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+
+  <message name="loginResponse">
+    <part name="return" type="tns:loginReturn" />
+  </message>
+
+  <message name="logoutRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+  </message>
+
+  <message name="logoutResponse">
+    <part name="return" type="xsd:boolean" />
+  </message>
+
+
+  <message name="affectResponse">
+    <part name="return" type="tns:affectRecord" />
+  </message>
+  <!-- Custom -->
+
+  <message name="exec_copy_contentRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="fromcourseid" type="xsd:int" />
+    <part name="newcourse" type="tns:courseDatum" />
+    <!--<part name="prefs" type="tns:restorePreferences" />-->
+  </message>
+
+  <message name="exec_copy_contentResponse">
+    <part name="return" type="xsd:boolean" />
+  </message>
+  
+  <message name="getOnlineUserCountRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="minute" type="xsd:int" />
+  </message>
+
+  <message name="getOnlineUserCountResponse">
+    <part name="return" type="xsd:int" />
+  </message>
+
+  <message name="exec_backupRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="courseid" type="xsd:int" />
+    <part name="prefs" type="tns:backupPreferences" />
+  </message>
+
+  <message name="exec_backupResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+
+  <message name="modifyUserEnrolmentsRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="userEnrolments" type="tns:userEnrolmentInput" />
+  </message>
+
+  <message name="modifyUserEnrolmentsResponse">
+    <part name="return" type="tns:affectedRecords" />
+  </message>
+
+  <message name="modifyCourseCohortLinkRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="cohortid" type="xsd:string" />
+    <part name="cohortidfield" type="xsd:string" />
+    <part name="courseid" type="xsd:string" />
+    <part name="courseidfield" type="xsd:string" />
+    <part name="roleid" type="xsd:string" />
+    <part name="roleidfield" type="xsd:string" />
+    <part name="addcohorttocourse" type="xsd:boolean" />
+  </message>
+
+  <message name="editCohortRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="cohort" type="tns:cohortDatum" />
+  </message>
+
+  <message name="editCohortResponse">
+    <part name="sesskey" type="tns:editedRecord" />
+  </message>
+
+  <message name="editUserRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="user" type="tns:userDatum" />
+  </message>
+
+  <message name="editUserResponse">
+    <part name="sesskey" type="tns:editedRecord" />
+  </message>
+
+  <message name="editCourseRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="course" type="tns:courseDatum" />
+  </message>
+
+  <message name="editCourseResponse">
+    <part name="sesskey" type="tns:editedRecord" />
+  </message>
+
+  <message name="editCategoryRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="category" type="tns:categoryDatum" />
+  </message>
+
+  <message name="editCategoryResponse">
+    <part name="sesskey" type="tns:editedRecord" />
+  </message>
+
+  <message name="modifyUserCohortEnrolmentsRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="cohortid" type="xsd:string" />
+    <part name="cohortidfield" type="xsd:string" />
+    <part name="userEnrolments" type="tns:userCohortEnrolmentInput" />
+  </message>
+
+  <message name="modifyUserCohortEnrolmentsResponse">
+    <part name="return" type="tns:affectedRecords" />
+  </message>
+
+  <message name="getCohortRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="cohortid" type="xsd:string" />
+    <part name="cohortidfield" type="xsd:string" />
+  </message>
+
+  <message name="getCohortResponse">
+    <part name="return" type="tns:cohortRecord" />
+  </message>
+
+  <message name="getUserRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="userid" type="xsd:string" />
+    <part name="useridfield" type="xsd:string" />
+  </message>
+
+  <message name="getUserResponse">
+    <part name="return" type="tns:userRecord" />
+  </message>
+
+  <message name="getCourseRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="courseid" type="xsd:string" />
+    <part name="courseidfield" type="xsd:string" />
+  </message>
+
+  <message name="getCourseResponse">
+    <part name="return" type="tns:courseRecord" />
+  </message>
+
+  <message name="getCategoryRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="categoryid" type="xsd:string" />
+    <part name="categoryidfield" type="xsd:string" />
+  </message>
+
+  <message name="getCategoryResponse">
+    <part name="return" type="tns:categoryRecord" />
+  </message>
+
+  <message name="getCourseUsersRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="courseid" type="xsd:string" />
+    <part name="courseidfield" type="xsd:string" />
+    <part name="roleid" type="xsd:string" />
+    <part name="roleidfield" type="xsd:string" />
+    <part name="includeCohortUsers" type="xsd:boolean" />
+  </message>
+
+  <message name="getCourseUsersResponse">
+    <part name="return" type="tns:courseUsers"/>
+  </message>
+
+  <message name="getCohortUsersRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="cohortid" type="xsd:string" />
+    <part name="cohortidfield" type="xsd:string" />
+  </message>
+
+  <message name="getCohortUsersResponse">
+    <part name="return" type="tns:simpleUserRecords"/>
+  </message>
+
+  <portType name="MoodleWSPortType">
+    <operation name="login">
+      <documentation>MoodleWS Client Login</documentation>
+      <input message="tns:loginRequest" />
+      <output message="tns:loginResponse" />
+    </operation>
+
+    <operation name="logout">
+      <documentation>MoodleWS: Client Logout</documentation>
+      <input message="tns:logoutRequest" />
+      <output message="tns:logoutResponse" />
+    </operation>
+
+    <!-- Custom -->
+    <operation name="exec_copy_content">
+      <documentation>MoodleWS: Copy content from one course to another</documentation>
+      <input message="tns:exec_copy_contentRequest" />
+      <output message="tns:exec_copy_contentResponse" />
+    </operation>
+    
+    <operation name="getOnlineUserCount">
+      <documentation>MoodleWS: Get number of online user in the specified interval</documentation>
+      <input message="tns:getOnlineUserCountRequest" />
+      <output message="tns:getOnlineUserCountResponse" />
+    </operation>
+
+    <operation name="exec_backup">
+      <documentation>MoodleWS: Execute backup of a course</documentation>
+      <input message="tns:exec_backupRequest" />
+      <output message="tns:exec_backupResponse" />
+    </operation>
+
+    <operation name="modifyUserEnrolments">
+      <documentation>MoodleWS: Add and/or remove users from a course</documentation>
+      <input message="tns:modifyUserEnrolmentsRequest" />
+      <output message="tns:modifyUserEnrolmentsResponse" />
+    </operation>
+
+    <operation name="modifyCourseCohortLink">
+      <documentation>MoodleWS: Add and/or remove users from a course</documentation>
+      <input message="tns:modifyCourseCohortLinkRequest" />
+      <output message="tns:affectResponse" />
+    </operation>
+
+    <operation name="editCohort">
+      <documentation>MoodleWS: Add, Edit or delete a cohort</documentation>
+      <input message="tns:editCohortRequest" />
+      <output message="tns:editCohortResponse" />
+    </operation>
+
+    <operation name="editUser">
+      <documentation>MoodleWS: Add, Edit or delete a user</documentation>
+      <input message="tns:editUserRequest" />
+      <output message="tns:editUserResponse" />
+    </operation>
+
+    <operation name="editCourse">
+      <documentation>MoodleWS: Add, Edit or delete a course</documentation>
+      <input message="tns:editCourseRequest" />
+      <output message="tns:editCourseResponse" />
+    </operation>
+
+    <operation name="editCategory">
+      <documentation>MoodleWS: Add, Edit or delete a category</documentation>
+      <input message="tns:editCategoryRequest" />
+      <output message="tns:editCategoryResponse" />
+    </operation>
+
+    <operation name="modifyUserCohortEnrolments">
+      <documentation>MoodleWS: Add and/or remove users from a cohort</documentation>
+      <input message="tns:modifyUserCohortEnrolmentsRequest" />
+      <output message="tns:modifyUserCohortEnrolmentsResponse" />
+    </operation>
+
+    <operation name="getCohort">
+      <documentation>MoodleWS: Get a cohort record for specified id and field</documentation>
+      <input message="tns:getCohortRequest" />
+      <output message="tns:getCohortResponse" />
+    </operation>
+
+    <operation name="getUser">
+      <documentation>MoodleWS: Get a user record for specified id and field</documentation>
+      <input message="tns:getUserRequest" />
+      <output message="tns:getUserResponse" />
+    </operation>
+
+    <operation name="getCourse">
+      <documentation>MoodleWS: Get a course record for specified id and field</documentation>
+      <input message="tns:getCourseRequest" />
+      <output message="tns:getCourseResponse" />
+    </operation>
+
+    <operation name="getCategory">
+      <documentation>MoodleWS: Get a category record for specified id and field</documentation>
+      <input message="tns:getCategoryRequest" />
+      <output message="tns:getCategoryResponse" />
+    </operation>
+
+    <operation name="getCourseUsers">
+      <documentation>MoodleWS: Get users enrolled in course and specified role (note: this includes cohort users)</documentation>
+      <input message="tns:getCourseUsersRequest" />
+      <output message="tns:getCourseUsersResponse" />
+    </operation>
+
+    <operation name="getCohortUsers">
+      <documentation>MoodleWS: Get users enrolled in cohort</documentation>
+      <input message="tns:getCohortUsersRequest" />
+      <output message="tns:getCohortUsersResponse" />
+    </operation>
+
+
+  </portType>
+
+  <binding name="MoodleWSBinding" type="tns:MoodleWSPortType">
+    <soap:binding style="rpc"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="login">
+      <soap:operation soapAction="http://www.nait.ca/moodle/wspp/wsdl#login"
+				style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="logout">
+      <soap:operation soapAction="http://www.nait.ca/moodle/wspp/wsdl#logout"
+				style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <!-- Custom -->
+    <operation name="exec_copy_content">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#exec_copy_content"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="getOnlineUserCount">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getOnlineUserCount"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="exec_backup">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#exec_backup"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="modifyUserEnrolments">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#modifyUserEnrolments"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="modifyCourseCohortLink">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#modifyCourseCohortLink"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="editCohort">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#editCohort"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="editUser">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#editUser"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="editCourse">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#editCourse"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="editCategory">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#editCategory"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="modifyUserCohortEnrolments">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#modifyUserCohortEnrolments"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="getCohort">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getCohort"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="getUser">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getUser"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="getCourse">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getCourse"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="getCategory">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getCategory"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="getCourseUsers">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getCourseUsers"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="getCohortUsers">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getCohortUsers"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+  </binding>
+  <service name="MoodleWS">
+    <port name="MoodleWSPort" binding="tns:MoodleWSBinding">
+      <soap:address location="http://www.nait.ca/moodle/wspp/service_pp.php" />
+    </port>
+  </service>
+</definitions>
