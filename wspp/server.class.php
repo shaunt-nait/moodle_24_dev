@@ -1373,8 +1373,13 @@ class server {
 					$this->debug_output ( 'inserion ok' . print_r ( $course, true ) );
 					events_trigger ( 'course_created', $course );
 					$ret->id = $newCourse->id;
+
 					//NAIT Cstom - Add course outline link
-					//$this->addCourseOutlineLabel($newCourse->id);
+					//only include if CFG values is not defined or set to false (default is show it)
+					if( empty($CFG->excludeCourseOutlineLinkInNewCourses) || $CFG->excludeCourseOutlineLinkInNewCourses == true )
+					{
+						$this->addCourseOutlineLabel($newCourse->id);
+					}
 				} else {
 					$ret->error = get_string ( 'ws_errorcreatingcourse', 'local_wspp', $course->shortname );
 					$this->debug_output ( 'insertion KO ' . print_r ( $course, true ) );
