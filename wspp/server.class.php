@@ -1376,7 +1376,7 @@ class server {
 
 					//NAIT Cstom - Add course outline link
 					//only include if CFG values is not defined or set to false (default is show it)
-					if( empty($CFG->excludeCourseOutlineLinkInNewCourses) || $CFG->excludeCourseOutlineLinkInNewCourses == true )
+					if( empty($CFG->excludeCourseOutlineLinkInNewCourses) || $CFG->excludeCourseOutlineLinkInNewCourses == false )
 					{
 						$this->addCourseOutlineLabel($newCourse->id);
 					}
