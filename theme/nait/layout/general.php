@@ -44,8 +44,11 @@ function GetQuerystringValue( name ){
 	}
 function ViewCourseOutline(){
 	//NAIT CHANGE: Change URL When copying to different systems
- 	window.open('http://academictools.nait.ca/CourseOutline/GetCourseOutlineForMoodleCourse?id=' + GetQuerystringValue("id") );
-}
+ 	//Old
+	//window.open('http://academictools.nait.ca/CourseOutline/GetCourseOutlineForMoodleCourse?id=' + GetQuerystringValue("id") );
+	window.open('<?php echo $CFG->courseOutlineUrl?>/CourseOutline/GetCourseOutlineForMoodleCourse?id=' + GetQuerystringValue("id") );
+	
+	}
 </script>
 </head>
 <body id="<?php echo $PAGE->bodyid ?>" class="<?php echo $PAGE->bodyclasses.' '.join(' ', $bodyclasses) ?>">
