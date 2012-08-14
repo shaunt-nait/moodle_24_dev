@@ -1457,7 +1457,7 @@ class server {
 		$label = new object();
 		$label->course = $courseid;
 		$label->name = 'Course Outline';
-		$label->intro = '<p><img src="http://moodle2-dev.nait.ca/moodle/theme/image.php?theme=nait&amp;image=f%2Fpdf&amp;rev=152" style="vertical-align: middle;" /> <a href="#" onclick="ViewCourseOutline();">Course Outline</a></p>';
+		$label->intro = '<p><img src="' . $CFG->wwwroot . '/theme/image.php?theme=nait&amp;image=f%2Fpdf&amp;rev=152" style="vertical-align: middle;" /> <a href="#" onclick="ViewCourseOutline();">Course Outline</a></p>';
 		$label->introformat = 1;
 		$labelid = label_add_instance($label);
 		
