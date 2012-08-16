@@ -3215,7 +3215,7 @@ function make_editing_buttons(stdClass $mod, $absolute_ignored = true, $movesele
 
     // Duplicate (require both target import caps to be able to duplicate, see modduplicate.php)
     if (has_all_capabilities($dupecaps, $coursecontext)) {
-    	if ($mod->module != 25){
+    	if ($mod->module != 23){
 	        $actions[] = new action_link(
 	            new moodle_url($baseurl, array('duplicate' => $mod->id)),
 	            new pix_icon('t/copy', $str->duplicate, 'moodle', array('class' => 'iconsmall')),
