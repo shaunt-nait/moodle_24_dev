@@ -76,6 +76,7 @@ function form_init_date_js() {
         $module   = 'moodle-form-dateselector';
         $function = 'M.form.dateselector.init_date_selectors';
         $config = array(array(
+        	/*
             'firstdayofweek'    =>  get_string('firstdayofweek', 'langconfig'),
             'mon'               => strftime('%a', 360000),      // 5th Jan 1970 at 12pm
             'tue'               => strftime('%a', 446400),
@@ -96,6 +97,28 @@ function form_init_date_js() {
             'october'           => strftime('%B', 23601600),
             'november'          => strftime('%B', 26280000),
             'december'          => strftime('%B', 28872000)
+            */
+        	//NAIT change: MDL 34708
+        	'firstdayofweek'    =>  get_string('firstdayofweek', 'langconfig'),
+            'mon'               => strftime('%a', strtotime("Monday")),      // 5th Jan 1970 at 12pm
+            'tue'               => strftime('%a', strtotime("Tuesday")),
+            'wed'               => strftime('%a', strtotime("Wednesday")),
+            'thu'               => strftime('%a', strtotime("Thursday")),
+            'fri'               => strftime('%a', strtotime("Friday")),
+            'sat'               => strftime('%a', strtotime("Saturday")),
+            'sun'               => strftime('%a', strtotime("Sunday")),
+            'january'           => strftime('%B', strtotime("January")),       // 1st Jan 1970 at 12pm
+            'february'          => strftime('%B', strtotime("February")),
+            'march'             => strftime('%B', strtotime("March")),
+            'april'             => strftime('%B', strtotime("April")),
+            'may'               => strftime('%B', strtotime("May")),
+            'june'              => strftime('%B', strtotime("June")),
+            'july'              => strftime('%B', strtotime("July")),
+            'august'            => strftime('%B', strtotime("August")),
+            'september'         => strftime('%B', strtotime("September")),
+            'october'           => strftime('%B', strtotime("October")),
+            'november'          => strftime('%B', strtotime("November")),
+            'december'          => strftime('%B', strtotime("December"))
         ));
         $PAGE->requires->yui_module($module, $function, $config);
         $done = true;
