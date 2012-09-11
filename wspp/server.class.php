@@ -931,11 +931,26 @@ class server {
 					if($userEnrolment->addUser == "true" )
 					{
 						
+						ob_start ();
+
 						//now add user to role
 						$temp = (object) $this->affect_user_to_course ( $client, $sesskey, $user->id, $userEnrolment->courseId, $userEnrolment->roleName);
 						grade_recover_history_grades($user->id, $userEnrolment->courseId);
 						$record->error = $temp->error;
 						$record->status = true;
+						
+						if (ob_get_length () && trim ( ob_get_contents () )) {
+							/// Return an error with  the contents of the output buffer.
+							$msg = trim ( ob_get_clean () );
+
+							//ignore if gradebook
+							if (strpos($msg,'This activity is locked in the gradebook.') == false)
+							{
+								return $this->error ( 'Database error: ' . $msg );
+							}
+						}
+
+						ob_end_clean ();
 						
 						
 						//TODO: Delete when Completed
