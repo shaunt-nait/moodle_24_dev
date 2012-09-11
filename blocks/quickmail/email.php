@@ -83,9 +83,19 @@ if(!has_capability('moodle/site:accessallgroups', $context)) {
     $mastercap = false;
     $mygroups = groups_get_user_groups($courseid);
     $gids = array_values($mygroups['0']);
+    //NAIT Change: Users belonging to a group can't email
+    /*
     list($sql, $params) = $DB->get_in_or_equal($gids);
     $groups = empty($gids) ? array() :
         $DB->get_records_select('groups', "id $sql", $params);
+    */
+    if (empty($gids)){
+    	$groups = array();
+    }
+    else{
+    	list($sql, $params) = $DB->get_in_or_equal($gids);
+    	$DB->get_records_select('groups', "id $sql", $params);
+    }
 } else {
     $mastercap = true;
     $groups = $allgroups;
