@@ -943,7 +943,12 @@ class page_wiki_create extends page_wiki {
         $data = $this->mform->get_data();
         if (isset($data->groupinfo)) {
             $groupid = $data->groupinfo;
-        } else {
+        }
+        //NAIT Change: MDL-35653 
+    	else if ($PAGE->activityrecord->wikimode == 'collaborative' && (int)$PAGE->activityrecord->forceformat == 1) {	
+            $groupid = $this->gid;
+        }
+        else {
             $groupid = '0';
         }
         if (empty($this->subwiki)) {
