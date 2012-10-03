@@ -376,7 +376,7 @@ class grade_report_grader extends grade_report {
         }
 		
        	//NAIT CHANGE - include class section
-        $sql = "SELECT distinct $userfields, racs.classsection as classsection
+        $sql = "SELECT $userfields, racs.classsection as classsection
                   FROM {user} u
                   JOIN ($enrolledsql) je ON je.id = u.id 
                   	   $this->groupsql
