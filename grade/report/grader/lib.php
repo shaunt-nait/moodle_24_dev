@@ -392,10 +392,10 @@ class grade_report_grader extends grade_report {
                              FROM {role_assignments} ra
                             WHERE ra.roleid IN ($this->gradebookroles)
                               AND ra.contextid " . get_related_contexts_string($this->context) . "
-                       ) rainner ON rainner.userid = u.id
-                   left JOIN {$CFG->prefix}role_assignments_class_sections racs on racs.roleassignmentsid = ra.id
-                   AND u.deleted = 0
+                       ) rainner ON rainner.userid = u.id AND u.deleted = 0
                    $this->groupwheresql
+                   left JOIN {$CFG->prefix}role_assignments_class_sections racs on racs.roleassignmentsid = ra.id
+                   
               ORDER BY $sort";
            /*        
         $sql = "SELECT $userfields
