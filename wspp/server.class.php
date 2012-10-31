@@ -628,7 +628,14 @@ class server {
 		$fileinfodb = $DB->get_record ( 'files', array ('filename' => $filename ) );
 		$fb = get_file_browser ();
 		$fileinfo = $fb->get_file_info ( get_context_instance_by_id ( $fileinfodb->contextid ), $fileinfodb->component, $fileinfodb->filearea, $fileinfodb->itemid, $fileinfodb->filepath, $fileinfodb->filename );
+		
 		$tmpdir = $CFG->dataroot . '/temp/backup';
+
+        if( $CFG->tempdir )
+		{
+			$tmpdir = $CFG->tempdir . '/backup';
+		}
+
 		$tempfilename = restore_controller::get_tempdir_name ( $fromcourseid, $USER->id );
 		$tempfilepathname = $tmpdir . '/' . $tempfilename;
 		$this->debug_output ( $tempfilepathname );
@@ -695,7 +702,14 @@ class server {
 		$fileinfodb = $DB->get_record ( 'files', array ('filename' => $filename ) );
 		$fb = get_file_browser ();
 		$fileinfo = $fb->get_file_info ( get_context_instance_by_id ( $fileinfodb->contextid ), $fileinfodb->component, $fileinfodb->filearea, $fileinfodb->itemid, $fileinfodb->filepath, $fileinfodb->filename );
+		
 		$tmpdir = $CFG->dataroot . '/temp/backup';
+		
+        if( $CFG->tempdir )
+		{
+			$tmpdir = $CFG->tempdir . '/backup';
+		}
+		
 		$tempfilename = restore_controller::get_tempdir_name ( $fromcourseid, $USER->id );
 		$tempfilepathname = $tmpdir . '/' . $tempfilename;
 		$this->debug_output ( 'Backup file path: '. $tempfilepathname );
