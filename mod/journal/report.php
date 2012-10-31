@@ -74,7 +74,8 @@ if ($data = data_submitted()) {
     foreach ($feedback as $num => $vals) {
         $entry = $entrybyentry[$num];
         // Only update entries where feedback has actually changed.
-        if (($vals['r'] <> $entry->rating) || ($vals['c'] <> addslashes($entry->entrycomment))) {
+        $notempty = $vals['r'] != NULL;
+        if (($vals['r'] <> $entry->rating && $notempty) || (addslashes($vals['c']) <> addslashes($entry->entrycomment))) {
             $newentry->rating     = $vals['r'];
             $newentry->entrycomment    = $vals['c'];
             $newentry->teacher    = $USER->id;

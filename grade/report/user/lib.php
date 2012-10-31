@@ -226,6 +226,21 @@ class grade_report_user extends grade_report {
         }
         $count = 1;
         foreach ($element['children'] as $key=>$child) {
+        	//NAIT Change: MDL-33117
+            $grade_object = $child['object'];
+            if ($grade_object->hidden != 1) {
+		    	
+		        if (!empty($grade_object->itemmodule) && !empty($grade_object->iteminstance)) {
+		            $instances = $this->gtree->modinfo->get_instances();
+		            if (!empty($instances[$grade_object->itemmodule][$grade_object->iteminstance])) {
+		            	$cm = $instances[$grade_object->itemmodule][$grade_object->iteminstance];
+		           
+		                if (!$cm->uservisible) {  
+		                    continue;
+		                }
+		            }
+		        }
+		    }	
             $count += $this->inject_rowspans($element['children'][$key]);
         }
         $element['rowspan'] = $count;
