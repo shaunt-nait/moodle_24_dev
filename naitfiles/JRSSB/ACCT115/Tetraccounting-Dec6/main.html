@@ -1,0 +1,410 @@
+<HTML>
+<HEAD>
+<TITLE>main</TITLE>
+<SCRIPT LANGUAGE="JAVASCRIPT">
+<!-- hide from non-Javascript browsers
+
+//--------------------------------------------------------
+// Function: GetCookieVal
+// Description: Gets a cookie value, used in conjuntion with GetCookie
+//--------------------------------------------------------
+function GetCookieVal(offset) 
+{
+	var endstr = document.cookie.indexOf(";", offset);
+	
+	if (endstr == -1)
+		endstr = document.cookie.length;
+
+	return unescape(document.cookie.substring(offset, endstr));
+}
+//--------------------------------------------------------
+// Function: GetCookie
+// Description: Gets the value of a given cookie name
+// 				name - name of the desired cookie
+// 				* return string containing value of specified cookie or null if cookie does not exist
+//--------------------------------------------------------
+function GetCookie(name)
+{
+  var dc = document.cookie;
+  var prefix = name + "=";
+  var begin = dc.indexOf("; " + prefix);
+  
+  if (begin == -1) {
+    begin = dc.indexOf(prefix);
+    if (begin != 0) return null;
+  } else
+    begin += 2;
+  var end = document.cookie.indexOf(";", begin);
+  if (end == -1)
+    end = dc.length;
+  return unescape(dc.substring(begin + prefix.length, end));
+}
+//--------------------------------------------------------
+// Function: SetCookie
+// Description: Sets a cookie with a given name and value
+// 		name - name of the cookie
+// 		value - value of the cookie
+// 		[expires] - expiration date of the cookie (defaults to end of current session)
+// 		[path] - path for which the cookie is valid (defaults to path of calling document)
+// 		[domain] - domain for which the cookie is valid (defaults to domain of calling document)
+// 		[secure] - Boolean value indicating if the cookie transmission requires a secure transmission
+// 		* an argument defaults when it is assigned null as a placeholder
+// 		* a null placeholder is not required for trailing omitted arguments
+//--------------------------------------------------------
+function SetCookie (name, value)
+{
+	var argv = SetCookie.arguments;
+	var argc = SetCookie.arguments.length;
+	var expires = (argc > 2) ? argv[2] : null;
+	var path = (argc > 3) ? argv[3] : null;
+	var domain = (argc > 4) ? argv[4] : null;
+	var secure = (argc > 5) ? argv[5] : false;
+	
+	document.cookie = name + "=" + escape (value) +
+			((expires === null) ? "" : ("; expires=" + expires.toGMTString())) +
+			((path == null) ? "" : ("; path=" + path)) +
+			((domain == null) ? "" : ("; domain=" + domain)) +
+			((secure == true) ? "; secure" : "");
+}
+//--------------------------------------------------------
+// Function: DeleteCookie
+// Description: Delete the cookie with the given name
+//--------------------------------------------------------
+function DeleteCookie(name, path, domain) 
+{
+    if (GetCookie(name)) document.cookie = name + "=" +
+        ( (path) ? ";path=" + path : "") +
+        ( (domain) ? ";domain=" + domain : "") +
+        ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
+}
+//--------------------------------------------------------
+// Function: SelectionSort
+// Description: Selection sort for array[] with lengthArray elements
+// 				used when you have a list of unsorted items.
+//--------------------------------------------------------
+function SelectionSort(array, lengthArray)
+{	 
+		 // Find maxpos, the location of the largest element in the effective
+         // array: index 0 to eff_size - 1
+         // Swap elements of array[] at index maxpos and index eff_size - 1
+		 var j = 0;
+		 var k = 0;
+		 var max_index = 0;
+		 var tmp = new Array();
+    
+		 for (j = 0; j <= lengthArray - 2; j++) 
+		 {
+     		max_index = j;
+      	
+			for (k = j + 1; k <= lengthArray - 1; k++)
+			{
+				if ( parseInt(array[k]["score"]) > parseInt(array[max_index]["score"]) )
+				{
+					max_index = k;					   
+				}
+			}
+			tmp["name"] = array[j]["name"];
+			tmp["score"] = array[j]["score"];
+			tmp["time"] = array[j]["time"];
+			tmp["date"] = array[j]["date"];
+			
+			array[j]["name"] = array[max_index]["name"];
+			array[j]["score"] = array[max_index]["score"];
+			array[j]["time"] = array[max_index]["time"];
+			array[j]["date"] = array[max_index]["date"];
+
+			array[max_index]["name"] = tmp["name"];
+			array[max_index]["score"] = tmp["score"];
+			array[max_index]["time"] = tmp["time"];
+			array[max_index]["date"] = tmp["date"];
+ 		 }
+}
+//--------------------------------------------------------
+// Function: GetCharIndex
+// Description: Returns the index of the first star in a given string
+//--------------------------------------------------------
+function GetCharIndex(longString)
+{
+		 var i = 0;
+		 var index = 0;
+		 
+		 while (i < longString.length)
+		 {
+		 	 if (longString.charAt(i) == "*")
+			 {
+			 	index = i;
+			  	break;
+			 }
+			 else
+			 {
+			 	i++;
+			 }		 
+		 }
+		 return index;
+}
+//--------------------------------------------------------
+// Function: GetName
+// Description: Gets the name part of the given long String
+// 		example: longString = name*score*time*date
+//
+// 		index = the index of the first occurence of "*"		 
+// 		tmpString = "name"
+//--------------------------------------------------------
+function GetName(longString)
+{
+		 var index = 0;
+		 var tmpString = "";
+		 
+		 index = GetCharIndex(longString);
+		 tmpString = longString.substring(0, index);
+
+		 return tmpString;
+}
+//--------------------------------------------------------
+// function:
+// Description: Gets the name, score, time, and date from the cookie
+// example. longString = name*score*time*date
+//		 
+// index1 = the index of the first occurence of "*"		 
+// tmpString1 = "score*time*date"
+// index2 = the index of the second occurence of "*"		 
+// tmpString2 = "score"
+//--------------------------------------------------------
+function GetScore(longString)
+{
+		 var index1 = GetCharIndex(longString);
+		 var tmpString1 = longString.substring(index1 + 1, longString.length);
+
+		 var index2 = GetCharIndex(tmpString1);
+		 var tmpString2 = tmpString1.substring(0, index2);
+		 
+		 return tmpString2;
+}
+//--------------------------------------------------------
+// function:
+// Description: Gets the name, score, time, and date from the cookie
+// example. longString = name*score*time*date
+//		 
+// index1 = the index of the first occurence of "*"		 
+// tmpString1 = "score*time*date"
+// index2 = the index of the second occurence of "*"		 
+// tmpString2 = "time*date"
+// index3 = the index of the third occurence of "*"		 
+// tmpString3 = "time"
+//--------------------------------------------------------
+function GetTime(longString)
+{
+		 var index1 = GetCharIndex(longString);
+		 var tmpString1 = longString.substring(index1 + 1, longString.length);
+		 	 
+		 var index2 = GetCharIndex(tmpString1);
+		 var tmpString2 = tmpString1.substring(index2 + 1, tmpString1.length);
+		 
+ 		 var index3 = GetCharIndex(tmpString2);
+		 var tmpString3 = tmpString2.substring(0, index3);
+
+		 return tmpString3;
+}
+//--------------------------------------------------------
+// function:
+// Description: Gets the name, score, time, and date from the cookie
+// example. longString = name*score*time*date
+//		 
+// index1 = the index of the first occurence of "*"		 
+// tmpString1 = "score*time*date"
+// index2 = the index of the second occurence of "*"		 
+// tmpString2 = "time*date"
+// index3 = the index of the third occurence of "*"		 
+// tmpString3 = "date"
+//--------------------------------------------------------
+function GetDate(longString)
+{
+		 var index1 = GetCharIndex(longString);
+		 var tmpString1 = longString.substring(index1 + 1, longString.length);
+		 
+		 var index2 = GetCharIndex(tmpString1);
+		 var tmpString2 = tmpString1.substring(index2 + 1, tmpString1.length);
+
+ 		 var index3 = GetCharIndex(tmpString2);
+		 var tmpString3 = tmpString2.substring(index3 + 1, tmpString2.length);
+
+		 return tmpString3;		 
+}
+
+//--------------------------------------------------------
+// function:
+// Description: Sets the given name, score, time, and today's date
+// 				into a cookie
+//--------------------------------------------------------
+function SetRecordNum(recordNum)
+{
+		 var expireDate = new Date;
+		 expireDate.setYear(expireDate.getYear() + 1);
+
+		 SetCookie ("recordNum", recordNum, expireDate, "");	 
+}
+//--------------------------------------------------------
+// function:
+// Description: Sets the given name, score, time, and today's date
+// 				into a cookie
+//--------------------------------------------------------
+function SetScores(name, score, time, recordNum)
+{
+		 var expireDate = new Date;
+		 expireDate.setYear(expireDate.getYear() + 1);
+
+		 var todaysDate = new Date;
+		 var day = todaysDate.getDate();
+		 var month = todaysDate.getMonth() + 1;	 // for some odd reason, the month shows up one less than it should be, so that's why had to add "1" to it.
+		 var year = todaysDate.getYear();
+		 
+		 dateToday = day + "/" + month + "/" + year;
+		 
+		 var recordName = name + "*" + score + "*" + time + "*" + dateToday;		 
+		 
+		 SetCookie ("record" + recordNum, recordName, expireDate, "");	 
+}
+//--------------------------------------------------------
+// Function: GetRecordNum
+// Description: Get the record number and returns to Flash
+//--------------------------------------------------------
+function GetRecordNum()
+{
+		 var recordNum = GetCookie("recordNum");
+		 if (!recordNum)
+		 {
+			recordNum = 0;
+			SetRecordNum (recordNum);				
+		 }
+		 else
+		 {
+		 	;
+ 		 }	
+    	 flashGame.setVariable("_level1._G_records", recordNum);
+}
+//--------------------------------------------------------
+// Function: CheckRecordNum
+// Description: Get the record number and check it to make sure it's appropriate (not null).
+// 				If the value is null, set it to 0.
+//--------------------------------------------------------
+function CheckRecordNum()
+{
+		 var recordNum = GetCookie("recordNum");
+		 if (!recordNum)
+		 {
+			recordNum = 0;
+			SetRecordNum (recordNum);				
+		 }
+		 else
+		 {
+		 	;
+ 		 }	
+		 return recordNum 
+}
+//--------------------------------------------------------
+// Function: RemoveLowest
+// Description: Remove lowest score if there are more than 10 scores in the cookie
+//--------------------------------------------------------
+function RemoveLowest(recordNum)
+{
+		 if (recordNum > 10)		   	 					
+		 {
+		 	for (var i = 10; i < recordNum; i++)
+			{
+				DeleteCookie("record" + i);
+				SetRecordNum ( GetCookie("recordNum") - 1 );
+			}
+		 }	
+}
+//--------------------------------------------------------
+// function:
+// Store data from cookie into 2D array
+// length is the length of the first array
+//--------------------------------------------------------
+function StoreData(TwoDArray, length)
+{
+		 for (var i = 0; i < length; i++)   			
+		 {
+		 	var recordString = GetCookie("record" + i);	
+			TwoDArray[i]["name"] = GetName(recordString);
+			TwoDArray[i]["score"]= GetScore(recordString);
+			TwoDArray[i]["time"] = GetTime(recordString);
+			TwoDArray[i]["date"] = GetDate(recordString);																		
+		 }	 
+}
+//--------------------------------------------------------
+// Function: ResetCookieValues
+// Description: Refreshes the values in the cookie to new values stored in TwoDArray
+//--------------------------------------------------------
+function ResetCookieValues(TwoDArray, length)
+{
+		 var expireDate = new Date;
+		 expireDate.setYear(expireDate.getYear() + 1);
+		 
+		 for (var i = 0; i < length; i++)			
+		 {
+		 	 var recordString = TwoDArray[i]["name"] + "*" + TwoDArray[i]["score"] + "*" + 
+			 	 			 TwoDArray[i]["time"] + "*" + TwoDArray[i]["date"];						 
+			 SetCookie("record" + i, recordString, expireDate, "");						 
+		 }		
+}
+//--------------------------------------------------------
+// Function: SaveScore
+// Description: 
+//--------------------------------------------------------
+function SaveScore(name, score, time)
+{	
+		 var recordNum = CheckRecordNum(); 		
+		 if ((name == "") | (!name))
+		 {
+		 	name = "No name";
+		 } 
+   		 SetScores(name, score, time, recordNum);	 // save the name, score, and time into the cookie
+		 
+		 recordNum++;	 		 	  				 // increase record numbers
+		 SetRecordNum(recordNum);
+		 		 
+		 var recordsArray = new Array(recordNum);	// create array of size "recordNum"
+		 for (var i = 0; i < recordNum; i++)  		// create a 2D array
+		 {
+		 	 recordsArray[i] = new Array();
+		 }
+		 		
+		 StoreData(recordsArray, recordNum);		// read data from cookie and store in array		  		 
+		 SelectionSort(recordsArray, recordNum);	// sort scores in decreasing order
+		 ResetCookieValues(recordsArray, recordNum);		// put all the sorted scores back into cookie		 	
+		 RemoveLowest(recordNum);	  				// if recordNum > 10, remove cookies that contain the lowest score			 
+}
+//--------------------------------------------------------
+// Function: GetHighScores
+// Description: Returns all the high scores (all the cookies with scores in it)
+// 				and attaches them together to make one long string.
+//				The string is returned to Flash.
+//--------------------------------------------------------
+function GetHighScores()
+{		  
+		 var recordNum = CheckRecordNum();
+		 var recordString = "";
+		 for (var i = 0; i < recordNum; i++)
+		 {
+		 	 recordString += GetCookie("record" + i) + "&";
+		 }
+    	 flashGame.setVariable("_level1._G_scoreString", recordString);
+}
+
+// end hide -->
+</SCRIPT>
+</HEAD>
+<BODY bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<!-- URL's used in the movie-->
+<!-- text used in the movie-->
+<OBJECT id="flashGame" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+ codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0"
+ WIDTH=500 HEIGHT=521>
+ <PARAM NAME=movie VALUE="main.swf"> 
+ <PARAM NAME=quality VALUE=high> 
+ <PARAM NAME=bgcolor VALUE=#FFFFFF> 
+ <EMBED src="main.swf" quality=high bgcolor=#FFFFFF  WIDTH=500 HEIGHT=521 TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"></EMBED>
+</OBJECT>
+</BODY>
+</HTML>
