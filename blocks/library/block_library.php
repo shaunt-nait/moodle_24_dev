@@ -79,9 +79,9 @@ class block_library extends block_base {
         
         $this->content->text = '<p><a data-mce-href="http://www.nait.ca/library" target="_blank" href="http://www.nait.ca/library" title="Library Website">Library Website</a></p>
 								<ul>
-								<li><a data-mce-href="http://primo2.hosted.exlibrisgroup.com:1701/primo_library/libweb/action/search.do?menuitem=0&amp;fromTop=true&amp;fromPreferences=false&amp;fromEshelf=false&amp;vid=NAIT" target="_blank" href="http://primo2.hosted.exlibrisgroup.com:1701/primo_library/libweb/action/search.do?menuitem=0&amp;fromTop=true&amp;fromPreferences=false&amp;fromEshelf=false&amp;vid=NAIT" title="Library search tool">Library search tool </a></li>
-								<li><a data-mce-href="http://www.nait.ca/library/852.htm" target="_blank" href="http://www.nait.ca/library/852.htm" title="Library databases">Library databases </a></li>
-								<li><a data-mce-href="http://www.nait.ca/libresources/library_tutorial/LibraryTutorialPlayer.html" target="_blank" href="http://www.nait.ca/libresources/library_tutorial/LibraryTutorialPlayer.html" title="iNAIT assignment tutorial">iNAIT assignment tutorial </a></li>
+								<li><a data-mce-href="http://primo2.hosted.exlibrisgroup.com:1701/primo_library/libweb/action/search.do?menuitem=0&amp;fromTop=true&amp;fromPreferences=false&amp;fromEshelf=false&amp;vid=NAIT" target="_blank" href="http://primo2.hosted.exlibrisgroup.com:1701/primo_library/libweb/action/search.do?menuitem=0&amp;fromTop=true&amp;fromPreferences=false&amp;fromEshelf=false&amp;vid=NAIT" title="Library Search Tool">Library Search Tool </a></li>
+								<li><a data-mce-href="http://www.nait.ca/library/852.htm" target="_blank" href="http://www.nait.ca/library/852.htm" title="Library Databases">Library Databases </a></li>
+								<li><a data-mce-href="http://www.nait.ca/libresources/library_tutorial/LibraryTutorialPlayer.html" target="_blank" href="http://www.nait.ca/libresources/library_tutorial/LibraryTutorialPlayer.html" title="iNAIT Assignment Tutorial">iNAIT Assignment Tutorial </a></li>
 								<li><a target="_blank" href="http://www.nait.ca/library/829.htm" title="Write &amp; Cite ">Write &amp; Cite</a></li>
 								<li><a target="_blank" href="http://www.nait.ca/58450.htm" title="Project Factory ">Project Factory</a></li>
 								<li><a data-mce-href="http://www.nait.ca/library/2713.htm" target="_blank" href="http://www.nait.ca/library/2713.htm" title="Ask Us">Ask Us </a></li>
