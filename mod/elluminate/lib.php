@@ -1058,7 +1058,7 @@ function elluminate_cron() {
 		return;
 	} else {
 		//NAIT Change: this will check within 6 hours in the past
-		$cron_value = $CFG->elluminate_last_cron_run - 21600;		
+		$cron_value = $CFG->elluminate_last_cron_run - 86400;		
 		$obj = $DB->get_record('config', array('name'=>'elluminate_last_cron_run'));
 		$obj->value = $timenow;
 		$DB->update_record('config', $obj);		
