@@ -107,18 +107,18 @@ function form_init_date_js() {
             'fri'               => strftime('%a', strtotime("Friday")),
             'sat'               => strftime('%a', strtotime("Saturday")),
             'sun'               => strftime('%a', strtotime("Sunday")),
-            'january'           => strftime('%B', strtotime("January")),       // 1st Jan 1970 at 12pm
-            'february'          => strftime('%B', strtotime("February")),
-            'march'             => strftime('%B', strtotime("March")),
-            'april'             => strftime('%B', strtotime("April")),
-            'may'               => strftime('%B', strtotime("May")),
-            'june'              => strftime('%B', strtotime("June")),
-            'july'              => strftime('%B', strtotime("July")),
-            'august'            => strftime('%B', strtotime("August")),
-            'september'         => strftime('%B', strtotime("September")),
-            'october'           => strftime('%B', strtotime("October")),
-            'november'          => strftime('%B', strtotime("November")),
-            'december'          => strftime('%B', strtotime("December"))
+            'january'           => strftime('%B', strtotime("January 1")),       // 1st Jan 1970 at 12pm
+            'february'          => strftime('%B', strtotime("February 1")),
+            'march'             => strftime('%B', strtotime("March 1")),
+            'april'             => strftime('%B', strtotime("April 1")),
+            'may'               => strftime('%B', strtotime("May 1")),
+            'june'              => strftime('%B', strtotime("June 1")),
+            'july'              => strftime('%B', strtotime("July 1")),
+            'august'            => strftime('%B', strtotime("August 1")),
+            'september'         => strftime('%B', strtotime("September 1")),
+            'october'           => strftime('%B', strtotime("October 1")),
+            'november'          => strftime('%B', strtotime("November 1")),
+            'december'          => strftime('%B', strtotime("December 1"))
         ));
         $PAGE->requires->yui_module($module, $function, $config);
         $done = true;
