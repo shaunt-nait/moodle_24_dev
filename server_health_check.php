@@ -9,6 +9,9 @@ $notOk = "<span style='color:red;font-weight:bold'>Not Ok</span>";
 $openMainSpan = "<span style=''>";
 $closeMainSpan = "</span>";
 
+echo '<h2>Moodle Service Status</h2>';
+
+echo '<h3>Server: '.$_SERVER['SERVER_NAME'].'</h3>';
 
 
 
