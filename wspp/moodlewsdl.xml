@@ -1035,7 +1035,7 @@
   </binding>
   <service name="MoodleWS">
     <port name="MoodleWSPort" binding="tns:MoodleWSBinding">
-      <soap:address location="http://www.nait.ca/moodle/wspp/service_pp.php" />
+      <soap:address location="CFGWWWROOT/wspp/service_pp.php" />
     </port>
   </service>
 </definitions>
