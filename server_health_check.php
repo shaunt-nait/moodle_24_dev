@@ -11,9 +11,7 @@ $closeMainSpan = "</span>";
 
 echo '<h2>Moodle Service Status</h2>';
 
-echo '<h3>Server: '.$_SERVER['SERVER_NAME'].'</h3>';
-
-
+echo '<h3>Server: App Node INSERT_APP_NODE_NUMBER</h3>';
 
 /// Check if the user has actually submitted login data to us
 $user = authenticate_user_login('localmoodleaccount', 'thisisthepassword');
@@ -96,14 +94,10 @@ echo $openMainSpan."Moodle WebServices (local call): ".$closeMainSpan;
 
 try
 {
-    
-    //this is needed to help debug soap error
-    //using fiddler. Comment out when not needed.
-    //$options = array( 'proxy_host' => 'localhost',
-    //                   'proxy_port' => intval(8888));
-    //$client = new soapclient($wsdl,$options);                   
+    $options = array("trace" => 1);
+                
     $wsdl = $CFG->wwwroot."/wspp/wsdl_pp.php";
-    $client = new soapclient($wsdl);
+    $client = new soapclient($wsdl,$options);
     $result = $client->login('moodle_eelyn','thisisthepassword');
     
     echo $ok;
@@ -121,6 +115,7 @@ catch(Exception $ex)
     else
     {
         echo $notOk . ' [message: '.$message.']';
+        echo 'Response: '.$client->__getLastResponse();
     }
     
 }
