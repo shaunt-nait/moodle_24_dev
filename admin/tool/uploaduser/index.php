@@ -40,7 +40,7 @@ raise_memory_limit(MEMORY_HUGE);
 
 require_login();
 admin_externalpage_setup('tooluploaduser');
-require_capability('moodle/site:uploadusers', get_context_instance(CONTEXT_SYSTEM));
+require_capability('moodle/site:uploadusers', context_system::instance());
 
 $struserrenamed             = get_string('userrenamed', 'tool_uploaduser');
 $strusernotrenamedexists    = get_string('usernotrenamedexists', 'error');
@@ -86,7 +86,7 @@ $today = make_timestamp(date('Y', $today), date('m', $today), date('d', $today),
 // array of all valid fields for validation
 $STD_FIELDS = array('id', 'firstname', 'lastname', 'username', 'email',
         'city', 'country', 'lang', 'timezone', 'mailformat',
-        'maildisplay', 'maildigest', 'htmleditor', 'ajax', 'autosubscribe',
+        'maildisplay', 'maildigest', 'htmleditor', 'autosubscribe',
         'institution', 'department', 'idnumber', 'skype',
         'msn', 'aim', 'yahoo', 'icq', 'phone1', 'phone2', 'address',
         'url', 'description', 'descriptionformat', 'password',
@@ -285,7 +285,11 @@ if ($formdata = $mform2->is_cancelled()) {
             $userserrors++;
             continue;
         }
-
+        if ($user->username !== clean_param($user->username, PARAM_USERNAME)) {
+            $upt->track('status', get_string('invalidusername', 'error', 'username'), 'error');
+            $upt->track('username', $errorstr, 'error');
+            $userserrors++;
+        }
         if ($existinguser = $DB->get_record('user', array('username'=>$user->username, 'mnethostid'=>$CFG->mnet_localhost_id))) {
             $upt->track('id', $existinguser->id, 'normal', false);
         }
@@ -595,6 +599,8 @@ if ($formdata = $mform2->is_cancelled()) {
 
                 $upt->track('status', $struserupdated);
                 $usersupdated++;
+                // pre-process custom profile menu fields data from csv file
+                $existinguser = uu_pre_process_custom_profile_data($existinguser);
                 // save custom profile fields data from csv file
                 profile_save_data($existinguser);
 
@@ -712,6 +718,8 @@ if ($formdata = $mform2->is_cancelled()) {
             $user->id = $DB->insert_record('user', $user);
             $upt->track('username', html_writer::link(new moodle_url('/user/profile.php', array('id'=>$user->id)), s($user->username)), 'normal', false);
 
+            // pre-process custom profile menu fields data from csv file
+            $user = uu_pre_process_custom_profile_data($user);
             // save custom profile fields data
             profile_save_data($user);
 
@@ -727,7 +735,7 @@ if ($formdata = $mform2->is_cancelled()) {
             $usersnew++;
 
             // make sure user context exists
-            get_context_instance(CONTEXT_USER, $user->id);
+            context_user::instance($user->id);
 
             events_trigger('user_created', $user);
 
@@ -801,7 +809,7 @@ if ($formdata = $mform2->is_cancelled()) {
                 $ccache[$shortname]->groups = null;
             }
             $courseid      = $ccache[$shortname]->id;
-            $coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);
+            $coursecontext = context_course::instance($courseid);
             if (!isset($manualcache[$courseid])) {
                 $manualcache[$courseid] = false;
                 if ($manual) {
@@ -853,6 +861,8 @@ if ($formdata = $mform2->is_cancelled()) {
                         if ($duration > 0) { // sanity check
                             $timeend = $today + $duration;
                         }
+                    } else if ($manualcache[$courseid]->enrolperiod > 0) {
+                        $timeend = $today + $manualcache[$courseid]->enrolperiod;
                     }
 
                     $manual->enrol_user($manualcache[$courseid], $user->id, $rid, $today, $timeend);
@@ -894,7 +904,11 @@ if ($formdata = $mform2->is_cancelled()) {
                     $newgroupdata = new stdClass();
                     $newgroupdata->name = $addgroup;
                     $newgroupdata->courseid = $ccache[$shortname]->id;
-                    if ($ccache[$shortname]->groups[$addgroup]->id = groups_create_group($newgroupdata)){
+                    $newgroupdata->description = '';
+                    $gid = groups_create_group($newgroupdata);
+                    if ($gid){
+                        $ccache[$shortname]->groups[$addgroup] = new stdClass();
+                        $ccache[$shortname]->groups[$addgroup]->id   = $gid;
                         $ccache[$shortname]->groups[$addgroup]->name = $newgroupdata->name;
                     } else {
                         $upt->track('enrolments', get_string('unknowngroup', 'error', s($addgroup)), 'error');
@@ -967,6 +981,7 @@ echo $OUTPUT->heading(get_string('uploaduserspreview', 'tool_uploaduser'));
 $data = array();
 $cir->init();
 $linenum = 1; //column header is first line
+$noerror = true; // Keep status of any error.
 while ($linenum <= $previewrows and $fields = $cir->next()) {
     $linenum++;
     $rowcols = array();
@@ -1003,7 +1018,8 @@ while ($linenum <= $previewrows and $fields = $cir->next()) {
             $rowcols['status'][] = get_string('fieldrequired', 'error', 'city');
         }
     }
-
+    // Check if rowcols have custom profile field with correct data and update error state.
+    $noerror = uu_check_custom_profile_data($rowcols) && $noerror;
     $rowcols['status'] = implode('<br />', $rowcols['status']);
     $data[] = $rowcols;
 }
@@ -1028,9 +1044,10 @@ $table->head[] = get_string('status');
 
 echo html_writer::tag('div', html_writer::table($table), array('class'=>'flexible-wrap'));
 
-/// Print the form
-
-$mform2->display();
+// Print the form if valid values are available
+if ($noerror) {
+    $mform2->display();
+}
 echo $OUTPUT->footer();
 die;
 

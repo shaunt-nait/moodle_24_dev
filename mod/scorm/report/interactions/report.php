@@ -35,7 +35,8 @@ class scorm_interactions_report extends scorm_default_report {
      */
     function display($scorm, $cm, $course, $download) {
         global $CFG, $DB, $OUTPUT, $PAGE;
-        $contextmodule = get_context_instance(CONTEXT_MODULE, $cm->id);
+
+        $contextmodule = context_module::instance($cm->id);
         $action = optional_param('action', '', PARAM_ALPHA);
         $attemptids = optional_param_array('attemptid', array(), PARAM_RAW);
         $attemptsmode = optional_param('attemptsmode', SCORM_REPORT_ATTEMPTS_ALL_STUDENTS, PARAM_INT);
@@ -84,7 +85,7 @@ class scorm_interactions_report extends scorm_default_report {
                 groups_print_activity_menu($cm, new moodle_url($PAGE->url, $displayoptions));
             }
         }
-        $formattextoptions = array('context' => get_context_instance(CONTEXT_COURSE, $course->id));
+        $formattextoptions = array('context' => context_course::instance($course->id));
 
         // We only want to show the checkbox to delete attempts
         // if the user has permissions and if the report mode is showing attempts.
@@ -159,7 +160,7 @@ class scorm_interactions_report extends scorm_default_report {
             $select = 'SELECT DISTINCT '.$DB->sql_concat('u.id', '\'#\'', 'COALESCE(st.attempt, 0)').' AS uniqueid, ';
             $select .= 'st.scormid AS scormid, st.attempt AS attempt, ' .
                     'u.id AS userid, u.idnumber, u.firstname, u.lastname, u.picture, u.imagealt, u.email'.
-                    get_extra_user_fields_sql($coursecontext, 'u', '', array('idnumber')) . ' ';
+                    get_extra_user_fields_sql($coursecontext, 'u', '', array('email', 'idnumber')) . ' ';
 
             // This part is the same for all cases - join users and scorm_scoes_track tables
             $from = 'FROM {user} u ';
@@ -221,6 +222,18 @@ class scorm_interactions_report extends scorm_default_report {
                 $table->no_sorting('finish');
                 $table->no_sorting('score');
 
+                for($id = 0; $id < $questioncount; $id++) {
+                    if ($displayoptions['qtext']) {
+                        $table->no_sorting('question'.$id);
+                    }
+                    if ($displayoptions['resp']) {
+                        $table->no_sorting('response'.$id);
+                    }
+                    if ($displayoptions['right']) {
+                        $table->no_sorting('right'.$id);
+                    }
+                }
+
                 foreach ($scoes as $sco) {
                     if ($sco->launch != '') {
                         $table->no_sorting('scograde'.$sco->id);
@@ -247,24 +260,24 @@ class scorm_interactions_report extends scorm_default_report {
                 $workbook->send($filename);
                 // Creating the first worksheet
                 $sheettitle = get_string('report', 'scorm');
-                $myxls =& $workbook->add_worksheet($sheettitle);
+                $myxls = $workbook->add_worksheet($sheettitle);
                 // format types
-                $format =& $workbook->add_format();
+                $format = $workbook->add_format();
                 $format->set_bold(0);
-                $formatbc =& $workbook->add_format();
+                $formatbc = $workbook->add_format();
                 $formatbc->set_bold(1);
                 $formatbc->set_align('center');
-                $formatb =& $workbook->add_format();
+                $formatb = $workbook->add_format();
                 $formatb->set_bold(1);
-                $formaty =& $workbook->add_format();
+                $formaty = $workbook->add_format();
                 $formaty->set_bg_color('yellow');
-                $formatc =& $workbook->add_format();
+                $formatc = $workbook->add_format();
                 $formatc->set_align('center');
-                $formatr =& $workbook->add_format();
+                $formatr = $workbook->add_format();
                 $formatr->set_bold(1);
                 $formatr->set_color('red');
                 $formatr->set_align('center');
-                $formatg =& $workbook->add_format();
+                $formatg = $workbook->add_format();
                 $formatg->set_bold(1);
                 $formatg->set_color('green');
                 $formatg->set_align('center');
@@ -286,24 +299,24 @@ class scorm_interactions_report extends scorm_default_report {
                 $workbook->send($filename);
                 // Creating the first worksheet
                 $sheettitle = get_string('report', 'scorm');
-                $myxls =& $workbook->add_worksheet($sheettitle);
+                $myxls = $workbook->add_worksheet($sheettitle);
                 // format types
-                $format =& $workbook->add_format();
+                $format = $workbook->add_format();
                 $format->set_bold(0);
-                $formatbc =& $workbook->add_format();
+                $formatbc = $workbook->add_format();
                 $formatbc->set_bold(1);
                 $formatbc->set_align('center');
-                $formatb =& $workbook->add_format();
+                $formatb = $workbook->add_format();
                 $formatb->set_bold(1);
-                $formaty =& $workbook->add_format();
+                $formaty = $workbook->add_format();
                 $formaty->set_bg_color('yellow');
-                $formatc =& $workbook->add_format();
+                $formatc = $workbook->add_format();
                 $formatc->set_align('center');
-                $formatr =& $workbook->add_format();
+                $formatr = $workbook->add_format();
                 $formatr->set_bold(1);
                 $formatr->set_color('red');
                 $formatr->set_align('center');
-                $formatg =& $workbook->add_format();
+                $formatg = $workbook->add_format();
                 $formatg->set_bold(1);
                 $formatg->set_color('green');
                 $formatg->set_align('center');
@@ -315,13 +328,9 @@ class scorm_interactions_report extends scorm_default_report {
                 }
                 $rownum = 1;
             } else if ($download == 'CSV') {
-                $filename .= ".txt";
-                header("Content-Type: application/download\n");
-                header("Content-Disposition: attachment; filename=\"$filename\"");
-                header("Expires: 0");
-                header("Cache-Control: must-revalidate,post-check=0,pre-check=0");
-                header("Pragma: public");
-                echo implode("\t", $headers)." \n";
+                $csvexport = new csv_export_writer("tab");
+                $csvexport->set_filename($filename, ".txt");
+                $csvexport->add_data($headers);
             }
 
             if (!$download) {
@@ -456,13 +465,8 @@ class scorm_interactions_report extends scorm_default_report {
                                 if ($trackdata->score_raw != '') {
                                     $score = $trackdata->score_raw;
                                     // add max score if it exists
-                                    if ($scorm->version == 'SCORM_1.3') {
-                                        $maxkey = 'cmi.score.max';
-                                    } else {
-                                        $maxkey = 'cmi.core.score.max';
-                                    }
-                                    if (isset($trackdata->$maxkey)) {
-                                        $score .= '/'.$trackdata->$maxkey;
+                                    if (isset($trackdata->score_max)) {
+                                        $score .= '/'.$trackdata->score_max;
                                     }
                                 // else print out status
                                 } else {
@@ -539,8 +543,7 @@ class scorm_interactions_report extends scorm_default_report {
                         }
                         $rownum++;
                     } else if ($download == 'CSV') {
-                        $text = implode("\t", $row);
-                        echo $text." \n";
+                        $csvexport->add_data($row);
                     }
                 }
                 if (!$download) {
@@ -599,6 +602,7 @@ class scorm_interactions_report extends scorm_default_report {
                 $workbook->close();
                 exit;
             } else if ($download == 'CSV') {
+                $csvexport->download_file();
                 exit;
             }
         } else {

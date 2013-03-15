@@ -38,7 +38,7 @@ $movedown = optional_param('movedown',0,PARAM_INT);
 
 $site = get_site();
 
-$systemcontext = get_context_instance(CONTEXT_SYSTEM);
+$systemcontext = context_system::instance();
 
 $PAGE->set_url('/course/index.php');
 $PAGE->set_context($systemcontext);
@@ -67,12 +67,11 @@ $straction = get_string('action');
 $strfulllistofcourses = get_string('fulllistofcourses');
 
 
-/// Unless it's an editing admin, just print the regular listing of courses/categories
+// Unless it's an editing admin, just print the regular listing of courses/categories.
 if (!$adminediting) {
-
-/// Print form for creating new categories
+    $showaddcoursebutton = true;
+    // Print form for creating new categories.
     $countcategories = $DB->count_records('course_categories');
-
     if ($countcategories > 1 || ($countcategories == 1 && $DB->count_records('course') > 200)) {
         $strcourses = get_string('courses');
         $strcategories = get_string('categories');
@@ -96,14 +95,13 @@ if (!$adminediting) {
         echo $OUTPUT->header();
         echo $OUTPUT->skip_link_target();
         echo $OUTPUT->box_start('courseboxes');
-        print_courses(0);
+        $showaddcoursebutton = print_courses(0);
         echo $OUTPUT->box_end();
     }
 
     echo $OUTPUT->container_start('buttons');
-    if (has_capability('moodle/course:create', $systemcontext)) {
-    /// Print link to create a new course
-    /// Get the 1st available category
+    if (has_capability('moodle/course:create', $systemcontext) && $showaddcoursebutton) {
+        // Print link to create a new course, for the 1st available category.
         $options = array('category' => $CFG->defaultrequestcategory);
         echo $OUTPUT->single_button(new moodle_url('edit.php', $options), get_string('addnewcourse'), 'get');
     }
@@ -121,7 +119,7 @@ if (!empty($delete) and confirm_sesskey()) {
     if (!$deletecat = $DB->get_record('course_categories', array('id'=>$delete))) {
         print_error('invalidcategoryid');
     }
-    $context = get_context_instance(CONTEXT_COURSECAT, $delete);
+    $context = context_coursecat::instance($delete);
     require_capability('moodle/category:manage', $context);
     require_capability('moodle/category:manage', get_category_or_system_context($deletecat->parent));
 
@@ -174,7 +172,7 @@ if (!$categories = get_categories()) {    /// No category yet!
     $tempcat = new stdClass();
     $tempcat->name = get_string('miscellaneous');
     $tempcat->id = $DB->insert_record('course_categories', $tempcat);
-    $tempcat->context = get_context_instance(CONTEXT_COURSECAT, $tempcat->id);
+    $tempcat->context = context_coursecat::instance($tempcat->id);
     mark_context_dirty('/'.SYSCONTEXTID);
     fix_course_sortorder(); // Required to build course_categories.depth and .path.
     set_config('defaultrequestcategory', $tempcat->id);
@@ -215,14 +213,14 @@ if ((!empty($moveup) or !empty($movedown)) and confirm_sesskey()) {
     $swapcategory = NULL;
 
     if (!empty($moveup)) {
-        require_capability('moodle/category:manage', get_context_instance(CONTEXT_COURSECAT, $moveup));
+        require_capability('moodle/category:manage', context_coursecat::instance($moveup));
         if ($movecategory = $DB->get_record('course_categories', array('id'=>$moveup))) {
             if ($swapcategory = $DB->get_records_select('course_categories', "sortorder<? AND parent=?", array($movecategory->sortorder, $movecategory->parent), 'sortorder DESC', '*', 0, 1)) {
                 $swapcategory = reset($swapcategory);
             }
         }
     } else {
-        require_capability('moodle/category:manage', get_context_instance(CONTEXT_COURSECAT, $movedown));
+        require_capability('moodle/category:manage', context_coursecat::instance($movedown));
         if ($movecategory = $DB->get_record('course_categories', array('id'=>$movedown))) {
             if ($swapcategory = $DB->get_records_select('course_categories', "sortorder>? AND parent=?", array($movecategory->sortorder, $movecategory->parent), 'sortorder ASC', '*', 0, 1)) {
                 $swapcategory = reset($swapcategory);
@@ -232,6 +230,7 @@ if ((!empty($moveup) or !empty($movedown)) and confirm_sesskey()) {
     if ($swapcategory and $movecategory) {
         $DB->set_field('course_categories', 'sortorder', $swapcategory->sortorder, array('id'=>$movecategory->id));
         $DB->set_field('course_categories', 'sortorder', $movecategory->sortorder, array('id'=>$swapcategory->id));
+        add_to_log(SITEID, "category", "move", "editcategory.php?id=$movecategory->id", $movecategory->id);
     }
 
     // finally reorder courses
@@ -254,7 +253,7 @@ $parentlist = array();
 $displaylist[0] = get_string('top');
 make_categories_list($displaylist, $parentlist);
 
-echo '<table class="generalbox editcourse boxaligncenter"><tr class="header">';
+echo '<table class="generaltable editcourse boxaligncenter"><tr class="header">';
 echo '<th class="header" scope="col">'.$strcategories.'</th>';
 echo '<th class="header" scope="col">'.$strcourses.'</th>';
 echo '<th class="header" scope="col">'.$stredit.'</th>';
@@ -306,7 +305,7 @@ function print_category_edit($category, $displaylist, $parentslist, $depth=-1, $
     if (!empty($category)) {
 
         if (!isset($category->context)) {
-            $category->context = get_context_instance(CONTEXT_COURSECAT, $category->id);
+            $category->context = context_coursecat::instance($category->id);
         }
 
         echo '<tr><td align="left" class="name">';
@@ -340,7 +339,7 @@ function print_category_edit($category, $displaylist, $parentslist, $depth=-1, $
 
             if (has_capability('moodle/cohort:manage', $category->context) or has_capability('moodle/cohort:view', $category->context)) {
                 echo '<a title="'.$str->cohorts.'" href="'.$CFG->wwwroot.'/cohort/index.php?contextid='.$category->context->id.'"><img'.
-                     ' src="'.$OUTPUT->pix_url('i/cohort') . '" class="iconsmall" alt="'.$str->cohorts.'" /></a> ';
+                     ' src="'.$OUTPUT->pix_url('t/cohort') . '" class="iconsmall" alt="'.$str->cohorts.'" /></a> ';
             }
 
             if ($up) {
@@ -369,6 +368,7 @@ function print_category_edit($category, $displaylist, $parentslist, $depth=-1, $
             }
             $popupurl = new moodle_url("index.php?move=$category->id&sesskey=".sesskey());
             $select = new single_select($popupurl, 'moveto', $tempdisplaylist, $category->parent, null, "moveform$category->id");
+            $select->set_label(get_string('frontpagecategorynames'), array('class' => 'accesshide'));
             echo $OUTPUT->render($select);
         }
         echo '</td>';

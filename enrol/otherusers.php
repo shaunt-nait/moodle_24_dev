@@ -29,11 +29,11 @@ require_once("$CFG->dirroot/enrol/renderer.php");
 require_once("$CFG->dirroot/group/lib.php");
 
 $id      = required_param('id', PARAM_INT); // course id
-$action  = optional_param('action', '', PARAM_ACTION);
+$action  = optional_param('action', '', PARAM_ALPHANUMEXT);
 $filter  = optional_param('ifilter', 0, PARAM_INT);
 
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
-$context = get_context_instance(CONTEXT_COURSE, $course->id, MUST_EXIST);
+$context = context_course::instance($course->id, MUST_EXIST);
 
 require_login($course);
 require_capability('moodle/role:assign', $context);
@@ -47,6 +47,7 @@ $PAGE->set_pagelayout('admin');
 $manager = new course_enrolment_manager($PAGE, $course, $filter);
 $table = new course_enrolment_other_users_table($manager, $PAGE);
 $PAGE->set_url('/enrol/otherusers.php', $manager->get_url_params()+$table->get_url_params());
+navigation_node::override_active_url(new moodle_url('/enrol/otherusers.php', array('id' => $id)));
 
 $userdetails = array (
     'picture' => false,

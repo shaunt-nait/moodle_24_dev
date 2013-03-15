@@ -117,8 +117,7 @@ function cron_run() {
         $loglifetime = get_config('backup', 'loglifetime');
         if (!empty($loglifetime)) {  // Value in days.
             $loglifetime = $timenow - ($loglifetime * 3600 * 24);
-            
-        	// Delete child records from backup_logs.
+            // Delete child records from backup_logs.
             $DB->execute("DELETE FROM {backup_logs}
                            WHERE EXISTS (
                                SELECT 'x'
@@ -319,7 +318,7 @@ function cron_run() {
     if ($CFG->enablecompletion) {
         // Completion cron
         mtrace('Starting the completion cron...');
-        require_once($CFG->libdir . '/completion/cron.php');
+        require_once($CFG->dirroot.'/completion/cron.php');
         completion_cron();
         mtrace('done');
     }
@@ -351,13 +350,16 @@ function cron_run() {
     cron_execute_plugin_type('gradereport');
     mtrace('Finished gradebook plugins');
 
+    // run calendar cron
+    require_once "{$CFG->dirroot}/calendar/lib.php";
+    calendar_cron();
 
     // Run external blog cron if needed
-    if ($CFG->useexternalblogs) {
+    if (!empty($CFG->enableblogs) && $CFG->useexternalblogs) {
         require_once($CFG->dirroot . '/blog/lib.php');
         mtrace("Fetching external blog entries...", '');
         $sql = "timefetched < ? OR timefetched = 0";
-        $externalblogs = $DB->get_records_select('blog_external', $sql, array(mktime() - $CFG->externalblogcrontime));
+        $externalblogs = $DB->get_records_select('blog_external', $sql, array(time() - $CFG->externalblogcrontime));
 
         foreach ($externalblogs as $eb) {
             blog_sync_external_entries($eb);
@@ -365,13 +367,20 @@ function cron_run() {
         mtrace('done.');
     }
     // Run blog associations cleanup
-    if ($CFG->useblogassociations) {
+    if (!empty($CFG->enableblogs) && $CFG->useblogassociations) {
         require_once($CFG->dirroot . '/blog/lib.php');
         // delete entries whose contextids no longer exists
         mtrace("Deleting blog associations linked to non-existent contexts...", '');
         $DB->delete_records_select('blog_association', 'contextid NOT IN (SELECT id FROM {context})');
         mtrace('done.');
     }
+
+
+    // Run question bank clean-up.
+    mtrace("Starting the question bank cron...", '');
+    require_once($CFG->libdir . '/questionlib.php');
+    question_bank::cron();
+    mtrace('done.');
 
 
     //Run registration updated cron
@@ -381,6 +390,12 @@ function cron_run() {
     $registrationmanager->cron();
     mtrace(get_string('siteupdatesend', 'hub'));
 
+    // If enabled, fetch information about available updates and eventually notify site admins
+    if (empty($CFG->disableupdatenotifications)) {
+        require_once($CFG->libdir.'/pluginlib.php');
+        $updateschecker = available_update_checker::instance();
+        $updateschecker->cron();
+    }
 
     //cleanup old session linked tokens
     //deletes the session linked tokens that are over a day old.
@@ -397,9 +412,9 @@ function cron_run() {
     cron_execute_plugin_type('format', 'course formats');
     cron_execute_plugin_type('profilefield', 'profile fields');
     cron_execute_plugin_type('webservice', 'webservices');
-    // TODO: Repository lib.php files are messed up (include many other files, etc), so it is
-    // currently not possible to implement repository plugin cron using this infrastructure
-    // cron_execute_plugin_type('repository', 'repository plugins');
+    cron_execute_plugin_type('repository', 'repository plugins');
+    cron_execute_plugin_type('qbehaviour', 'question behaviours');
+    cron_execute_plugin_type('qformat', 'question import/export formats');
     cron_execute_plugin_type('qtype', 'question types');
     cron_execute_plugin_type('plagiarism', 'plagiarism plugins');
     cron_execute_plugin_type('theme', 'themes');
@@ -453,7 +468,6 @@ function cron_run() {
     // cleanup file trash - not very important
     $fs = get_file_storage();
     $fs->cron();
-
 
     mtrace("Cron script completed correctly");
 

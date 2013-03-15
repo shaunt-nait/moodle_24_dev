@@ -26,6 +26,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->libdir.'/formslib.php');
+
 
 abstract class question_wizard_form extends moodleform {
     /**
@@ -98,14 +101,14 @@ abstract class question_edit_form extends question_wizard_form {
 
         $record = $DB->get_record('question_categories',
                 array('id' => $question->category), 'contextid');
-        $this->context = get_context_instance_by_id($record->contextid);
+        $this->context = context::instance_by_id($record->contextid);
 
         $this->editoroptions = array('subdirs' => 1, 'maxfiles' => EDITOR_UNLIMITED_FILES,
                 'context' => $this->context);
         $this->fileoptions = array('subdirs' => 1, 'maxfiles' => -1, 'maxbytes' => -1);
 
         $this->category = $category;
-        $this->categorycontext = get_context_instance_by_id($category->contextid);
+        $this->categorycontext = context::instance_by_id($category->contextid);
 
         parent::__construct($submiturl, null, 'post', '', null, $formeditable);
     }
@@ -187,7 +190,7 @@ abstract class question_edit_form extends question_wizard_form {
         $mform->setType('questiontext', PARAM_RAW);
 
         $mform->addElement('text', 'defaultmark', get_string('defaultmark', 'question'),
-                array('size' => 3));
+                array('size' => 7));
         $mform->setType('defaultmark', PARAM_FLOAT);
         $mform->setDefault('defaultmark', 1);
         $mform->addRule('defaultmark', null, 'required', null, 'client');
@@ -435,7 +438,8 @@ abstract class question_edit_form extends question_wizard_form {
         if (!empty($question->questiontext)) {
             $questiontext = $question->questiontext;
         } else {
-            $questiontext = '';
+            $questiontext = $this->_form->getElement('questiontext')->getValue();
+            $questiontext = $questiontext['text'];
         }
         $questiontext = file_prepare_draft_area($draftid, $this->context->id,
                 'question', 'questiontext', empty($question->id) ? null : (int) $question->id,
@@ -451,7 +455,8 @@ abstract class question_edit_form extends question_wizard_form {
         $draftid = file_get_submitted_draft_itemid('generalfeedback');
 
         if (empty($question->generalfeedback)) {
-            $question->generalfeedback = '';
+            $generalfeedback = $this->_form->getElement('generalfeedback')->getValue();
+            $question->generalfeedback = $generalfeedback['text'];
         }
 
         $feedback = file_prepare_draft_area($draftid, $this->context->id,
@@ -476,7 +481,7 @@ abstract class question_edit_form extends question_wizard_form {
         if (is_array($extraquestionfields) && !empty($question->options)) {
             array_shift($extraquestionfields);
             foreach ($extraquestionfields as $field) {
-                if (isset($question->options->$field)) {
+                if (property_exists($question->options, $field)) {
                     $question->$field = $question->options->$field;
                 }
             }
@@ -649,6 +654,12 @@ abstract class question_edit_form extends question_wizard_form {
                 && empty($fromform['usecurrentcat']) && !$this->question->formoptions->canmove) {
             $errors['currentgrp'] = get_string('nopermissionmove', 'question');
         }
+
+        // Default mark.
+        if ($fromform['defaultmark'] < 0) {
+            $errors['defaultmark'] = get_string('defaultmarkmustbepositive', 'question');
+        }
+
         return $errors;
     }
 

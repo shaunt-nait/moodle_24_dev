@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/questionlib.php');
+
 
 /**
  * The essay question type.
@@ -76,6 +78,13 @@ class qtype_essay extends question_type {
         $question->attachments = $questiondata->options->attachments;
         $question->graderinfo = $questiondata->options->graderinfo;
         $question->graderinfoformat = $questiondata->options->graderinfoformat;
+    }
+
+    public function delete_question($questionid, $contextid) {
+        global $DB;
+
+        $DB->delete_records('qtype_essay_options', array('questionid' => $questionid));
+        parent::delete_question($questionid, $contextid);
     }
 
     /**

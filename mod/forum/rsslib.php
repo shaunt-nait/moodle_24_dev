@@ -16,20 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* This file adds support to rss feeds generation
-*
-* @package mod-forum
-* @copyright 2001 Eloy Lafuente (stronk7) http://contiento.com
-* @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
+ * This file adds support to rss feeds generation
+ *
+ * @package mod_forum
+ * @category rss
+ * @copyright 2001 Eloy Lafuente (stronk7) http://contiento.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 /**
  * Returns the path to the cached rss feed contents. Creates/updates the cache if necessary.
- * @global object $CFG
- * @global object $DB
- * @param object $context the context
- * @param int $forumid the ID of the forum
- * @param array $args the arguments received in the url
+ * @param stdClass $context the context
+ * @param array    $args    the arguments received in the url
  * @return string the full path to the cached RSS feed directory. Null if there is a problem.
  */
 function forum_rss_get_feed($context, $args) {
@@ -58,17 +56,10 @@ function forum_rss_get_feed($context, $args) {
     }
 
     //the sql that will retreive the data for the feed and be hashed to get the cache filename
-    $sql = forum_rss_get_sql($forum, $cm);
+    list($sql, $params) = forum_rss_get_sql($forum, $cm);
 
     // Hash the sql to get the cache file name.
-    // If the forum is Q and A then we need to cache the files per user. This can
-    // have a large impact on performance, so we want to only do it on this type of forum.
-    if ($forum->type == 'qanda') {
-        $filename = rss_get_file_name($forum, $sql . $USER->id);
-    } else {
-        $filename = rss_get_file_name($forum, $sql);
-    }
-
+    $filename = rss_get_file_name($forum, $sql, $params);
     $cachedfilepath = rss_get_file_full_name('mod_forum', $filename);
 
     //Is the cache out of date?
@@ -76,14 +67,15 @@ function forum_rss_get_feed($context, $args) {
     if (file_exists($cachedfilepath)) {
         $cachedfilelastmodified = filemtime($cachedfilepath);
     }
-    //if the cache is more than 60 seconds old and there's new stuff
+    // Used to determine if we need to generate a new RSS feed.
     $dontrecheckcutoff = time()-60;
-    if ( $dontrecheckcutoff > $cachedfilelastmodified && forum_rss_newstuff($forum, $cm, $cachedfilelastmodified)) {
-        //need to regenerate the cached version
-        $result = forum_rss_feed_contents($forum, $sql, $modcontext);
-        if (!empty($result)) {
-            $status = rss_save_file('mod_forum',$filename,$result);
-        }
+    // If it hasn't been generated we will need to create it, otherwise only update
+    // if there is new stuff to show and it is older than the cut off date set above.
+    if (($cachedfilelastmodified == 0) || (($dontrecheckcutoff > $cachedfilelastmodified) &&
+        forum_rss_newstuff($forum, $cm, $cachedfilelastmodified))) {
+        // Need to regenerate the cached version.
+        $result = forum_rss_feed_contents($forum, $sql, $params, $modcontext);
+        $status = rss_save_file('mod_forum', $filename, $result);
     }
 
     //return the path to the cached version
@@ -93,8 +85,7 @@ function forum_rss_get_feed($context, $args) {
 /**
  * Given a forum object, deletes all cached RSS files associated with it.
  *
- * @param object $forum
- * @return void
+ * @param stdClass $forum
  */
 function forum_rss_delete_file($forum) {
     rss_delete_file('mod_forum', $forum);
@@ -107,34 +98,43 @@ function forum_rss_delete_file($forum) {
  * If there is new stuff in the forum since $time this returns true
  * Otherwise it returns false.
  *
- * @param object $forum the forum object
- * @param object $cm
- * @param int $time timestamp
- * @return bool
+ * @param stdClass $forum the forum object
+ * @param stdClass $cm    Course Module object
+ * @param int      $time  check for items since this epoch timestamp
+ * @return bool True for new items
  */
 function forum_rss_newstuff($forum, $cm, $time) {
     global $DB;
 
-    $sql = forum_rss_get_sql($forum, $cm, $time);
+    list($sql, $params) = forum_rss_get_sql($forum, $cm, $time);
 
-    $recs = $DB->get_records_sql($sql, null, 0, 1);//limit of 1. If we get even 1 back we have new stuff
-    return ($recs && !empty($recs));
+    return $DB->record_exists_sql($sql, $params);
 }
 
+/**
+ * Determines which type of SQL query is required, one for posts or one for discussions, and returns the appropriate query
+ *
+ * @param stdClass $forum the forum object
+ * @param stdClass $cm    Course Module object
+ * @param int      $time  check for items since this epoch timestamp
+ * @return string the SQL query to be used to get the Discussion/Post details from the forum table of the database
+ */
 function forum_rss_get_sql($forum, $cm, $time=0) {
-    $sql = null;
-
-    if (!empty($forum->rsstype)) {
-        if ($forum->rsstype == 1) {    //Discussion RSS
-            $sql = forum_rss_feed_discussions_sql($forum, $cm, $time);
-        } else {                //Post RSS
-            $sql = forum_rss_feed_posts_sql($forum, $cm, $time);
-        }
+    if ($forum->rsstype == 1) { // Discussion RSS
+        return forum_rss_feed_discussions_sql($forum, $cm, $time);
+    } else { // Post RSS
+        return forum_rss_feed_posts_sql($forum, $cm, $time);
     }
-
-    return $sql;
 }
 
+/**
+ * Generates the SQL query used to get the Discussion details from the forum table of the database
+ *
+ * @param stdClass $forum     the forum object
+ * @param stdClass $cm        Course Module object
+ * @param int      $newsince  check for items since this epoch timestamp
+ * @return string the SQL query to be used to get the Discussion details from the forum table of the database
+ */
 function forum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     global $CFG, $DB, $USER;
 
@@ -143,7 +143,7 @@ function forum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     $modcontext = null;
 
     $now = round(time(), -2);
-    $params = array($cm->instance);
+    $params = array();
 
     $modcontext = context_module::instance($cm->id);
 
@@ -160,21 +160,21 @@ function forum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
         }
     }
 
-    //do we only want new posts?
+    // Do we only want new posts?
     if ($newsince) {
-        $newsince = " AND p.modified > '$newsince'";
+        $params['newsince'] = $newsince;
+        $newsince = " AND p.modified > :newsince";
     } else {
         $newsince = '';
     }
 
-    //get group enforcing SQL
-    $groupmode    = groups_get_activity_groupmode($cm);
+    // Get group enforcing SQL.
+    $groupmode = groups_get_activity_groupmode($cm);
     $currentgroup = groups_get_activity_group($cm);
-    $groupselect = forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
+    list($groupselect, $groupparams) = forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
 
-    if ($groupmode && $currentgroup) {
-        $params['groupid'] = $currentgroup;
-    }
+    // Add the groupparams to the params array.
+    $params = array_merge($params, $groupparams);
 
     $forumsort = "d.timemodified DESC";
     $postdata = "p.id AS postid, p.subject, p.created as postcreated, p.modified, p.discussion, p.userid, p.message as postmessage, p.messageformat AS postformat, p.messagetrust AS posttrust";
@@ -187,25 +187,34 @@ function forum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
              WHERE d.forum = {$forum->id} AND p.parent = 0
                    $timelimit $groupselect $newsince
           ORDER BY $forumsort";
-    return $sql;
+    return array($sql, $params);
 }
 
+/**
+ * Generates the SQL query used to get the Post details from the forum table of the database
+ *
+ * @param stdClass $forum     the forum object
+ * @param stdClass $cm        Course Module object
+ * @param int      $newsince  check for items since this epoch timestamp
+ * @return string the SQL query to be used to get the Post details from the forum table of the database
+ */
 function forum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
     $modcontext = context_module::instance($cm->id);
 
-    //get group enforcement SQL
-    $groupmode    = groups_get_activity_groupmode($cm);
+    // Get group enforcement SQL.
+    $groupmode = groups_get_activity_groupmode($cm);
     $currentgroup = groups_get_activity_group($cm);
+    $params = array();
 
-    $groupselect = forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
+    list($groupselect, $groupparams) = forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
 
-    if ($groupmode && $currentgroup) {
-        $params['groupid'] = $currentgroup;
-    }
+    // Add the groupparams to the params array.
+    $params = array_merge($params, $groupparams);
 
-    //do we only want new posts?
+    // Do we only want new posts?
     if ($newsince) {
-        $newsince = " AND p.modified > '$newsince'";
+        $params['newsince'] = $newsince;
+        $newsince = " AND p.modified > :newsince";
     } else {
         $newsince = '';
     }
@@ -230,11 +239,21 @@ function forum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
                 $groupselect
             ORDER BY p.created desc";
 
-    return $sql;
+    return array($sql, $params);
 }
 
+/**
+ * Retrieve the correct SQL snippet for group-only forums
+ *
+ * @param stdClass $cm           Course Module object
+ * @param int      $groupmode    the mode in which the forum's groups are operating
+ * @param bool     $currentgroup true if the user is from the a group enabled on the forum
+ * @param stdClass $modcontext   The context instance of the forum module
+ * @return string SQL Query for group details of the forum
+ */
 function forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=null) {
     $groupselect = '';
+    $params = array();
 
     if ($groupmode) {
         if ($groupmode == VISIBLEGROUPS or has_capability('moodle/site:accessallgroups', $modcontext)) {
@@ -243,7 +262,7 @@ function forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=nul
                 $params['groupid'] = $currentgroup;
             }
         } else {
-            //seprate groups without access all
+            // Separate groups without access all.
             if ($currentgroup) {
                 $groupselect = "AND (d.groupid = :groupid OR d.groupid = -1)";
                 $params['groupid'] = $currentgroup;
@@ -253,28 +272,27 @@ function forum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=nul
         }
     }
 
-    return $groupselect;
+    return array($groupselect, $params);
 }
-
-
-
 
 /**
  * This function return the XML rss contents about the forum
  * It returns false if something is wrong
  *
  * @param stdClass $forum the forum object
- * @param string   $sql   The SQL used to retrieve the contents from the database
+ * @param string $sql the SQL used to retrieve the contents from the database
+ * @param array $params the SQL parameters used
  * @param object $context the context this forum relates to
  * @return bool|string false if the contents is empty, otherwise the contents of the feed is returned
+ *
+ * @Todo MDL-31129 implement post attachment handling
  */
-function forum_rss_feed_contents($forum, $sql, $context) {
+
+function forum_rss_feed_contents($forum, $sql, $params, $context) {
     global $CFG, $DB, $USER;
 
     $status = true;
 
-    $params = array();
-    //$params['forumid'] = $forum->id;
     $recs = $DB->get_recordset_sql($sql, $params, 0, $forum->rssarticles);
 
     //set a flag. Are we displaying discussions or posts?
@@ -286,7 +304,6 @@ function forum_rss_feed_contents($forum, $sql, $context) {
     if (!$cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course)) {
         print_error('invalidcoursemodule');
     }
-    $context = context_module::instance($cm->id);
 
     $formatoptions = new stdClass();
     $items = array();
@@ -321,10 +338,7 @@ function forum_rss_feed_contents($forum, $sql, $context) {
                         'mod_forum', 'post', $rec->postid);
                 $formatoptions->trusted = $rec->posttrust;
             }
-            $user->firstname = $rec->userfirstname;
-            $user->lastname = $rec->userlastname;
-            $item->author = fullname($user);
-            $item->pubdate = $rec->postcreated;
+
             if ($isdiscussion) {
                 $item->link = $CFG->wwwroot."/mod/forum/discuss.php?d=".$rec->discussionid;
             } else {
@@ -334,7 +348,7 @@ function forum_rss_feed_contents($forum, $sql, $context) {
             $formatoptions->trusted = $rec->posttrust;
             $item->description = format_text($message, $rec->postformat, $formatoptions, $forum->course);
 
-            //TODO: implement post attachment handling
+            //TODO: MDL-31129 implement post attachment handling
             /*if (!$isdiscussion) {
                 $post_file_area_name = str_replace('//', '/', "$forum->course/$CFG->moddata/forum/$forum->id/$rec->postid");
                 $post_files = get_directory_list("$CFG->dataroot/$post_file_area_name");
@@ -349,29 +363,17 @@ function forum_rss_feed_contents($forum, $sql, $context) {
         }
     $recs->close();
 
-
+    // Create the RSS header.
+    $header = rss_standard_header(strip_tags(format_string($forum->name,true)),
+                                  $CFG->wwwroot."/mod/forum/view.php?f=".$forum->id,
+                                  format_string($forum->intro,true)); // TODO: fix format
+    // Now all the RSS items, if there are any.
+    $articles = '';
     if (!empty($items)) {
-        //First the RSS header
-        $header = rss_standard_header(strip_tags(format_string($forum->name,true)),
-                                      $CFG->wwwroot."/mod/forum/view.php?f=".$forum->id,
-                                      format_string($forum->intro,true)); // TODO: fix format
-        //Now all the rss items
-        if (!empty($header)) {
-            $articles = rss_add_items($items);
-        }
-        //Now the RSS footer
-        if (!empty($header) && !empty($articles)) {
-            $footer = rss_standard_footer();
-        }
-        //Now, if everything is ok, concatenate it
-        if (!empty($header) && !empty($articles) && !empty($footer)) {
-            $status = $header.$articles.$footer;
-        } else {
-            $status = false;
-        }
-    } else {
-        $status = false;
+        $articles = rss_add_items($items);
     }
+    // Create the RSS footer.
+    $footer = rss_standard_footer();
 
-    return $status;
+    return $header . $articles . $footer;
 }

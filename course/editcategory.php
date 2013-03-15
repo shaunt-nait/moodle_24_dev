@@ -40,7 +40,7 @@ if ($id) {
         print_error('unknowcategory');
     }
     $PAGE->set_url('/course/editcategory.php', array('id' => $id));
-    $categorycontext = get_context_instance(CONTEXT_COURSECAT, $id);
+    $categorycontext = context_coursecat::instance($id);
     $PAGE->set_context($categorycontext);
     require_capability('moodle/category:manage', $categorycontext);
     $strtitle = get_string('editcategorysettings');
@@ -54,7 +54,7 @@ if ($id) {
         if (!$DB->record_exists('course_categories', array('id' => $parent))) {
             print_error('unknowcategory');
         }
-        $context = get_context_instance(CONTEXT_COURSECAT, $parent);
+        $context = context_coursecat::instance($parent);
     } else {
         $context = get_system_context();
     }
@@ -102,6 +102,7 @@ if ($mform->is_cancelled()) {
         $newcategory->theme = $data->theme;
     }
 
+    $logaction = 'update';
     if ($id) {
         // Update an existing category.
         $newcategory->id = $category->id;
@@ -114,15 +115,17 @@ if ($mform->is_cancelled()) {
     } else {
         // Create a new category.
         $newcategory->description = $data->description_editor['text'];
-        $newcategory->sortorder = 999;
-        $newcategory->id = $DB->insert_record('course_categories', $newcategory);
-        $newcategory->context = get_context_instance(CONTEXT_COURSECAT, $newcategory->id);
-        $categorycontext = $newcategory->context;
-        mark_context_dirty($newcategory->context->path);
+
+        // Don't overwrite the $newcategory object as it'll be processed by file_postupdate_standard_editor in a moment
+        $category = create_course_category($newcategory);
+        $newcategory->id = $category->id;
+        $categorycontext = $category->context;
+        $logaction = 'add';
     }
 
     $newcategory = file_postupdate_standard_editor($newcategory, 'description', $editoroptions, $categorycontext, 'coursecat', 'description', 0);
     $DB->update_record('course_categories', $newcategory);
+    add_to_log(SITEID, "category", $logaction, "editcategory.php?id=$newcategory->id", $newcategory->id);
     fix_course_sortorder();
 
     redirect('category.php?id='.$newcategory->id.'&categoryedit=on');

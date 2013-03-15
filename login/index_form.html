@@ -5,7 +5,7 @@ if ($show_instructions) {
     $columns = 'onecolumn';
 }
 
-if (empty($CFG->xmlstrictheaders) and !empty($CFG->loginpasswordautocomplete)) {
+if (!empty($CFG->loginpasswordautocomplete)) {
     $autocomplete = 'autocomplete="off"';
 } else {
     $autocomplete = '';
@@ -30,9 +30,10 @@ if (empty($CFG->xmlstrictheaders) and !empty($CFG->loginpasswordautocomplete)) {
         </div>
         <?php
           if (!empty($errormsg)) {
-              echo '<div class="loginerrors">';
+              echo html_writer::start_tag('div', array('class' => 'loginerrors'));
+              echo html_writer::link('#', $errormsg, array('id' => 'loginerrormessage', 'class' => 'accesshide'));
               echo $OUTPUT->error_text($errormsg);
-              echo '</div>';
+              echo html_writer::end_tag('div');
           }
         ?>
         <form action="<?php echo $CFG->httpswwwroot; ?>/login/index.php" method="post" id="login" <?php echo $autocomplete; ?> >
@@ -57,8 +58,6 @@ if (empty($CFG->xmlstrictheaders) and !empty($CFG->loginpasswordautocomplete)) {
               <?php } ?>
           <div class="clearer"><!-- --></div>
           <div class="forgetpass"><a href="forgot_password.php"><?php print_string("forgotten") ?></a></div>
-	  <p></p>
-          <p><b>New to Moodle? <a href="http://digilearn.nait.ca/moodletransition/UsingMoodle_StudentManual.pdf" target="_blank">Download</a> an introductory guide.</b></p>
         </form>
       </div>
 
@@ -112,13 +111,9 @@ if (empty($CFG->xmlstrictheaders) and !empty($CFG->loginpasswordautocomplete)) {
         <h6><?php print_string('potentialidps', 'auth'); ?></h6>
         <div class="potentialidplist">
 <?php foreach ($potentialidps as $idp) {
-    echo  '<div class="potentialidp"><a href="' . $idp['url']->out() . '" title="' . $idp['name'] . '">' . $OUTPUT->render($idp['icon'], $idp['name']) . '&nbsp;' . $idp['name'] . '</a></div>';
+    echo  '<div class="potentialidp"><a href="' . $idp['url']->out() . '" title="' . $idp['name'] . '">' . $OUTPUT->render($idp['icon'], $idp['name']) . $idp['name'] . '</a></div>';
 } ?>
         </div>
     </div>
 <?php } ?>
-</div>
-<div class="loginbox" style="padding:10px; width:inherit;">
-<p><b>Regularly Scheduled Maintenance</b></p>
-<p>Due to regularly scheduled server maintenance, Moodle may be unavailable between the hours of 3am and 5am (MST) every Saturday morning. Please be aware that if you are logged in during this time, the server may suddenly go offline without notification and without saving.</p>
 </div>

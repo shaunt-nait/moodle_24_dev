@@ -19,7 +19,7 @@
 
     admin_externalpage_setup('editusers');
 
-    $sitecontext = get_context_instance(CONTEXT_SYSTEM);
+    $sitecontext = context_system::instance();
     $site = get_site();
 
     if (!has_capability('moodle/user:update', $sitecontext) and !has_capability('moodle/user:delete', $sitecontext)) {
@@ -167,25 +167,48 @@
         } else {
             $columndir = $dir == "ASC" ? "DESC":"ASC";
             if ($column == "lastaccess") {
-                $columnicon = $dir == "ASC" ? "up":"down";
+                $columnicon = ($dir == "ASC") ? "sort_desc" : "sort_asc";
             } else {
-                $columnicon = $dir == "ASC" ? "down":"up";
+                $columnicon = ($dir == "ASC") ? "sort_asc" : "sort_desc";
             }
-            $columnicon = " <img src=\"" . $OUTPUT->pix_url('t/' . $columnicon) . "\" alt=\"\" />";
+            $columnicon = "<img class='iconsort' src=\"" . $OUTPUT->pix_url('t/' . $columnicon) . "\" alt=\"\" />";
 
         }
         $$column = "<a href=\"user.php?sort=$column&amp;dir=$columndir\">".$string[$column]."</a>$columnicon";
     }
 
-    if ($sort == "name") {
-        $sort = "firstname";
+    $override = new stdClass();
+    $override->firstname = 'firstname';
+    $override->lastname = 'lastname';
+    $fullnamelanguage = get_string('fullnamedisplay', '', $override);
+    if (($CFG->fullnamedisplay == 'firstname lastname') or
+        ($CFG->fullnamedisplay == 'firstname') or
+        ($CFG->fullnamedisplay == 'language' and $fullnamelanguage == 'firstname lastname' )) {
+        $fullnamedisplay = "$firstname / $lastname";
+        if ($sort == "name") { // If sort has already been set to something else then ignore.
+            $sort = "firstname";
+        }
+    } else { // ($CFG->fullnamedisplay == 'language' and $fullnamelanguage == 'lastname firstname').
+        $fullnamedisplay = "$lastname / $firstname";
+        if ($sort == "name") { // This should give the desired sorting based on fullnamedisplay.
+            $sort = "lastname";
+        }
     }
 
     list($extrasql, $params) = $ufiltering->get_sql_filter();
-    $users = get_users_listing($sort, $dir, $page*$perpage, $perpage, '', '', '',
-            $extrasql, $params, $context);
+
     $usercount = get_users(false);
     $usersearchcount = get_users(false, '', false, null, "", '', '', '', '', '*', $extrasql, $params);
+
+    // Exclude guest user from list.
+    $noguestsql = '';
+    if (!empty($extrasql)) {
+        $noguestsql .= ' AND';
+    }
+    $noguestsql .= " id <> :guestid";
+    $params['guestid'] = $CFG->siteguest;
+    $users = get_users_listing($sort, $dir, $page*$perpage, $perpage, '', '', '',
+            $extrasql.$noguestsql, $params, $context);
 
     if ($extrasql !== '') {
         echo $OUTPUT->heading("$usersearchcount / $usercount ".get_string('users'));
@@ -229,18 +252,6 @@
                 $nusers[] = $users[$key];
             }
             $users = $nusers;
-        }
-
-        $override = new stdClass();
-        $override->firstname = 'firstname';
-        $override->lastname = 'lastname';
-        $fullnamelanguage = get_string('fullnamedisplay', '', $override);
-        if (($CFG->fullnamedisplay == 'firstname lastname') or
-            ($CFG->fullnamedisplay == 'firstname') or
-            ($CFG->fullnamedisplay == 'language' and $fullnamelanguage == 'firstname lastname' )) {
-            $fullnamedisplay = "$firstname / $lastname";
-        } else { // ($CFG->fullnamedisplay == 'language' and $fullnamelanguage == 'lastname firstname')
-            $fullnamedisplay = "$lastname / $firstname";
         }
 
         $table = new html_table();

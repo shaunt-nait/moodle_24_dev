@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/numerical/question.php');
 
 
@@ -46,6 +47,7 @@ class qtype_calculated extends question_type {
         global $CFG, $DB, $OUTPUT;
         if (!$question->options = $DB->get_record('question_calculated_options',
                 array('question' => $question->id))) {
+            $question->options = new stdClass();
             $question->options->synchronize = 0;
             $question->options->single = 0;
             $question->options->answernumbering = 'abc';
@@ -710,8 +712,8 @@ class qtype_calculated extends question_type {
                 get_string('calcmax', 'qtype_calculated'));
         $mform->addGroup($minmaxgrp, 'minmaxgrp',
                 get_string('minmax', 'qtype_calculated'), ' - ', false);
-        $mform->setType("calcmin[$idx]", PARAM_NUMBER);
-        $mform->setType("calcmax[$idx]", PARAM_NUMBER);
+        $mform->setType("calcmin[$idx]", PARAM_FLOAT);
+        $mform->setType("calcmax[$idx]", PARAM_FLOAT);
 
         $precisionoptions = range(0, 10);
         $mform->addElement('select', "calclength[$idx]",
@@ -749,11 +751,13 @@ class qtype_calculated extends question_type {
                     ? 'decimals'
                     : 'significantfigures'), 'qtype_calculated', $i);
             }
-            $menu1 = html_writer::select($lengthoptions, 'calclength[]', $regs[4], null);
+            $menu1 = html_writer::label(get_string('lengthoption', 'qtype_calculated'), 'menucalclength', false, array('class' => 'accesshide'));
+            $menu1 .= html_writer::select($lengthoptions, 'calclength[]', $regs[4], null);
 
             $options = array('uniform' => get_string('uniformbit', 'qtype_calculated'),
                     'loguniform' => get_string('loguniformbit', 'qtype_calculated'));
-            $menu2 = html_writer::select($options, 'calcdistribution[]', $regs[1], null);
+            $menu2 = html_writer::label(get_string('distributionoption', 'qtype_calculated'), 'menucalcdistribution', false, array('class' => 'accesshide'));
+            $menu2 .= html_writer::select($options, 'calcdistribution[]', $regs[1], null);
             return '<input type="submit" onclick="'
                 . "getElementById('addform').regenerateddefid.value='$defid'; return true;"
                 .'" value="'. get_string('generatevalue', 'qtype_calculated') . '"/><br/>'
@@ -1079,6 +1083,7 @@ class qtype_calculated extends question_type {
                         get_string('anyvalue', 'qtype_calculated') . '<br/><br/><br/>';
             } else {
                 $comment->stranswers[$key] = $formula . ' = ' . $formattedanswer->answer . '<br/>';
+                $correcttrue = new stdClass();
                 $correcttrue->correct = $formattedanswer->answer;
                 $correcttrue->true = $answer->answer;
                 if ($formattedanswer->answer < $answer->min ||
@@ -1222,7 +1227,7 @@ class qtype_calculated extends question_type {
                 echo $OUTPUT->notification(get_string('notvalidnumber', 'qtype_calculated', $a));
                 $val = 1.0;
             }
-            if ($val < 0) {
+            if ($val <= 0) { // MDL-36025 Use parentheses for "-0"
                 $str = str_replace('{'.$name.'}', '('.$val.')', $str);
             } else {
                 $str = str_replace('{'.$name.'}', $val, $str);
@@ -1250,6 +1255,7 @@ class qtype_calculated extends question_type {
         } else if ($formula === '*') {
             $str = '*';
         } else {
+            $str = null;
             eval('$str = '.$formula.';');
         }
         return $str;
@@ -1524,6 +1530,7 @@ class qtype_calculated extends question_type {
                WHERE a.id = b.datasetdefinition AND a.type = '1' AND b.question = ? AND a.name = ?";
             $currentdatasetdef = $DB->get_record_sql($sql, array($form->id, $name));
             if (!$currentdatasetdef) {
+                $currentdatasetdef = new stdClass();
                 $currentdatasetdef->type = '0';
             }
             $key = "$type-0-$name";
@@ -1697,17 +1704,19 @@ class qtype_calculated extends question_type {
                      WHERE i.id = d.datasetdefinition AND i.category = ?";
             if ($records = $DB->get_records_sql($sql, array($category))) {
                 foreach ($records as $r) {
+                    $key = "$r->type-$r->category-$r->name";
                     $sql1 = "SELECT q.*
                                FROM {question} q
                               WHERE q.id = ?";
-                    if (!isset ($datasetdefs["$r->type-$r->category-$r->name"])) {
-                        $datasetdefs["$r->type-$r->category-$r->name"]= $r;
+                    if (!isset($datasetdefs[$key])) {
+                        $datasetdefs[$key] = $r;
                     }
                     if ($questionb = $DB->get_records_sql($sql1, array($r->question))) {
-                        $datasetdefs["$r->type-$r->category-$r->name"]->questions[
-                                $r->question]->name = $questionb[$r->question]->name;
-                        $datasetdefs["$r->type-$r->category-$r->name"]->questions[
-                                $r->question]->id = $questionb[$r->question]->id;
+                        $datasetdefs[$key]->questions[$r->question] = new stdClass();
+                        $datasetdefs[$key]->questions[$r->question]->name =
+                                $questionb[$r->question]->name;
+                        $datasetdefs[$key]->questions[$r->question]->id =
+                                $questionb[$r->question]->id;
                     }
                 }
             }
@@ -1858,10 +1867,15 @@ function qtype_calculated_calculate_answer($formula, $individualdata,
     // ->answer    the correct answer
     // ->min       the lower bound for an acceptable response
     // ->max       the upper bound for an accetpable response
-
+    $calculated = new stdClass();
     // Exchange formula variables with the correct values...
     $answer = question_bank::get_qtype('calculated')->substitute_variables_and_eval(
             $formula, $individualdata);
+    if (!is_numeric($answer)) {
+        // Something went wrong, so just return NaN.
+        $calculated->answer = NAN;
+        return $calculated;
+    }
     if ('1' == $answerformat) { /* Answer is to have $answerlength decimals */
         /*** Adjust to the correct number of decimals ***/
         if (stripos($answer, 'e')>0) {

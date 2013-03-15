@@ -16,11 +16,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    moodlecore
- * @subpackage backup-moodle2
- * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Defines restore_plugin class
+ *
+ * @package     core_backup
+ * @subpackage  moodle2
+ * @category    backup
+ * @copyright   2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class implementing the plugins support for moodle2 restore
@@ -196,10 +201,6 @@ abstract class restore_plugin {
      * @param mixed $ifnotfound what to return if $oldid wasnt found. Defaults to false
      */
     protected function get_mappingid($itemname, $oldid, $ifnotfound = false) {
-	global $CFG;
-    	if ($CFG->dbtype == 'pgsql' && $oldid== '') {
-        	$oldid = null;
-	}
         return $this->step->get_mappingid($itemname, $oldid, $ifnotfound);
     }
 
