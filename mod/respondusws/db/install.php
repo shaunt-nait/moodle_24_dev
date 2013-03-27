@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 defined("MOODLE_INTERNAL") || die();
 require_once("$CFG->dirroot/course/lib.php");
 $lib_file = dirname(dirname(__FILE__)) . "/lib.php";
@@ -18,6 +18,7 @@ function xmldb_respondusws_install_recovery()
 function respondusws_install()
 {
 	global $DB;
+	global $CFG;
 	$dbman = $DB->get_manager();
 	if (!isset($CFG->respondusws_initialdisable)) {
 		if (!$dbman->table_exists("respondusws")

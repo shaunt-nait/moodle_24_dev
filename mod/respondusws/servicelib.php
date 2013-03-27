@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 $RWSIHLOG = FALSE;
 $RWSECAS = FALSE;
 $RWSESL3 = FALSE; 
@@ -138,6 +138,7 @@ define("RWSCSI", "calculatedsimple");
 define("RWSCMU", "calculatedmulti");
 define("RWSCAS", "cas");
 define("RWSRXP", "regexp");
+define("RWSMXC", 1200);
 function RWSRHCom()
 {
 	header("Cache-Control: private, must-revalidate"); 
@@ -247,6 +248,8 @@ function RWSCMBVer()
 	  || $r_bv == 2011080100	
 	  || $r_bv == 2011102500	
 	  || $r_bv == 2011121500	
+	  || $r_bv == 2012081300	
+	  || $r_bv == 2013030700	
 	  ) {
 		return; 
 	}
@@ -1259,7 +1262,10 @@ function RWSIUMQuiz($r_qzmi)
 function RWSGUMCList()
 {
 	$r_mc = array();
-	$r_crss = get_courses();
+	$r_flds = NULL;							
+	$r_sor = "visible DESC,sortorder ASC";	
+	$r_lm = RWSMXC;
+	$r_crss = enrol_get_my_courses($r_flds, $r_sor, $r_lm);
 	if ($r_crss === FALSE || count($r_crss) == 0)
 		return $r_mc;
     if (array_key_exists(SITEID, $r_crss))
@@ -1277,6 +1283,7 @@ function RWSCMUSvc()
 }
 function RWSIUMCourse($r_cid)
 {
+	global $CFG;
 	$r_ctx = get_context_instance(CONTEXT_COURSE, $r_cid);
 	$r_ok = ($r_ctx !== FALSE);
 	if ($r_ok)
@@ -1315,6 +1322,10 @@ function RWSIUMCourse($r_cid)
 		$r_ok = has_capability("moodle/question:movemine", $r_ctx);
 	if ($r_ok)
 		$r_ok = has_capability("moodle/question:moveall", $r_ctx);
+	if (RWSFCmp($CFG->version, 2012062501.07, 2) >= 0) { 
+		if ($r_ok)
+			$r_ok = has_capability("mod/quiz:addinstance", $r_ctx);
+	}
 	if (!$r_ok)
 		$r_ok = is_siteadmin();
 	return $r_ok;
@@ -1373,8 +1384,17 @@ function RWSSQDLocal(&$r_qiz)
 	$r_qiz->timelimit = 0; 
 	$r_qiz->attempts = 0; 
 	$r_qiz->grademethod = 1; 
+	if (RWSFCmp($CFG->version, 2012040205, 2) >= 0) { 
+		$r_qiz->overduehandling = "autoabandon"; 
+	}
+	if (RWSFCmp($CFG->version, 2012040206, 2) >= 0) { 
+		$r_qiz->graceperiod = 86400; 
+	}
 	$r_qiz->questionsperpage = 0; 
 	$r_qiz->shufflequestions = 0; 
+	if (RWSFCmp($CFG->version, 2012030901, 2) >= 0) { 
+		$r_qiz->navmethod = "free"; 
+	}
 	$r_qiz->shuffleanswers = 1; 
 	if (RWSFCmp($CFG->version, 2011070100, 2) >= 0) { 
 		$r_qiz->preferredbehaviour = "adaptive";
@@ -1453,6 +1473,7 @@ function RWSSQDLocal(&$r_qiz)
 	$r_qiz->delay1 = 0; 
 	$r_qiz->delay2 = 0; 
 	$r_qiz->popup = 0; 
+	$r_qiz->browsersecurity = "-";	
 	$r_nf = 5; 
 	for ($r_i = 0; $r_i < $r_nf; $r_i++) {
 		$r_drf = 0;
@@ -1507,8 +1528,17 @@ function RWSSQDMoodle(&$r_qiz)
 	$r_qiz->timelimit = $r_dfs->timelimit;
 	$r_qiz->attempts = $r_dfs->attempts;
 	$r_qiz->grademethod = $r_dfs->grademethod;
+	if (RWSFCmp($CFG->version, 2012040205, 2) >= 0) { 
+		$r_qiz->overduehandling = $r_dfs->overduehandling;
+	}
+	if (RWSFCmp($CFG->version, 2012040206, 2) >= 0) { 
+		$r_qiz->graceperiod = $r_dfs->graceperiod;
+	}
 	$r_qiz->questionsperpage = $r_dfs->questionsperpage;
 	$r_qiz->shufflequestions = $r_dfs->shufflequestions;
+	if (RWSFCmp($CFG->version, 2012030901, 2) >= 0) { 
+		$r_qiz->navmethod = $r_dfs->navmethod;
+	}
 	$r_qiz->shuffleanswers = $r_dfs->shuffleanswers;
 	if (RWSFCmp($CFG->version, 2011070100, 2) >= 0) { 
 		$r_qiz->preferredbehaviour = $r_dfs->preferredbehaviour;
@@ -1678,7 +1708,10 @@ function RWSSQDMoodle(&$r_qiz)
 	$r_qiz->subnet = $r_dfs->subnet;
 	$r_qiz->delay1 = $r_dfs->delay1;
 	$r_qiz->delay2 = $r_dfs->delay2;
-	$r_qiz->popup = $r_dfs->popup;
+	if (isset($r_dfs->browsersecurity)) 
+		$r_qiz->browsersecurity = $r_dfs->browsersecurity;
+	else
+		$r_qiz->popup = $r_dfs->popup;
 	$r_nf = 5; 
 	for ($r_i = 0; $r_i < $r_nf; $r_i++) {
 		$r_drf = 0;
@@ -2949,9 +2982,14 @@ function RWSISRec(&$r_qiz, $r_rcd, $r_pop=FALSE)
 	$r_p += $r_ct;
 	$r_sz -= $r_ct;
 	$r_dat = unpack("C", $r_fld);
-	$r_qiz->popup = intval($r_dat[1]);
-	if ($r_qiz->popup != 0 && $r_qiz->popup != 1)
+	$popup = intval($r_dat[1]);
+	if ($popup != 0 && $popup != 1)
 		return FALSE;
+	$r_qiz->popup = $popup;
+	if ($popup == 0)
+		$r_qiz->browsersecurity = "-";
+	else 
+		$r_qiz->browsersecurity = "securewindow";
 	if ($r_sz < 1)
 		return FALSE;
 	$r_ct = strpos(substr($r_rcd, $r_p), "\0");
@@ -6408,7 +6446,17 @@ function RWSESRec($r_qiz)
 	}
 	$r_fld = pack("C*", $r_rsps, $r_asrs, $r_fb, $r_gen, $r_sc, $r_ov);
 	$r_rcd .= $r_fld;
-	$r_fld = $r_qiz->popup;
+	if (isset($r_qiz->browsersecurity)) { 
+		if ($r_qiz->browsersecurity == "securewindow"
+		  || $r_qiz->browsersecurity == "safebrowser")
+			$popup = 1;
+		else
+			$popup = 0;
+	}
+	else {
+		$popup = $r_qiz->popup;
+	}
+	$r_fld = $popup;
 	$r_fld = pack("C", $r_fld);
 	$r_rcd .= $r_fld;
 	$r_fld = $r_qiz->password;

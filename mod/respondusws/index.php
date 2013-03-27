@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 require_once(dirname(dirname(dirname(__FILE__))) . "/config.php");
 require_once("$CFG->dirroot/course/lib.php");
 require_once(dirname(__FILE__) . "/lib.php");
@@ -11,7 +11,8 @@ $id = required_param("id", PARAM_INT);
 $course = $DB->get_record("course", array("id" => $id));
 if ($course === false)
     print_error("invalidcourseid");
-$PAGE->set_url("/mod/respondusws/index.php", array("id" => $id));
+$PAGE->set_url("$CFG->wwwroot/mod/respondusws/index.php",
+  array("id" => $id));
 require_course_login($course);
 $dbman = $DB->get_manager();
 if ($dbman->table_exists("respondusws"))

@@ -2,7 +2,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
+$moodlecfg_file = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . "/config.php";
+require_once($moodlecfg_file);
 defined("MOODLE_INTERNAL") || die();
 $string["adminsettingsheader"] = "admin settings";
 $string["installmodulerecord"] = "respondusws install failed; could not find module record";
@@ -15,7 +17,7 @@ $string["moduledescheader"] = "description";
 $string["moduledescription"] = "Respondus 4.0 Web Service Extension for Moodle";
 $string["modulename"] = "Respondus 4.0 Web Services";
 $string["modulename_help"] = 
-  "<p><img alt=\"\" src=\"/mod/respondusws/pix/icon.gif\" />&nbsp;<b>respondusws</b></p>
+  "<p><img alt=\"\" src=\"$CFG->wwwroot/mod/respondusws/pix/icon.gif\" />&nbsp;<b>respondusws</b></p>
   <div class=\"indent\"><p>
   The respondusws module is not a typical activity module. Instances of this
   module cannot be created or deleted. A single shared instance is available to
@@ -37,6 +39,7 @@ $string["onlyoneinstance"] = "Only one shared respondusws module instance is sup
 $string["pluginadministration"] = "Respondus 4.0 Web Services administration";
 $string["pluginname"] = "Respondus 4.0 Web Services";
 $string["respondusws"] = "Respondus 4.0 Web Services";
+$string["respondusws:addinstance"] = "Add a new respondusws instance";
 $string["responduswsintro"] = "respondusws Intro";
 $string["responduswsname"] = "respondusws Name";
 $string["responduswstype"] = "Respondus 4.0 Web Services";

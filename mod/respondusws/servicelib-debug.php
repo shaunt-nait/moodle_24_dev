@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 $RWS_IGNORE_HTTPS_LOGIN = FALSE;
 $RWS_ENABLE_CAS_AUTH = FALSE;
 $RWS_ENABLE_CAS_SSL3 = FALSE; 
@@ -138,6 +138,7 @@ define("RWS_CALCULATEDSIMPLE", "calculatedsimple");
 define("RWS_CALCULATEDMULTI", "calculatedmulti");
 define("RWS_AUTH_CAS", "cas");
 define("RWS_REGEXP", "regexp");
+define("RWS_MAX_COURSES", 1200);
 function RWSResponseHeadersCommon()
 {
 	header("Cache-Control: private, must-revalidate"); 
@@ -259,6 +260,8 @@ function RWSCheckModuleBehaviorVersion()
 	  || $behavior_version == 2011080100	
 	  || $behavior_version == 2011102500	
 	  || $behavior_version == 2011121500	
+	  || $behavior_version == 2012081300	
+	  || $behavior_version == 2013030700	
 	  ) {
 		return; 
 	}
@@ -1271,7 +1274,10 @@ function RWSIsMoodleUserModifyQuiz($quiz_cmid)
 function RWSGetMoodleUserModifyCourses()
 {
 	$modify_courses = array();
-	$courses = get_courses();
+	$fields = NULL;							
+	$sort = "visible DESC,sortorder ASC";	
+	$limit = RWS_MAX_COURSES;
+	$courses = enrol_get_my_courses($fields, $sort, $limit);
 	if ($courses === FALSE || count($courses) == 0)
 		return $modify_courses;
     if (array_key_exists(SITEID, $courses))
@@ -1289,6 +1295,7 @@ function RWSCheckMoodleUserWebService()
 }
 function RWSIsMoodleUserModifyCourse($course_id)
 {
+	global $CFG;
 	$context = get_context_instance(CONTEXT_COURSE, $course_id);
 	$ok = ($context !== FALSE);
 	if ($ok)
@@ -1327,6 +1334,10 @@ function RWSIsMoodleUserModifyCourse($course_id)
 		$ok = has_capability("moodle/question:movemine", $context);
 	if ($ok)
 		$ok = has_capability("moodle/question:moveall", $context);
+	if (RWSFloatCompare($CFG->version, 2012062501.07, 2) >= 0) { 
+		if ($ok)
+			$ok = has_capability("mod/quiz:addinstance", $context);
+	}
 	if (!$ok)
 		$ok = is_siteadmin();
 	return $ok;
@@ -1385,8 +1396,17 @@ function RWSSetQuizDefaultsLocal(&$quiz)
 	$quiz->timelimit = 0; 
 	$quiz->attempts = 0; 
 	$quiz->grademethod = 1; 
+	if (RWSFloatCompare($CFG->version, 2012040205, 2) >= 0) { 
+		$quiz->overduehandling = "autoabandon"; 
+	}
+	if (RWSFloatCompare($CFG->version, 2012040206, 2) >= 0) { 
+		$quiz->graceperiod = 86400; 
+	}
 	$quiz->questionsperpage = 0; 
 	$quiz->shufflequestions = 0; 
+	if (RWSFloatCompare($CFG->version, 2012030901, 2) >= 0) { 
+		$quiz->navmethod = "free"; 
+	}
 	$quiz->shuffleanswers = 1; 
 	if (RWSFloatCompare($CFG->version, 2011070100, 2) >= 0) { 
 		$quiz->preferredbehaviour = "adaptive";
@@ -1465,6 +1485,7 @@ function RWSSetQuizDefaultsLocal(&$quiz)
 	$quiz->delay1 = 0; 
 	$quiz->delay2 = 0; 
 	$quiz->popup = 0; 
+	$quiz->browsersecurity = "-";	
 	$num_feeds = 5; 
 	for ($i = 0; $i < $num_feeds; $i++) {
 		$draftid = 0;
@@ -1519,8 +1540,17 @@ function RWSSetQuizDefaultsMoodle(&$quiz)
 	$quiz->timelimit = $defaults->timelimit;
 	$quiz->attempts = $defaults->attempts;
 	$quiz->grademethod = $defaults->grademethod;
+	if (RWSFloatCompare($CFG->version, 2012040205, 2) >= 0) { 
+		$quiz->overduehandling = $defaults->overduehandling;
+	}
+	if (RWSFloatCompare($CFG->version, 2012040206, 2) >= 0) { 
+		$quiz->graceperiod = $defaults->graceperiod;
+	}
 	$quiz->questionsperpage = $defaults->questionsperpage;
 	$quiz->shufflequestions = $defaults->shufflequestions;
+	if (RWSFloatCompare($CFG->version, 2012030901, 2) >= 0) { 
+		$quiz->navmethod = $defaults->navmethod;
+	}
 	$quiz->shuffleanswers = $defaults->shuffleanswers;
 	if (RWSFloatCompare($CFG->version, 2011070100, 2) >= 0) { 
 		$quiz->preferredbehaviour = $defaults->preferredbehaviour;
@@ -1690,7 +1720,10 @@ function RWSSetQuizDefaultsMoodle(&$quiz)
 	$quiz->subnet = $defaults->subnet;
 	$quiz->delay1 = $defaults->delay1;
 	$quiz->delay2 = $defaults->delay2;
-	$quiz->popup = $defaults->popup;
+	if (isset($defaults->browsersecurity)) 
+		$quiz->browsersecurity = $defaults->browsersecurity;
+	else
+		$quiz->popup = $defaults->popup;
 	$num_feeds = 5; 
 	for ($i = 0; $i < $num_feeds; $i++) {
 		$draftid = 0;
@@ -2961,9 +2994,14 @@ function RWSImportSettingsRecord(&$quiz, $record, $process_options=FALSE)
 	$pos += $count;
 	$size -= $count;
 	$data = unpack("C", $field);
-	$quiz->popup = intval($data[1]);
-	if ($quiz->popup != 0 && $quiz->popup != 1)
+	$popup = intval($data[1]);
+	if ($popup != 0 && $popup != 1)
 		return FALSE;
+	$quiz->popup = $popup;
+	if ($popup == 0)
+		$quiz->browsersecurity = "-";
+	else 
+		$quiz->browsersecurity = "securewindow";
 	if ($size < 1)
 		return FALSE;
 	$count = strpos(substr($record, $pos), "\0");
@@ -6420,7 +6458,17 @@ function RWSExportSettingsRecord($quiz)
 	}
 	$field = pack("C*", $responses, $answers, $feedback, $general, $scores, $overall);
 	$record .= $field;
-	$field = $quiz->popup;
+	if (isset($quiz->browsersecurity)) { 
+		if ($quiz->browsersecurity == "securewindow"
+		  || $quiz->browsersecurity == "safebrowser")
+			$popup = 1;
+		else
+			$popup = 0;
+	}
+	else {
+		$popup = $quiz->popup;
+	}
+	$field = $popup;
 	$field = pack("C", $field);
 	$record .= $field;
 	$field = $quiz->password;

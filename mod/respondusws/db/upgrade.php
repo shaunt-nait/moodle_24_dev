@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 defined("MOODLE_INTERNAL") || die();
 function xmldb_respondusws_upgrade($oldversion = 0)
 {
@@ -37,6 +37,10 @@ function xmldb_respondusws_upgrade($oldversion = 0)
 	if ($oldversion < 2011102500) { 
 	}
 	if ($oldversion < 2011121500) { 
+	}
+	if ($oldversion < 2012081300) { 
+	}
+	if ($oldversion < 2013030700) { 
 	}
     return true;
 }

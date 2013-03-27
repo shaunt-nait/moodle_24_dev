@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 defined("MOODLE_INTERNAL") || die();
 function respondusws_add_instance($instance)
 {
@@ -126,7 +126,7 @@ function respondusws_print_overview($courses, &$htmlarray)
           '<div class="name">' . get_string("modulename", "respondusws") .
 		  ': <a ' . ($instance->visible ? '' : ' class="dimmed"') .
           ' href="' . $CFG->wwwroot . '/mod/respondusws/view.php?id=' .
-		  $instance->coursemodule . '">' . $instance->name .
+		  $instance->coursemodule . '">' . format_string($instance->name) .
 		  '</a></div></div>';
         if (empty($htmlarray[$instance->course]["respondusws"]))
             $htmlarray[$instance->course]["respondusws"] = $summary;
@@ -213,7 +213,7 @@ function respondusws_supports($feature)
 		case FEATURE_RATE: 
 			return false; 
 		case FEATURE_MOD_ARCHETYPE: 
-			return MOD_ARCHETYPE_OTHER; 
+			return MOD_ARCHETYPE_OTHER;
         default:
 			return null; 
     }
@@ -228,8 +228,8 @@ function respondusws_extend_settings_navigation(
 }
 function respondusws_get_extra_capabilities()
 {
+	global $CFG;
 	$caps = array(
-		"moodle/course:viewhiddensections",
 		"mod/quiz:view",
 		"mod/quiz:preview",
 		"mod/quiz:manage",
@@ -252,10 +252,13 @@ function respondusws_get_extra_capabilities()
 		"moodle/question:movemine",
 		"moodle/question:moveall"
 		);
+	if (bccomp($CFG->version, 2012062501.07, 2) >= 0) { 
+		$caps[] = "mod/quiz:addinstance";
+	}
 	return $caps;
 }
 function respondusws_pluginfile(
-  $course, $cm, $context, $filearea, $args, $forcedownload)
+  $course, $cm, $context, $filearea, $args, $forcedownload, array $options=array())
 {
 	return false;
 }

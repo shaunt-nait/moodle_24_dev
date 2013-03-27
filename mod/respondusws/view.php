@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Respondus 4.0 Web Service Extension For Moodle
 // Copyright (c) 2009-2011 Respondus, Inc.  All Rights Reserved.
-// Date: May 17, 2012
+// Date: March 08, 2013
 require_once(dirname(dirname(dirname(__FILE__))) . "/config.php");
 require_once(dirname(__FILE__) . "/lib.php");
 defined("MOODLE_INTERNAL") || die();
@@ -39,7 +39,8 @@ if ($id) {
 } else {
     print_error("invalidcminstance", "respondusws");
 }
-$PAGE->set_url("/mod/respondusws/view.php", array("id" => $cm->id));
+$PAGE->set_url("$CFG->wwwroot/mod/respondusws/view.php",
+  array("id" => $cm->id));
 require_login($course, true, $cm);
 $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 $PAGE->set_context($context);
