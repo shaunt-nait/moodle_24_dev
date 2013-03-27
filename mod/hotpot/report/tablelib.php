@@ -64,12 +64,13 @@ class hotpot_report_table extends table_sql {
     }
 
     /**
-     * setup
+     * setup_report_table
      *
      * @param xxx $tablecolumns
      * @param xxx $baseurl
+     * @param xxx $usercount (optional, default value = 10)
      */
-    function setup($tablecolumns, $baseurl, $usercount = 10)  {
+    function setup_report_table($tablecolumns, $baseurl, $usercount=10)  {
 
         // generate headers (using "header_xxx()" methods below)
         $tableheaders = array();
@@ -170,14 +171,14 @@ class hotpot_report_table extends table_sql {
 
         // add "select all" link
         $text = get_string('selectall', 'quiz');
-        $href = "javascript:select_all_in('FORM',null,'attemptsform');";
+        $href = "javascript:select_all_in('TABLE',null,'attempts');";
         echo html_writer::tag('a', $text, array('href' => $href));
 
         echo ' / ';
 
         // add "deselect all" link
         $text = get_string('selectnone', 'quiz');
-        $href = "javascript:deselect_all_in('FORM',null,'attemptsform');";
+        $href = "javascript:deselect_all_in('TABLE',null,'attempts');";
         echo html_writer::tag('a', $text, array('href' => $href));
 
         echo ' &nbsp; ';
