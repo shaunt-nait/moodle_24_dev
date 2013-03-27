@@ -1,10 +1,23 @@
-<?php // $Id$
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * This file contains the parent class for questionnaire question types.
  *
  * @author Mike Churchward
- * @version
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -142,7 +155,7 @@ class questionnaire_question {
      * The class constructor
      *
      */
-    function questionnaire_question($id = 0, $question = null, $context = null) {
+    function __construct($id = 0, $question = null, $context = null) {
         global $DB;
         static $qtypes = null;
 
@@ -176,19 +189,12 @@ class questionnaire_question {
         $this->context = $context;
     }
 
-    /**
-     * Fake constructor to keep PHP5 happy
-     *
-     */
-    function __construct($id = 0, $question = null, $context = null) {
-        $this->questionnaire_question($id, $question, $context);
-    }
-
     function get_choices() {
         global $DB;
 
         if ($choices = $DB->get_records('questionnaire_quest_choice', array('question_id' => $this->id), 'id ASC')) {
             foreach ($choices as $choice) {
+                $this->choices[$choice->id] = new stdClass();
                 $this->choices[$choice->id]->content = $choice->content;
                 $this->choices[$choice->id]->value = $choice->value;
             }
@@ -201,56 +207,53 @@ class questionnaire_question {
 /// The following methods are defined by the tables they use. Questions should call the
 /// appropriate function based on its table.
 
-    function insert_response($rid, $formdata) {
+    function insert_response($rid) {
         $method = 'insert_'.$this->response_table;
         if (method_exists($this, $method)) {
-            return $this->$method($rid, $formdata);
+            return $this->$method($rid);
         } else {
             return false;
         }
     }
 
-    function insert_response_bool($rid, $formdata) {
+    function insert_response_bool($rid) {
         global $DB;
-
-        if (isset($formdata->{'q'.$this->id})
-            && !empty($formdata->{'q'.$this->id}) // if "no answer" then choice is empty (CONTRIB-846)
-            ) {
+        $val = optional_param('q'.$this->id, '', PARAM_ALPHANUMEXT);
+        if (!empty($val)) { // if "no answer" then choice is empty (CONTRIB-846)
             $record = new Object();
             $record->response_id = $rid;
             $record->question_id = $this->id;
-            $record->choice_id = $formdata->{'q'.$this->id};
+            $record->choice_id = $val;
             return $DB->insert_record('questionnaire_'.$this->response_table, $record);
         } else {
             return false;
         }
     }
 
-    function insert_response_text($rid, $formdata) {
+    function insert_response_text($rid) {
         global $DB;
-
+        $val = optional_param('q'.$this->id, '', PARAM_CLEAN);
         // only insert if non-empty content
         if($this->type_id == 10) { // numeric
-            $formdata->{'q'.$this->id} = ereg_replace("[^0-9.\-]*(-?[0-9]*\.?[0-9]*).*", '\1', $formdata->{'q'.$this->id});
+            $val = preg_replace("/[^0-9.\-]*(-?[0-9]*\.?[0-9]*).*/", '\1', $val);
         }
 
-        if(ereg("[^ \t\n]",$formdata->{'q'.$this->id})) {
+        if(preg_match("/[^ \t\n]/",$val)) {
             $record = new Object();
             $record->response_id = $rid;
             $record->question_id = $this->id;
-            $record->response = $formdata->{'q'.$this->id};
+            $record->response = $val;
             return $DB->insert_record('questionnaire_'.$this->response_table, $record);
         } else {
             return false;
         }
     }
 
-    function insert_response_date($rid, $formdata) {
+    function insert_response_date($rid) {
         global $DB;
-
-        $checkdateresult = '';
-        $checkdateresult = check_date($formdata->{'q'.$this->id});
-        $thisdate = $formdata->{'q'.$this->id};
+        $val = optional_param('q'.$this->id, '', PARAM_CLEAN);
+        $checkdateresult = check_date($val);
+        $thisdate = $val;
         if (substr($checkdateresult,0,5) == 'wrong') {
             return false;
         }
@@ -263,49 +266,49 @@ class questionnaire_question {
         return $DB->insert_record('questionnaire_'.$this->response_table, $record);
     }
 
-    function insert_resp_single($rid, $formdata) {
+    function insert_resp_single($rid) {
         global $DB;
-
-        if(!empty($formdata->{'q'.$this->id})) {
+        $val = optional_param('q'.$this->id, null, PARAM_CLEAN);
+        if(!empty($val)) {
             foreach ($this->choices as $cid => $choice) {
                 if (strpos($choice->content, '!other') === 0) {
-                    if (!isset($formdata->{'q'.$this->id.'_'.$cid})) {
+                    $other = optional_param('q'.$this->id.'_'.$cid, null, PARAM_CLEAN);
+                    if (!isset($other)) {
                         continue;
                     }
-                    $other = clean_param($formdata->{'q'.$this->id.'_'.$cid}, PARAM_CLEAN);
-                    if(ereg("[^ \t\n]",$other)) {
+                    if(preg_match("/[^ \t\n]/",$other)) {
                         $record = new Object();
                         $record->response_id = $rid;
                         $record->question_id = $this->id;
                         $record->choice_id = $cid;
                         $record->response = $other;
                         $resid = $DB->insert_record('questionnaire_response_other', $record);
-                        $formdata->{'q'.$this->id} = $cid;
+                        $val = $cid;
                         break;
                     }
                 }
             }
         }
-        if(ereg("other_q([0-9]+)", (isset($formdata->{'q'.$this->id})?$formdata->{'q'.$this->id}:''), $regs)) {
+        if(preg_match("/other_q([0-9]+)/", (isset($val)?$val:''), $regs)) {
             $cid=$regs[1];
-            if (!isset($formdata->{'q'.$this->id.'_'.$cid})) {
+            $other = optional_param('q'.$this->id.'_'.$cid, null, PARAM_CLEAN);
+            if (!isset($other)) {
                 break; // out of the case
             }
-            $other = clean_param($formdata->{'q'.$this->id.'_'.$cid}, PARAM_CLEAN);
-            if(ereg("[^ \t\n]",$other)) {
+            if(preg_match("/[^ \t\n]/",$other)) {
                 $record = new object;
                 $record->response_id = $rid;
                 $record->question_id = $this->id;
                 $record->choice_id = $cid;
                 $record->response = $other;
                 $resid = $DB->insert_record('questionnaire_response_other', $record);
-                $formdata->{'q'.$this->id} = $cid;
+                $val = $cid;
             }
         }
         $record = new Object();
         $record->response_id = $rid;
         $record->question_id = $this->id;
-        $record->choice_id = isset($formdata->{'q'.$this->id}) ? $formdata->{'q'.$this->id} : 0;
+        $record->choice_id = isset($val) ? $val : 0;
         if ($record->choice_id) {// if "no answer" then choice_id is empty (CONTRIB-846)
             return $DB->insert_record('questionnaire_'.$this->response_table, $record);
         } else {
@@ -313,21 +316,21 @@ class questionnaire_question {
         }
     }
 
-    function insert_resp_multiple($rid, $formdata) {
+    function insert_resp_multiple($rid) {
         global $DB;
-
+        $val = optional_param_array('q'.$this->id, null, PARAM_CLEAN);
         foreach ($this->choices as $cid => $choice) {
             if (strpos($choice->content, '!other') === 0) {
-                if (!isset($formdata->{'q'.$this->id.'_'.$cid}) || empty($formdata->{'q'.$this->id.'_'.$cid})) {
+                $other = optional_param('q'.$this->id.'_'.$cid, '', PARAM_CLEAN);
+                if (empty($other)) {
                     continue;
                 }
-                if (!isset($formdata->{'q'.$this->id})) {
-                    $formdata->{'q'.$this->id} = array($cid);
+                if (!isset($val)) {
+                    $val = array($cid);
                 } else {
-                    array_push($formdata->{'q'.$this->id}, $cid);
+                    array_push($val, $cid);
                 }
-                $other = clean_param($formdata->{'q'.$this->id.'_'.$cid}, PARAM_CLEAN);
-                if(ereg("[^ \t\n]",$other)) {
+                if(preg_match("/[^ \t\n]/",$other)) {
                     $record = new Object();
                     $record->response_id = $rid;
                     $record->question_id = $this->id;
@@ -338,14 +341,14 @@ class questionnaire_question {
             }
         }
 
-        if(!isset($formdata->{'q'.$this->id}) || count($formdata->{'q'.$this->id}) < 1) {
+        if(!isset($val) || count($val) < 1) {
             return false;
         }
 
-        foreach($formdata->{'q'.$this->id} as $cid) {
+        foreach($val as $cid) {
             $cid = clean_param($cid, PARAM_CLEAN);
             if ($cid != 0) { //do not save response if choice is empty
-                if(ereg("other_q[0-9]+", $cid))
+                if(preg_match("/other_q[0-9]+/", $cid))
                     continue;
                 $record = new Object();
                 $record->response_id = $rid;
@@ -357,20 +360,20 @@ class questionnaire_question {
         return $resid;
     }
 
-    function insert_response_rank($rid, $formdata) {
+    function insert_response_rank($rid) {
         global $DB;
-
+        $val = optional_param('q'.$this->id, null, PARAM_CLEAN);
         if($this->type_id == 8) { // Rank
             $resid = false;
             foreach ($this->choices as $cid => $choice) {
-                if (!isset($formdata->{'q'.$this->id.'_'.$cid})) {
+                $other = optional_param('q'.$this->id.'_'.$cid, null, PARAM_CLEAN);
+                if (!isset($other)) {
                     continue;
                 }
-                $val = clean_param($formdata->{'q'.$this->id.'_'.$cid}, PARAM_CLEAN);
-                if($val == get_string('notapplicable', 'questionnaire')) {
+                if($other == get_string('notapplicable', 'questionnaire')) {
                     $rank = -1;
                 } else {
-                    $rank = intval($val);
+                    $rank = intval($other);
                 }
                 $record = new Object();
                 $record->response_id = $rid;
@@ -381,11 +384,11 @@ class questionnaire_question {
             }
             return $resid;
         } else { // THIS SHOULD NEVER HAPPEN
-            $r = clean_param($formdata->{'q'.$this->id}, PARAM_CLEAN);
-            if($formdata->{'q'.$this->id} == get_string('notapplicable', 'questionnaire')) {
+            $r = $val;
+            if($val == get_string('notapplicable', 'questionnaire')) {
                 $rank = -1;
             } else {
-                $rank = intval($formdata->{'q'.$this->id});
+                $rank = intval($val);
             }
             $record = new Object();
             $record->response_id = $rid;
@@ -425,14 +428,13 @@ class questionnaire_question {
         }
 
         $sql = 'SELECT choice_id, COUNT(response_id) AS num '.
-               'FROM '.$CFG->prefix.'questionnaire_'.$this->response_table.' '.
-               'WHERE question_id='.$this->id.$ridstr.' AND choice_id != \'\' '.
+               'FROM {questionnaire_'.$this->response_table.'} '.
+               'WHERE question_id= ? '.$ridstr.' AND choice_id != \'\' '.
                'GROUP BY choice_id';
-        return $DB->get_records_sql($sql);
+        return $DB->get_records_sql($sql, array($this->id));
     }
 
     function get_response_text_results($rids = false) {
-        global $CFG;
         global $DB;
 
         $ridstr = '';
@@ -445,14 +447,13 @@ class questionnaire_question {
             $ridstr = ' AND response_id = '.$rids.' ';
         }
         $sql = 'SELECT id, response '.
-               'FROM '.$CFG->prefix.'questionnaire_'.$this->response_table.' '.
-               'WHERE question_id='.$this->id.$ridstr;
-        return $DB->get_records_sql($sql);
+               'FROM {questionnaire_'.$this->response_table.'} '.
+               'WHERE question_id= ? '.$ridstr;
+        return $DB->get_records_sql($sql, array($this->id));
     }
 
 
     function get_response_date_results($rids = false) {
-        global $CFG;
         global $DB;
 
         $ridstr = '';
@@ -466,10 +467,10 @@ class questionnaire_question {
         }
 
         $sql = 'SELECT id, response '.
-               'FROM '.$CFG->prefix.'questionnaire_'.$this->response_table.' '.
-               'WHERE question_id='.$this->id.$ridstr;
+               'FROM {questionnaire_'.$this->response_table.'} '.
+               'WHERE question_id= ? '.$ridstr;
 
-        return $DB->get_records_sql($sql);
+        return $DB->get_records_sql($sql, array($this->id));
     }
 
     function get_response_single_results($rids=false) {
@@ -487,24 +488,25 @@ class questionnaire_question {
         }
         // JR added qc.id to preserve original choices ordering
         $sql = 'SELECT rt.id, qc.id as cid, qc.content '.
-               'FROM '.$CFG->prefix.'questionnaire_quest_choice qc, '.
-                       $CFG->prefix.'questionnaire_'.$this->response_table.' rt '.
-               'WHERE qc.question_id='.$this->id.' AND qc.content NOT LIKE \'!other%\' AND '.
+               'FROM {questionnaire_quest_choice} qc, '.
+               '{questionnaire_'.$this->response_table.'} rt '.
+               'WHERE qc.question_id= ? AND qc.content NOT LIKE \'!other%\' AND '.
                      'rt.question_id=qc.question_id AND rt.choice_id=qc.id'.$ridstr.' '.
                'ORDER BY qc.id';
 
-        $rows = $DB->get_records_sql($sql);
+        $rows = $DB->get_records_sql($sql, array($this->id));
 
         // handle 'other...'
         $sql = 'SELECT rt.id, rt.response, qc.content '.
-               'FROM '.$CFG->prefix.'questionnaire_response_other rt, '.
-                       $CFG->prefix.'questionnaire_quest_choice qc '.
-               'WHERE rt.question_id='.$this->id.' AND rt.choice_id=qc.id'.$ridstr.' '.
+               'FROM {questionnaire_response_other} rt, '.
+                    '{questionnaire_quest_choice} qc '.
+               'WHERE rt.question_id= ? AND rt.choice_id=qc.id'.$ridstr.' '.
                'ORDER BY qc.id';
 
-        if ($recs = $DB->get_records_sql($sql)) {
+        if ($recs = $DB->get_records_sql($sql, array($this->id))) {
             $i = 1;
             foreach ($recs as $rec) {
+                $rows['other'.$i]= new stdClass();
                 $rows['other'.$i]->content = $rec->content;
                 $rows['other'.$i]->response = $rec->response;
                 $i++;
@@ -537,7 +539,7 @@ class questionnaire_question {
             $select = 'question_id='.$this->id.' AND content NOT LIKE \'!other%\' ORDER BY id ASC'; //JR 4 NOV 2009 added ORDER
             if ($rows = $DB->get_records_select('questionnaire_quest_choice', $select)) {
                 foreach ($rows as $row) {
-                    $this->counts[$row->content] = null;
+                    $this->counts[$row->content] = new stdClass();
                     $nbna = $DB->count_records('questionnaire_response_rank', array('question_id' => $this->id, 'choice_id' => $row->id, 'rank' => '-1'));
                     $this->counts[$row->content]->nbna = $nbna;
                 }
@@ -547,13 +549,13 @@ class questionnaire_question {
             // usual case
             if (!$isrestricted) {
                 $sql = "SELECT c.id, c.content, a.average, a.num
-                        FROM {$CFG->prefix}questionnaire_quest_choice c
+                        FROM {questionnaire_quest_choice} c
                         INNER JOIN
                              (SELECT c2.id, AVG(a2.rank+1) AS average, COUNT(a2.response_id) AS num
-                              FROM {$CFG->prefix}questionnaire_quest_choice c2, {$CFG->prefix}questionnaire_{$this->response_table} a2
-                              WHERE c2.question_id = {$this->id} AND a2.question_id = {$this->id} AND a2.choice_id = c2.id AND a2.rank >= 0{$ridstr}
+                              FROM {questionnaire_quest_choice} c2, {$CFG->prefix}questionnaire_{$this->response_table} a2
+                              WHERE c2.question_id = ? AND a2.question_id = ? AND a2.choice_id = c2.id AND a2.rank >= 0{$ridstr}
                               GROUP BY c2.id) a ON a.id = c.id";
-                $results = $DB->get_records_sql($sql);
+                $results = $DB->get_records_sql($sql, array($this->id, $this->id));
                 /// Reindex by 'content'. Can't do this from the query as it won't work with MS-SQL.
                 foreach ($results as $key => $result) {
                     $results[$result->content] = $result;
@@ -563,13 +565,13 @@ class questionnaire_question {
             // case where scaleitems is less than possible choices
             } else {
                 $sql = "SELECT c.id, c.content, a.sum, a.num
-                        FROM {$CFG->prefix}questionnaire_quest_choice c
+                        FROM {questionnaire_quest_choice} c
                         INNER JOIN
                              (SELECT c2.id, SUM(a2.rank+1) AS sum, COUNT(a2.response_id) AS num
-                              FROM {$CFG->prefix}questionnaire_quest_choice c2, {$CFG->prefix}questionnaire_{$this->response_table} a2
-                              WHERE c2.question_id = {$this->id} AND a2.question_id = {$this->id} AND a2.choice_id = c2.id AND a2.rank >= 0{$ridstr}
+                              FROM {questionnaire_quest_choice} c2, {$CFG->prefix}questionnaire_{$this->response_table} a2
+                              WHERE c2.question_id = ? AND a2.question_id = ? AND a2.choice_id = c2.id AND a2.rank >= 0{$ridstr}
                               GROUP BY c2.id) a ON a.id = c.id";
-                $results = $DB->get_records_sql($sql);
+                $results = $DB->get_records_sql($sql, array($this->id, $this->id));
                 // formula to calculate the best ranking order
                 $nbresponses = count($rids);
                 foreach ($results as $key => $result) {
@@ -581,10 +583,10 @@ class questionnaire_question {
             }
         } else {
             $sql = 'SELECT A.rank, COUNT(A.response_id) AS num '.
-                   'FROM '.$CFG->prefix.'questionnaire_'.$this->response_table.' A '.
-                   'WHERE A.question_id='.$this->id.$ridstr.' '.
+                   'FROM {questionnaire_'.$this->response_table.'} A '.
+                   'WHERE A.question_id= ? '.$ridstr.' '.
                    'GROUP BY A.rank';
-            return $DB->get_records_sql($sql);
+            return $DB->get_records_sql($sql, array($this->id));
         }
     }
 
@@ -668,8 +670,8 @@ class questionnaire_question {
             /// Count identical answers (case insensitive)
                 $this->text = $row->response;
                 if(!empty($this->text)) {
-                    $dateparts = split('-', $this->text);
-                    $this->text = gmmktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]); // Unix timestamp
+                    $dateparts = preg_split('/-/', $this->text);
+                    $this->text = make_timestamp($dateparts[0], $dateparts[1], $dateparts[2]); // Unix timestamp
                     $textidx = clean_text($this->text);
                     $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
                 }
@@ -799,7 +801,7 @@ class questionnaire_question {
     }
 
     function questionstart_survey_display($qnum, $data='') {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
         if ($this->type_id == QUESSECTIONTEXT) {
             return;
         }
@@ -1195,7 +1197,7 @@ class questionnaire_question {
         foreach ($this->choices as $cid => $choice) {
             $content = $choice->content;
             // check for number from 1 to 3 digits, followed by the equal sign = (to accomodate named degrees)
-            if (ereg("^([0-9]{1,3})=(.*)$", $content,$ndd)) {
+            if (preg_match("/^([0-9]{1,3})=(.*)$/", $content,$ndd)) {
                 $n[$nameddegrees] = format_text($ndd[2], FORMAT_HTML);
                 $this->choices[$cid] = '';
                 $nameddegrees++;
@@ -1256,7 +1258,7 @@ class questionnaire_question {
                 echo '<tr>';
                 $content = $choice->content;
                 if ($osgood) {
-                    list($content, $contentright) = split('[|]', $content);
+                    list($content, $contentright) = preg_split('/[|]/', $content);
                 }
                 echo '<td class="'.$bgr.'">'.format_text($content, FORMAT_HTML).'&nbsp;</td>';
                 if ($bgr == 'qntype r0') {
@@ -1323,7 +1325,7 @@ class questionnaire_question {
             }
         }
         echo $date_mess;
-        echo html_writer::start_tag('div', array('class' => 'qn-date'));        
+        echo html_writer::start_tag('div', array('class' => 'qn-date'));
         echo '<input type="text" size="12" name="q'.$this->id.'" maxlength="10" value="'.
              (isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : '').'" />';
         echo html_writer::end_tag('div');
@@ -1567,7 +1569,7 @@ class questionnaire_question {
         $n = array();
         foreach ($this->choices as $cid => $choice) {
             $content = $choice->content;
-             if (ereg("^[0-9]{1,3}=", $content,$ndd)) {
+             if (preg_match("/^[0-9]{1,3}=/", $content,$ndd)) {
                 $n[$nameddegrees] = format_text(substr($content, strlen($ndd[0])), FORMAT_HTML);
                 $cidnamed[$cid] = true;
                 $nameddegrees++;
@@ -1608,7 +1610,7 @@ class questionnaire_question {
                     $content = $contents->text;
                 }
                 if ($osgood) {
-                    list($content, $contentright) = split('[|]', $content);
+                    list($content, $contentright) = preg_split('/[|]/', $content);
                 }
                 echo '<td align="left">'.format_text($content, FORMAT_HTML).'&nbsp;</td>';
                 $bg = 'qntype c0';
@@ -1928,7 +1930,7 @@ class questionnaire_question {
         foreach ($this->choices as $choice) {
             // to take into account languages filter
             $content = (format_text($choice->content, FORMAT_HTML));
-            if (ereg("^[0-9]{1,3}=", $content,$ndd)) {
+            if (preg_match("/^[0-9]{1,3}=/", $content,$ndd)) {
                 $n[$nameddegrees] = substr($content, strlen($ndd[0]));
                 $nameddegrees++;
             }
@@ -1968,7 +1970,7 @@ class questionnaire_question {
         if (!empty($this->counts) && is_array($this->counts)) {
             while(list($content) = each($this->counts)) {
                 // eliminate potential named degrees on Likert scale
-                 if (!ereg("^[0-9]{1,3}=", $content)) {
+                 if (!preg_match("/^[0-9]{1,3}=/", $content)) {
                     if (isset($this->counts[$content]->avg)) {
                         $avg = $this->counts[$content]->avg;
                     } else {
@@ -1989,7 +1991,7 @@ class questionnaire_question {
                     }
 
                     if ($osgood) {
-                        list($content, $contentright) = split('[|]', $content);
+                        list($content, $contentright) = preg_split('/[|]/', $content);
                     } else {
                         $contents = choice_values($content);
                         if ($contents->modname) {
@@ -2119,4 +2121,3 @@ function sortavgdesc($a, $b) {
         }
     }
 }
-?>

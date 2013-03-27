@@ -1,12 +1,8 @@
-<?php // $Id: version.php,v 1.3 2011/04/06 15:20:30 davmon Exp $
+<?php
 
-////////////////////////////////////////////////////////////////////////////////
-//  Code fragment to define the module version etc.
-//  This fragment is called by /admin/index.php
-////////////////////////////////////////////////////////////////////////////////
-
-$module->version  = 2011040600;
-$module->requires = 2010092100;  // Requires this Moodle version
+$module->version  = 2013022700;
+$module->requires = 2012120300;  // Moodle 2.4
+$module->release = '1.8.1 (Build: 2013022700)';
+$module->maturity = MATURITY_STABLE;
 $module->cron     = 60;
 
-?>

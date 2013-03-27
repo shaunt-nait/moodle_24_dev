@@ -1,4 +1,19 @@
-<?php  // $Id$
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /// This page prints a particular instance of questionnaire
 
     require_once("../../config.php");
@@ -108,7 +123,7 @@
                 $reload = true;
             } else if (isset($qformdata->addqbutton)) {
                 if($qformdata->type_id == 99) { // Adding section break is handled right away....
-                    $sql = 'SELECT MAX(position) as maxpos FROM '.$CFG->prefix.'questionnaire_question '.
+                    $sql = 'SELECT MAX(position) as maxpos FROM {questionnaire_question} '.
                            'WHERE survey_id = '.$qformdata->sid.' AND deleted = \'n\'';
                     if ($record = $DB->get_record_sql($sql)) {
                         $pos = $record->maxpos + 1;
@@ -124,10 +139,10 @@
                     $reload = true;
                 } else {
 	                /// Switch to edit question screen.
-    	            $action = 'question';
-        	        $qtype = $qformdata->type_id;
-            	    $qid = 0;
-                	$reload = true;
+                    $action = 'question';
+                    $qtype = $qformdata->type_id;
+                    $qid = 0;
+                    $reload = true;
                 }
             } else if (isset($qformdata->moveupbutton)) {
             /// Need to use the key, since IE returns the image position as the value rather than the specified
@@ -269,7 +284,7 @@
                     foreach ($allchoices as $choice) {
                         if ($choice) {
                             // check for number from 1 to 3 digits, followed by the equal sign =
-                             if (ereg("^[0-9]{1,3}=", $choice)) {
+                             if (preg_match("/^[0-9]{1,3}=/", $choice)) {
                                 $nbnameddegrees++;
                             } else {
                                 $nbvalues++;
@@ -326,7 +341,7 @@
             } else {
                 /// Create new question:
                 // set the position to the end
-                $sql = 'SELECT MAX(position) as maxpos FROM '.$CFG->prefix.'questionnaire_question '.
+                $sql = 'SELECT MAX(position) as maxpos FROM {questionnaire_question} '.
                        'WHERE survey_id = '.$qformdata->sid.' AND deleted = \'n\'';
                 if ($record = $DB->get_record_sql($sql)) {
                     $qformdata->position = $record->maxpos + 1;
@@ -471,5 +486,3 @@
     include('tabs.php');
     $questions_form->display();
     echo $OUTPUT->footer();
-
-?>

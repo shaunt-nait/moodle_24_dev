@@ -1,4 +1,18 @@
-<?php  // $Id$
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /// This page shows results of a questionnaire to a student.
 
@@ -32,7 +46,7 @@
     require_course_login($course, true, $cm);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
     /// Should never happen, unless called directly by a snoop...
-    if ( !has_capability('mod/questionnaire:readownresponses',$context) 
+    if ( !has_capability('mod/questionnaire:readownresponses',$context)
         || $userid != $USER->id) {
         print_error('Permission denied');
     }
@@ -130,8 +144,8 @@
             $rid = $rids[0];
         }
         if ($rid) {
-        	$numresp = $questionnaire->count_submissions($USER->id);
-            $titletext = '<strong>'.get_string('myresponsetitle', 'questionnaire', $numresp).'</strong>: ';
+            $numresp = $questionnaire->count_submissions($USER->id);
+            $titletext = get_string('myresponsetitle', 'questionnaire', $numresp);
         }
 
     /// Print the page header
@@ -139,10 +153,10 @@
 
         /// print the tabs
         include('tabs.php');
+        echo $OUTPUT->heading($titletext);
 
         if (count($resps) > 1) {
             echo '<div style="text-align:center; padding-bottom:5px;">';
-            echo ($titletext);
             $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $resps);
             echo '</div>';
         }
@@ -151,7 +165,6 @@
         echo ('</td></tr></table>');
         if (count($resps) > 1) {
             echo '<div style="text-align:center; padding-bottom:5px;">';
-            echo ($titletext);
             $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $resps);
             echo '</div>';
         }
@@ -165,4 +178,3 @@
     default:
         redirect('view.php?id='.$cm->id);
     }
-?>
