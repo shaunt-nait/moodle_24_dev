@@ -4,7 +4,7 @@
  *
  * This file is part of the Course Menu block for Moodle
  *
- * The Course Menu block for Moodle software package is Copyright © 2008 onwards NetSapiensis AB and is provided under
+ * The Course Menu block for Moodle software package is Copyright ï¿½ 2008 onwards NetSapiensis AB and is provided under
  * the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (GPL). This program is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
@@ -29,8 +29,6 @@ $courseid   = optional_param('courseid', 0, PARAM_INT);
 $name       = optional_param('name', '', PARAM_RAW);
 $url        = optional_param('url', '', PARAM_RAW);
 $frameset   = optional_param('frameset', 0, PARAM_RAW);
-$url = "http://www.google.ro";
-
 $urls = new moodle_url('/blocks/course_menu/link_with_navigation.php', array('courseid' => $courseid, 'name' => $name, 'url' => $url, 'frameset' => $frameset));
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 $PAGE->set_url($urls);
@@ -42,7 +40,7 @@ if (empty($frameset)) { ?>
 	<head>
 	
 	<meta content="text/html; charset=utf-8" http-equiv="content-type" />
-	<title><?php echo $_REQUEST['name']; ?></title>
+	<title><?php echo $name; ?></title>
 	</head>
 	
 	<frameset rows="130,*">
@@ -53,7 +51,7 @@ if (empty($frameset)) { ?>
 
 <?php } elseif ($frameset == "top") { 
 
-	$course = $DB->get_record('course', array('id' => $_REQUEST['courseid']));
+	$course = $DB->get_record('course', array('id' => $courseid));
     $PAGE->set_course($course);
     $PAGE->set_title($name);
     $PAGE->navbar->add($name);
@@ -77,12 +75,12 @@ if (empty($frameset)) { ?>
 
     ?>
 <script type="text/javascript">
-window.onload = function () {
-    var aElems = document.getElementsByTagName("a");
-    for (var i = 0; i < aElems.length; i++) {
-        aElems[i].setAttribute("target", "_top");
-        aElems[i].target = "_top";
-    }
-}
+//window.onload = function () {
+//    var aElems = document.getElementsByTagName("a");
+//    for (var i = 0; i < aElems.length; i++) {
+//        aElems[i].setAttribute("target", "_top");
+//        aElems[i].target = "_top";
+//    }
+//}
 </script>
 <?php } ?>

@@ -46,8 +46,8 @@ M.block_course_menu = M.block_course_menu || {
             // Give the tree class the dock block properties
 	        Y.augment(M.block_course_menu.classes.tree, M.core_dock.genericblock);
 			//adjust the title to fit the content ?
-			
 	    }
+        
     },
     /**
      * Add new instance of navigation tree to tree collection
@@ -96,6 +96,18 @@ M.block_course_menu.classes.tree = function(Y, id, properties) {
         }
     });
     
+    Y.all( '.editing_showhide' ).on( 'click', function( event ) {
+        var _li = event.currentTarget.ancestor( 'li' );
+        if ( ! _li ) {
+            return;
+        }
+        var target = Y.one( 'a#block-course-menu-' + _li.getAttribute( 'id' ) );
+        if ( ! target ) {
+            return;
+        }
+        target.ancestor( 'li' ).all( 'a' ).toggleClass( 'dimmed_text' );
+    } );
+    
     if (properties.expansions) {
         this.expansions = properties.expansions;
     }
@@ -125,15 +137,6 @@ M.block_course_menu.classes.tree = function(Y, id, properties) {
         if(v.getAttribute("href") == "#" + section) {
             v.get('parentNode').addClass("active_tree_node");
             v.get('parentNode').get('parentNode').addClass("current_branch");
-            Y.one("#showonlysection_nr").set('text', section.split("-")[1]);
-            var newHref = "";
-            var pp = Y.one("#showallsections").getAttribute('href').split("=");
-            pp.pop();
-            for (var x in pp) {
-                newHref += pp[x] + "=";
-            }
-            newHref += section.split("-")[1];
-            Y.one("#showallsections").setAttribute('href', newHref);
         }
     });
     sectionLinks.on('click', function (e) {
@@ -146,15 +149,6 @@ M.block_course_menu.classes.tree = function(Y, id, properties) {
             });
             v.get('parentNode').addClass("active_tree_node");
             v.get('parentNode').get('parentNode').addClass("current_branch");
-            Y.one("#showonlysection_nr").set('text', section.split("-")[1]);
-            var newHref = "";
-            var pp = Y.one("#showallsections").getAttribute('href').split("=");
-            pp.pop();
-            for (var x in pp) {
-                newHref += pp[x] + "=";
-            }
-            newHref += section.split("-")[1];
-            Y.one("#showallsections").setAttribute('href', newHref);
         }
     });
     // Attach events to expand by AJAX
