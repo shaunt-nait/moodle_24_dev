@@ -175,7 +175,6 @@
           <xsd:element name="marker" type="xsd:int" />
           <xsd:element name="maxbytes" type="xsd:int" />
           <xsd:element name="visible" type="xsd:int" />
-          <xsd:element name="hiddensections" type="xsd:int" />
           <xsd:element name="groupmode" type="xsd:int" />
           <xsd:element name="groupmodeforce" type="xsd:int" />
           <xsd:element name="lang" type="xsd:string" />
@@ -209,7 +208,6 @@
           <xsd:element name="marker" type="xsd:int" />
           <xsd:element name="maxbytes" type="xsd:int" />
           <xsd:element name="visible" type="xsd:int" />
-          <xsd:element name="hiddensections" type="xsd:int" />
           <xsd:element name="groupmode" type="xsd:int" />
           <xsd:element name="groupmodeforce" type="xsd:int" />
           <xsd:element name="lang" type="xsd:string" />
