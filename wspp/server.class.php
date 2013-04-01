@@ -1382,7 +1382,6 @@ class server {
 		switch (trim ( strtolower ( $course->action ) )) {
 			case 'add' :
 				/// Adding a new course.
-				
 
 				if (! $this->has_capability ( 'moodle/course:create', CONTEXT_SYSTEM, 0 )) {
 					$ret->error = get_string ( 'ws_operationnotallowed', 'local_wspp' );
@@ -1429,6 +1428,13 @@ class server {
 				
 				if (ws_update_record ( 'course', $course )) {
 					events_trigger ( 'course_updated', $course );
+                    
+                    if( $oldcourse->category != $course->category)
+                    {
+                        //if category changed then this will fix the category course counts
+                        fix_course_sortorder();
+                    }
+                    
 				} else {
 					$ret->error = get_string ( 'ws_errorupdatingcourse', 'local_wspp', $course->id );
 				}
@@ -1550,11 +1556,20 @@ class server {
 						break;
 					}
 				}
-				
+			
+                
 				if ($categoryid = ws_insert_record ( 'course_categories', $category )) {
 					$this->debug_output ( 'inserion ok' . print_r ( $category, true ) );
 					events_trigger ( 'category_created', $category );
 					$ret->id = $categoryid;
+                    
+                    if( $category->parent != 0 )
+                    {
+                        $oldcategory = ws_get_record ( 'course_categories', 'id', $categoryid );
+                        $parentcat = ws_get_record ( 'course_categories', 'id', $category->parent );
+                        
+                        move_category($oldcategory,$parentcat);                    
+                    }
 					
 				} else {
 					$ret->error = get_string ( 'ws_errorcreatingcategory', 'local_wspp', $category->shortname );
@@ -1572,6 +1587,18 @@ class server {
 					break;
 				}
 
+                if( $oldcategory->parent != $category->parent )
+                {
+                    $parentcat = ws_get_record ( 'course_categories', 'id', $category->parent );
+                    
+                    move_category($oldcategory,$parentcat);
+                    
+                    $oldcategory = ws_get_record ( 'course_categories', 'id', $category->id );
+                    
+                    $category->path = $oldcategory->path;
+                    $category->depth = $oldcategory->depth;
+                }
+                
 				if (ws_update_record ( 'course_categories', $category )) {
 					events_trigger ( 'category_updated', $category );
 				} else {
@@ -1775,6 +1802,27 @@ class server {
 		}
 		
 		$ret->error = "";
+		
+		return $ret;
+	}
+    
+    function getCategorySubCategories($client, $sesskey, $categoryid, $categoryidfield) {
+		
+		if (! $this->validate_client ( $client, $sesskey, __FUNCTION__ )) {
+            return $this->error ( get_string ( 'ws_invalidclient', 'local_wspp' ) );
+		}
+		
+		if (! $categories = ws_get_records ( 'course_categories', 'parent', $categoryid )) {
+			$categories = get_string ( 'ws_categoryunknown', 'local_wspp', "id=" . $categoryid );
+			return $categories;
+		}
+        
+        $ret = array ();
+		
+		foreach ( $categories as $category ) {
+            $category->error = '';
+            $ret [] = $category;
+		}
 		
 		return $ret;
 	}

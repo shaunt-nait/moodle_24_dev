@@ -280,6 +280,7 @@
         <xsd:all>
           <xsd:element name="action" type="xsd:string" />
           <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="idnumber" type="xsd:string" />
           <xsd:element name="name" type="xsd:string" />
           <xsd:element name="description" type="xsd:string" />
           <xsd:element name="parent" type="xsd:int" />
@@ -303,6 +304,8 @@
         <xsd:all>
           <xsd:element name="error" type="xsd:string" />
           <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="idnumber" type="xsd:string"
+						nillable="true" />
           <xsd:element name="name" type="xsd:string" />
           <xsd:element name="description" type="xsd:string"
 						nillable="true" />
@@ -609,6 +612,17 @@
     <part name="return" type="tns:categoryRecord" />
   </message>
 
+  <message name="getCategorySubCategoriesRequest">
+    <part name="client" type="xsd:int" />
+    <part name="sesskey" type="xsd:string" />
+    <part name="categoryid" type="xsd:string" />
+    <part name="categoryidfield" type="xsd:string" />
+  </message>
+
+  <message name="getCategorySubCategoriesResponse">
+    <part name="return" type="tns:categoryRecords"/>
+  </message>
+
   <message name="getCourseUsersRequest">
     <part name="client" type="xsd:int" />
     <part name="sesskey" type="xsd:string" />
@@ -731,6 +745,12 @@
       <input message="tns:getCategoryRequest" />
       <output message="tns:getCategoryResponse" />
     </operation>
+    
+    <operation name="getCategorySubCategories">
+      <documentation>MoodleWS: Get a category record for specified id and field</documentation>
+      <input message="tns:getCategorySubCategoriesRequest" />
+      <output message="tns:getCategorySubCategoriesResponse" />
+    </operation>    
 
     <operation name="getCourseUsers">
       <documentation>MoodleWS: Get users enrolled in course and specified role (note: this includes cohort users)</documentation>
@@ -999,6 +1019,22 @@
         encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </output>
     </operation>
+
+    <operation name="getCategorySubCategories">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#getCategorySubCategories"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>    
 
     <operation name="getCourseUsers">
       <soap:operation
