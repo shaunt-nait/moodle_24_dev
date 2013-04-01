@@ -172,7 +172,6 @@
           <xsd:element name="format" type="xsd:string" />
           <xsd:element name="showgrades" type="xsd:int" />
           <xsd:element name="newsitems" type="xsd:int" />
-          <xsd:element name="numsections" type="xsd:int" />
           <xsd:element name="marker" type="xsd:int" />
           <xsd:element name="maxbytes" type="xsd:int" />
           <xsd:element name="visible" type="xsd:int" />
@@ -207,7 +206,6 @@
           <xsd:element name="format" type="xsd:string" />
           <xsd:element name="showgrades" type="xsd:int" />
           <xsd:element name="newsitems" type="xsd:int" />
-          <xsd:element name="numsections" type="xsd:int" />
           <xsd:element name="marker" type="xsd:int" />
           <xsd:element name="maxbytes" type="xsd:int" />
           <xsd:element name="visible" type="xsd:int" />
