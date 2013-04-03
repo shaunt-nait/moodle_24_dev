@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /*
  * ---------------------------------------------------------------------------------------------------------------------
@@ -54,6 +54,10 @@ class block_course_menu extends block_base
     function instance_allow_multiple()
     {
         return false;
+    }
+
+    function applicable_formats() {
+        return array('my' => false);
     }
 
     function instance_allow_config()
