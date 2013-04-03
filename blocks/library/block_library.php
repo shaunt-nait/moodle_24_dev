@@ -58,6 +58,7 @@ class block_library extends block_base {
             return $this->content;
         }
 
+/*
         if (empty($CFG->bloglevel)) {
             $this->content = new stdClass();
             $this->content->text = '';
@@ -74,7 +75,9 @@ class block_library extends block_base {
 
         // require necessary libs and get content
         require_once($CFG->dirroot .'/blog/lib.php');
+*/
 
+	$this->content = new stdClass();
         // Prep the content
         
         $this->content->text = '<p><a data-mce-href="http://www.nait.ca/library" target="_blank" href="http://www.nait.ca/library" title="Library Website">Library Website</a></p>
