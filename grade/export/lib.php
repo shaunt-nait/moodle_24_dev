@@ -232,6 +232,7 @@ abstract class grade_export {
                 echo '<th>'.$this->format_column_name($grade_item, true).'</th>';
             }
         }
+        echo '<th>Class Section</th>'; // NAIT CHANGE - added class section ;
         echo '</tr>';
         /// Print all the lines of data.
         $i = 0;
@@ -284,6 +285,7 @@ abstract class grade_export {
                 echo '<td>' . format_text($fieldvalue, FORMAT_MOODLE, $formatoptions) . '</td>';
             }
             echo $rowstr;
+            echo "<td>$user->classsection</td>"; //NAIT Change addedclass section
             echo "</tr>";
 
             $i++; // increment the counter

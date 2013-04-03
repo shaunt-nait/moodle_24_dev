@@ -47,7 +47,9 @@ class grade_export_xls extends grade_export {
         foreach ($profilefields as $id => $field) {
             $myxls->write_string(0, $id, $field->fullname);
         }
-        $pos = count($profilefields);
+        
+        $myxls->write_string(0,6,'Class Section'); //NAIT CHANGE
+        $pos = count($profilefields) + 1;//NAIT CHANGE
 
         foreach ($this->columns as $grade_item) {
             $myxls->write_string(0, $pos++, $this->format_column_name($grade_item));
@@ -73,7 +75,8 @@ class grade_export_xls extends grade_export {
                 $fieldvalue = grade_helper::get_user_field_value($user, $field);
                 $myxls->write_string($i, $id, $fieldvalue);
             }
-            $j = count($profilefields);
+            $myxls->write_string($i,6,$user->classsection); // NAIT CHANGE
+            $j = count($profilefields) + 1;// NAIT CHANGE
 
             foreach ($userdata->grades as $itemid => $grade) {
                 if ($export_tracking) {

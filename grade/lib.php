@@ -192,20 +192,40 @@ class graded_users_iterator {
             }
         }
 
+        //NAIT CHANGE
+		$sectionSelectFieldsSQL = ", racs.classsection as classsection";
+		$sectionJoinSQL = "left JOIN {$CFG->prefix}role_assignments_class_sections racs ON ra.id = racs.roleassignmentsid";
+        
         // $params contents: gradebookroles and groupid (for $groupwheresql)
-        $users_sql = "SELECT $userfields $ofields
+        $users_sql = "SELECT u.* $ofields $sectionSelectFieldsSQL
                         FROM {user} u
-                        JOIN ($enrolledsql) je ON je.id = u.id
-                             $groupsql $customfieldssql
-                        JOIN (
-                                  SELECT DISTINCT ra.userid
-                                    FROM {role_assignments} ra
-                                   WHERE ra.roleid $gradebookroles_sql
-                                     AND ra.contextid $relatedcontexts
-                             ) rainner ON rainner.userid = u.id
-                         WHERE u.deleted = 0
+                             INNER JOIN {role_assignments} ra ON u.id = ra.userid
+								$sectionJoinSQL
+                             $groupsql
+                       WHERE u.deleted=0
+                             AND ra.roleid $gradebookroles_sql
+                             AND ra.contextid $relatedcontexts
                              $groupwheresql
                     ORDER BY $order";
+        
+       
+        
+        //// $params contents: gradebookroles and groupid (for $groupwheresql)
+        //$users_sql = "SELECT $userfields $ofields
+        //                FROM {user} u
+        //                JOIN ($enrolledsql) je ON je.id = u.id
+        //                     $groupsql $customfieldssql
+        //                JOIN (
+        //                          SELECT DISTINCT ra.userid
+        //                            FROM {role_assignments} ra
+        //                           WHERE ra.roleid $gradebookroles_sql
+        //                             AND ra.contextid $relatedcontexts
+        //                     ) rainner ON rainner.userid = u.id
+        //                 WHERE u.deleted = 0
+        //                     $groupwheresql
+        //            ORDER BY $order";
+        //NAIT CHANGE END
+        
         $this->users_rs = $DB->get_recordset_sql($users_sql, $params);
 
         if (!empty($this->grade_items)) {

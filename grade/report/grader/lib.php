@@ -414,6 +414,12 @@ class grade_report_grader extends grade_report {
                 case 'firstname':
                     $sort = "u.firstname $this->sortorder, u.lastname $this->sortorder";
                     break;
+
+                //NAIT Change start
+                case 'classsection':
+                    $sort = "classsection $this->sortorder, u.lastname ASC"; break; 
+                // NAIT change end
+                
                 case 'email':
                     $sort = "u.email $this->sortorder";
                     break;
@@ -426,20 +432,41 @@ class grade_report_grader extends grade_report {
             $params = array_merge($gradebookrolesparams, $this->groupwheresql_params, $enrolledparams);
         }
 
-        $sql = "SELECT $userfields
-                  FROM {user} u
-                  JOIN ($enrolledsql) je ON je.id = u.id
-                       $this->groupsql
-                       $sortjoin
-                  JOIN (
-                           SELECT DISTINCT ra.userid
-                             FROM {role_assignments} ra
-                            WHERE ra.roleid IN ($this->gradebookroles)
-                              AND ra.contextid " . get_related_contexts_string($this->context) . "
-                       ) rainner ON rainner.userid = u.id
-                   AND u.deleted = 0
-                   $this->groupwheresql
-              ORDER BY $sort";
+        //NAIT CHANGE - include class section 
+        $sql = "SELECT $userfields, racs.classsection as classsection
+              FROM {user} u
+              JOIN ($enrolledsql) je ON je.id = u.id
+              $this->groupsql
+                   $sortjoin
+              JOIN (
+                       SELECT ra.id, ra.userid
+                         FROM {role_assignments} ra
+                        WHERE ra.roleid IN ($this->gradebookroles)
+                          AND ra.contextid " . get_related_contexts_string($this->context) . "
+                   ) ra ON ra.userid = u.id
+              JOIN (
+                       SELECT DISTINCT ra.userid
+                         FROM {role_assignments} ra
+                        WHERE ra.roleid IN ($this->gradebookroles)
+                          AND ra.contextid " . get_related_contexts_string($this->context) . "
+                   ) rainner ON rainner.userid = u.id AND u.deleted = 0
+               $this->groupwheresql
+               left JOIN {$CFG->prefix}role_assignments_class_sections racs on racs.roleassignmentsid = ra.id
+          ORDER BY $sort";        
+        //$sql = "SELECT $userfields
+        //          FROM {user} u
+        //          JOIN ($enrolledsql) je ON je.id = u.id
+        //               $this->groupsql
+        //               $sortjoin
+        //          JOIN (
+        //                   SELECT DISTINCT ra.userid
+        //                     FROM {role_assignments} ra
+        //                    WHERE ra.roleid IN ($this->gradebookroles)
+        //                      AND ra.contextid " . get_related_contexts_string($this->context) . "
+        //               ) rainner ON rainner.userid = u.id
+        //           AND u.deleted = 0
+        //           $this->groupwheresql
+        //      ORDER BY $sort";
 
         $studentsperpage = $this->get_students_per_page();
         $this->users = $DB->get_records_sql($sql, $params, $studentsperpage * $this->page, $studentsperpage);
@@ -634,6 +661,9 @@ class grade_report_grader extends grade_report {
         }
         $colspan += count($extrafields);
 
+        //NAIT CHANGE
+        $colspan += 1;
+        
         $levels = count($this->gtree->levels) - 1;
 
         for ($i = 0; $i < $levels; $i++) {
@@ -670,6 +700,17 @@ class grade_report_grader extends grade_report {
             $headerrow->cells[] = $fieldheader;
         }
 
+        // NAIT CHANGE
+        if (has_capability('gradereport/'.$CFG->grade_profilereport.':view', $this->context)) {
+            $cohortheader = new html_table_cell();
+            $cohortheader->attributes['class'] = 'header';
+            $cohortheader->scope = 'col';
+            $cohortheader->header = true;
+            $cohortheader->id = 'cohortheader';
+            $cohortheader->text = $arrows['classsection'];//'Class Section';
+            $headerrow->cells[] = $cohortheader;
+        }
+        
         $rows[] = $headerrow;
 
         $rows = $this->get_left_icons_row($rows, $colspan);
@@ -727,6 +768,15 @@ class grade_report_grader extends grade_report {
                 $userrow->cells[] = $fieldcell;
             }
 
+            //NAIT Change to output the class section text
+        	$fieldcell = new html_table_cell();
+            $fieldcell->attributes['class'] = 'header userfield user' . $field;
+            $fieldcell->header = true;
+            $fieldcell->scope = 'row';
+            $fieldcell->text = $user->classsection;
+            $userrow->cells[] = $fieldcell;
+			//NAIT CHANGE END   
+            
             $rows[] = $userrow;
         }
 
@@ -1717,6 +1767,19 @@ class grade_report_grader extends grade_report {
                 }
             }
         }
+        
+        //NAIT CHANGE Start
+        $classsectionlink= html_writer::link(new moodle_url($this->baseurl, array('sortitemid'=>'classsection')), 'Class Section');
+        
+        $arrows['classsection'] = $classsectionlink;
+        if ($this->sortitemid === 'classsection') {
+            if ($this->sortorder == 'ASC') {
+                $arrows['classsection'] .= print_arrow('up', $strsortasc, true);
+            } else {
+                $arrows['classsection'] .= print_arrow('down', $strsortdesc, true);
+            }
+        }
+        //NAIT CHANGE end          
 
         return $arrows;
     }
