@@ -106,3 +106,9 @@
 .path-mod-book .book_toc_indented li li {
     list-style: none;
 }
+
+	.generalbox
+	{
+		overflow-x: auto;
+	}
+

@@ -501,7 +501,7 @@ abstract class backup_cron_automated_helper {
             // Detect if the backup_auto_running semaphore is a valid one
             // by looking for recent activity in the backup_controllers table
             // for backups of type backup::MODE_AUTOMATED
-            $timetosee = 60 * 90; // Time to consider in order to clean the semaphore
+            $timetosee = 60 * 30; // Time to consider in order to clean the semaphore
             $params = array( 'purpose'   => backup::MODE_AUTOMATED, 'timetolook' => (time() - $timetosee));
             if ($DB->record_exists_select('backup_controllers',
                 "operation = 'backup' AND type = 'course' AND purpose = :purpose AND timemodified > :timetolook", $params)) {
@@ -591,7 +591,19 @@ abstract class backup_cron_automated_helper {
         if (!empty($dir) && ($storage == 1 || $storage == 2)) {
             // Calculate backup filename regex, ignoring the date/time/info parts that can be
             // variable, depending of languages, formats and automated backup settings.
-            $filename = $backupword . '-' . backup::FORMAT_MOODLE . '-' . backup::TYPE_1COURSE . '-' . $course->id . '-';
+            
+	    // MDL-33531: use different filenames depending on backup_shortname option
+            if ( !empty($config->backup_shortname) ) {
+                $context = get_context_instance(CONTEXT_COURSE, $course->id);
+                $courseref = format_string($course->shortname, true, array('context' => $context));
+                $courseref = str_replace(' ', '_', $courseref);
+                $courseref = textlib::strtolower(trim(clean_filename($courseref), '_'));
+            } else {
+                $courseref = $course->id;
+            }
+            $filename = $backupword . '-' . backup::FORMAT_MOODLE . '-' . backup::TYPE_1COURSE . '-' .$courseref . '-';
+	    //$filename = $backupword . '-' . backup::FORMAT_MOODLE . '-' . backup::TYPE_1COURSE . '-' . $course->id . '-';
+
             $regex = '#^'.preg_quote($filename, '#').'.*\.mbz$#';
 
             // Store all the matching files into filename => timemodified array.

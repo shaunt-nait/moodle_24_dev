@@ -201,6 +201,12 @@ abstract class restore_plugin {
      * @param mixed $ifnotfound what to return if $oldid wasnt found. Defaults to false
      */
     protected function get_mappingid($itemname, $oldid, $ifnotfound = false) {
+	//NAIT Change
+	global $CFG;
+    	if ($CFG->dbtype == 'pgsql' && $oldid== '') {
+      		$oldid = null;
+	}
+
         return $this->step->get_mappingid($itemname, $oldid, $ifnotfound);
     }
 
