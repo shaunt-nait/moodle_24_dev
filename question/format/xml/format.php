@@ -447,6 +447,7 @@ class qformat_xml extends qformat_default {
      * @param array question question array from xml tree
      * @return object question object
      */
+/*
     public function import_multianswer($question) {
         question_bank::get_qtype('multianswer');
 
@@ -501,6 +502,68 @@ class qformat_xml extends qformat_default {
 
         return $qo;
     }
+*/
+    public function import_multianswer($question) {
+        global $USER;
+        question_bank::get_qtype('multianswer');
+
+        $questiontext = $this->import_text_with_files($question,
+                array('#', 'questiontext', 0));
+        $qo = qtype_multianswer_extract_question($questiontext);
+
+        // 'header' parts particular to multianswer
+        $qo->qtype = 'multianswer';
+        $qo->course = $this->course;
+
+        $qo->name = $this->clean_question_name($this->import_text($question['#']['name'][0]['#']['text']));
+        $qo->questiontextformat = $questiontext['format'];
+        $qo->questiontext = $qo->questiontext['text'];
+        if (!empty($questiontext['itemid'])) {
+            $qo->questiontextitemid = $questiontext['itemid'];
+        }
+
+        // Backwards compatibility, deal with the old image tag.
+        $filedata = $this->getpath($question, array('#', 'image_base64', '0', '#'), null, false);
+        $filename = $this->getpath($question, array('#', 'image', '0', '#'), null, false);
+        if ($filedata && $filename) {
+            $fs = get_file_storage();
+            if (empty($qo->questiontextitemid)) {
+                $qo->questiontextitemid = file_get_unused_draft_itemid();
+            }
+            $filename = clean_param(str_replace('/', '_', $filename), PARAM_FILE);
+            $filerecord = array(
+                'contextid' => context_user::instance($USER->id)->id,
+                'component' => 'user',
+                'filearea'  => 'draft',
+                'itemid'    => $qo->questiontextitemid,
+                'filepath'  => '/',
+                'filename'  => $filename,
+            );
+            $fs->create_file_from_string($filerecord, base64_decode($filedata));
+            $qo->questiontext .= ' <img src="@@PLUGINFILE@@/' . $filename . '" />';
+        }
+
+        // restore files in generalfeedback
+        $generalfeedback = $this->import_text_with_files($question,
+                array('#', 'generalfeedback', 0), $qo->generalfeedback, $this->get_format($qo->questiontextformat));
+        $qo->generalfeedback = $generalfeedback['text'];
+        $qo->generalfeedbackformat = $generalfeedback['format'];
+        if (!empty($generalfeedback['itemid'])) {
+            $qo->generalfeedbackitemid = $generalfeedback['itemid'];
+        }
+
+        $qo->penalty = $this->getpath($question,
+                array('#', 'penalty', 0, '#'), $this->defaultquestion()->penalty);
+        // Fix problematic rounding from old files:
+        if (abs($qo->penalty - 0.3333333) < 0.005) {
+            $qo->penalty = 0.3333333;
+        }
+
+        $this->import_hints($qo, $question, true, false, $this->get_format($qo->questiontextformat));
+
+        return $qo;
+    }
+
 
     /**
      * Import true/false type question
