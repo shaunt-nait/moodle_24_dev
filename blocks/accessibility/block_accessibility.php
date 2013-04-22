@@ -59,7 +59,7 @@ class block_accessibility extends block_base {
      * @return array
      */
     public function applicable_formats() {
-        return array('all' => true);
+        return array('all' => true, 'my' => false);
     }
 
     /**
