@@ -468,6 +468,15 @@
   <message name="exec_copy_contentResponse">
     <part name="return" type="xsd:boolean" />
   </message>
+
+  <message name="GetUserProfileBase64ImageRequest">
+    <part name="userName" type="xsd:string" />
+    <part name="filename" type="xsd:string" />
+  </message>
+
+  <message name="GetUserProfileBase64ImageResponse">
+    <part name="return" type="xsd:base64Binary" />
+  </message>
   
   <message name="getOnlineUserCountRequest">
     <part name="client" type="xsd:int" />
@@ -663,6 +672,12 @@
       <input message="tns:exec_copy_contentRequest" />
       <output message="tns:exec_copy_contentResponse" />
     </operation>
+
+    <operation name="GetUserProfileBase64Image">
+      <documentation>MoodleWS: Get user profile image</documentation>
+      <input message="tns:GetUserProfileBase64ImageRequest" />
+      <output message="tns:GetUserProfileBase64ImageResponse" />
+    </operation>
     
     <operation name="getOnlineUserCount">
       <documentation>MoodleWS: Get number of online user in the specified interval</documentation>
@@ -808,6 +823,22 @@
       </output>
     </operation>
     
+    <operation name="GetUserProfileBase64ImageResponse">
+      <soap:operation
+      soapAction="http://www.nait.ca/moodle/wspp/wsdl#GetUserProfileBase64ImageResponse"
+      style="rpc" />
+      <input>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded"
+        namespace="http://www.nait.ca/moodle/wspp/wsdl"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
     <operation name="getOnlineUserCount">
       <soap:operation
       soapAction="http://www.nait.ca/moodle/wspp/wsdl#getOnlineUserCount"

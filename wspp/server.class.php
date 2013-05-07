@@ -1962,5 +1962,55 @@ class server {
 			return array ();
 		}
 	}
+
+	function GetUserProfileBase64Image($userName, $filename = 'f1') {
+                global $DB;
+
+                if ($user = $DB->get_record('user', array('username'=>$userName))) {
+
+                        $pic = new user_picture($user);
+                        //print_r($pic);
+                        //return;
+                        $context = context_user::instance($user->id, IGNORE_MISSING);
+
+                        $fs = get_file_storage();
+
+                        if (!$file = $fs->get_file($context->id, 'user', 'icon', 0, '/', $filename.'.png')) {
+                                if (!$file = $fs->get_file($context->id, 'user', 'icon', 0, '/', $filename.'.jpg')) {
+                                        if ($filename === 'f3') {
+                                                // f3 512x512px was introduced in 2.3, there might be only the smaller version.
+                                                if (!$file = $fs->get_file($context->id, 'user', 'icon', 0, '/', 'f1.png')) {
+                                                         $file = $fs->get_file($context->id, 'user', 'icon', 0, '/', 'f1.jpg');
+                                                }
+                                        }
+                                }
+                        }
+
+                        if( $file != null )
+                        {
+                                $data = $file->get_content();
+                                $base64 = 'data:image\png;base64,' . base64_encode($data);
+                                return $base64;
+                        }
+                        else
+                        {
+                                $moodlePage = new moodle_page();
+                                $moodlePage->set_context(context_course::instance(1));
+
+                                $renderer = $moodlePage->get_renderer('core');
+
+                                $defaulturl = $renderer->pix_url('u/'.$filename); // default image
+
+                                //echo $defaulturl;
+                                $contType = get_headers($defaulturl,1);
+                                $type = $contType['Content-Type'];
+                                $data = file_get_contents($defaulturl);
+                                //echo $data;
+                                $base64 = 'data:' . $type . ';base64,' . base64_encode($data);
+                                return $base64;
+                        }
+                }
+        }
+
 }
 ?>
