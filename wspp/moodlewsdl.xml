@@ -471,7 +471,8 @@
 
   <message name="GetUserProfileBase64ImageRequest">
     <part name="userName" type="xsd:string" />
-    <part name="filename" type="xsd:string" />
+    <part name="passphrase" type="xsd:string" />
+    <part name="size" type="xsd:string" />
   </message>
 
   <message name="GetUserProfileBase64ImageResponse">

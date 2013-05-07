@@ -2369,8 +2369,8 @@ class mdl_soapserver extends server {
             ), 'messages', 'messageRecord', get_string('nomessages', 'local_wspp')));
     }
 
-    public function GetUserProfileBase64Image($userName, $filename = 'f1') {
-        return parent :: GetUserProfileBase64Image($userName, $filename = 'f1');
+    public function GetUserProfileBase64Image($userName, $passphrase, $size= '2') {
+        return parent :: GetUserProfileBase64Image($userName, $passphrase, $size);
 
     }
 
