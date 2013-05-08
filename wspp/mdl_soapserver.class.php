@@ -1966,8 +1966,8 @@ class mdl_soapserver extends server {
     * @param string $rolename
     * @return affectRecord
     */
-    function affect_user_to_course($client, $sesskey, $userid, $courseid, $rolename) {
-        $rest = parent :: affect_user_to_course($client, $sesskey, $userid, $courseid, $rolename);
+    function affect_user_to_course($client, $sesskey, $userid, $courseid, $rolename, $enrol = "true") {
+        $rest = parent :: affect_user_to_course($client, $sesskey, $userid, $courseid, $rolename, $enrol);
         return $this->send($this->to_soap($rest, 'affectRecord'));
     }
 
