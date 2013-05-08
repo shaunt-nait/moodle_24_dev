@@ -1968,6 +1968,14 @@ class server {
 		
 		if ($passphrase != 'getmyimage@nait_its_2013')
 			return 'invalid passphrase';
+		
+		$filename = 'f1';
+		if ($size == '1')
+			$filename = 'f2';
+		else if ($size == '2')
+			$filename = 'f1';
+		else if ($size == '3')
+			$filename = 'f3';
 
                 if ($user = $DB->get_record('user', array('username'=>$userName))) {
 
@@ -1977,14 +1985,6 @@ class server {
                         $context = context_user::instance($user->id, IGNORE_MISSING);
 
                         $fs = get_file_storage();
-			$filename = 'f1';
-			if ($size == '1')
-				$filename = 'f2';
-			else if ($size == '2')
-				$filename = 'f1';
-			else if ($size == '3')
-				$filename = 'f3';
-
                         if (!$file = $fs->get_file($context->id, 'user', 'icon', 0, '/', $filename.'.png')) {
                                 if (!$file = $fs->get_file($context->id, 'user', 'icon', 0, '/', $filename.'.jpg')) {
                                         if ($filename === 'f3') {
