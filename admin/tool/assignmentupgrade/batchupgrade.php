@@ -46,7 +46,7 @@ $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
 //    die();
 //}
 $batchnum = required_param('batchnum', PARAM_INT);
-if (!$batchnum {
+if (!$batchnum) {
     print_error('invalidrequest');
     die();
 }
