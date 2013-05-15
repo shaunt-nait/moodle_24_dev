@@ -45,22 +45,22 @@ $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
 //    print_error('invalidrequest');
 //    die();
 //}
-$batchnum = required_param('batchnum', PARAM_INT);
+$batchnum = required_param('batchnum', PARAM_TEXT);
 if (!$batchnum) {
     print_error('invalidrequest');
     die();
 }
 $from = 0;
 $to = 0;
-if($batchnum == 1){
+if($batchnum == '1'){
 	$from = 0;
 	$to = 20000;
 }
-else if($batchnum == 2){
+else if($batchnum == '2'){
 	$from = 20001;
 	$to = 40000;
 }
-else if($batchnum == 3){
+else if($batchnum == '3'){
 	$from = 40001;
 	$to = 70000;
 }
