@@ -64,6 +64,8 @@ else if($batchnum == '3'){
 	$from = 40001;
 	$to = 70000;
 }
+echo $from;
+echo $to;
 
 raise_memory_limit(MEMORY_EXTRA);
 session_get_instance()->write_close(); // release session
