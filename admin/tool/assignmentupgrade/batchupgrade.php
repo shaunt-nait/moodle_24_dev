@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/'.$CFG->admin.'/tool/assignmentupgrade/locallib.p
 require_once($CFG->dirroot . '/'.$CFG->admin.'/tool/assignmentupgrade/upgradableassignmentstable.php');
 require_once($CFG->dirroot . '/'.$CFG->admin.'/tool/assignmentupgrade/upgradableassignmentsbatchform.php');
 
-require_sesskey();
+//require_sesskey();
 
 // admin_externalpage_setup calls require_login and checks moodle/site:config
 admin_externalpage_setup('assignmentupgrade', '', array(), tool_assignmentupgrade_url('batchupgrade'));
@@ -40,11 +40,31 @@ $PAGE->navbar->add(get_string('batchupgrade', 'tool_assignmentupgrade'));
 
 $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
 
-$confirm = required_param('confirm', PARAM_BOOL);
-if (!$confirm) {
+//$confirm = required_param('confirm', PARAM_BOOL);
+//if (!$confirm) {
+//    print_error('invalidrequest');
+//    die();
+//}
+$batchnum = required_param('batchnum', PARAM_INT);
+if (!$batchnum {
     print_error('invalidrequest');
     die();
 }
+$from = 0;
+$to = 0;
+if($batchnum == 1){
+	$from = 0;
+	$to = 20000;
+}
+else if($batchnum == 2){
+	$from = 20001;
+	$to = 40000;
+}
+else if($batchnum == 3){
+	$from = 40001;
+	$to = 70000;
+}
+
 raise_memory_limit(MEMORY_EXTRA);
 session_get_instance()->write_close(); // release session
 
@@ -60,10 +80,12 @@ if (optional_param('upgradeall', false, PARAM_BOOL)) {
 $total = count($assignmentids);
 
 foreach ($assignmentids as $assignmentid) {
+if($assignmentid > $from && $assignmentid <= $to){
     list($summary, $success, $log) = tool_assignmentupgrade_upgrade_assignment($assignmentid);
     $current += 1;
     echo $renderer->heading(get_string('upgradeprogress', 'tool_assignmentupgrade', array('current'=>$current, 'total'=>$total)), 3);
     echo $renderer->convert_assignment_result($summary, $success, $log);
+}
 }
 
 echo $renderer->continue_button(tool_assignmentupgrade_url('listnotupgraded'));
