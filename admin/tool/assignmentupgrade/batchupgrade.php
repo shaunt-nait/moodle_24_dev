@@ -68,7 +68,7 @@ if (optional_param('upgradeall', false, PARAM_BOOL)) {
 $total = count($assignmentids);
 
 foreach ($assignmentids as $assignmentid) {
-if($assignmentid > $from && $assignmentid < $to){
+if($assignmentid > $from && $assignmentid <= $to){
     list($summary, $success, $log) = tool_assignmentupgrade_upgrade_assignment($assignmentid);
     $current += 1;
     echo $renderer->heading(get_string('upgradeprogress', 'tool_assignmentupgrade', array('current'=>$current, 'total'=>$total)), 3);
