@@ -733,7 +733,7 @@ class server {
 		$this->debug_output ( 'This is what the new course should be...'.print_r ( $newcourse, true ) );
 		//now put the correct course info, this code is taken from update course
 		$newcourse->id = $tocourseid;
-		$newcourse-format= $oldcourse->format
+		$newcourse->format= $oldcourse->format;
 		$newcourse->numsections = $oldcourse->numsections;
 		$this->debug_output ( 'Updating Course.....');
 		$DB->update_record( 'course', $newcourse );
