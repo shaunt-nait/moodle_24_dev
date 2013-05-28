@@ -27,6 +27,7 @@
 
 require_once(dirname(__FILE__) . '/lib.php');
 
+
 class block_course_overview_campus extends block_base {
 
     /**
@@ -46,7 +47,7 @@ class block_course_overview_campus extends block_base {
      
     function enrol_get_my_courses_mark($fields = NULL, $sort = 'visible DESC,sortorder ASC', $limit = 0, $archived = 4) {
         
-        global $DB, $USER;
+        global $DB, $USER, $CFG;
         
         
         // Guest account does not have any courses
@@ -105,10 +106,15 @@ class block_course_overview_campus extends block_base {
         $wheres = implode(" AND ", $wheres);
         
         //AND  Instr(cc.path, '/4/' )  = false
+        
+        
+        $intString = $CFG->dbtype == "mysqli" ? "" : "::int";
+        
+        
 
         //note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why we have the subselect there
         $sql = "SELECT  $coursefields $ccselect 
-  , (cc.idnumber is not null and position('archive' in cc.idnumber) > 0)::int as archived
+  , (cc.idnumber is not null and position('archive' in cc.idnumber) > 0)$intString as archived
               FROM {course} c
               JOIN {course_categories} cc ON (cc.id = c.category )
               JOIN (SELECT DISTINCT e.courseid
@@ -119,7 +125,7 @@ class block_course_overview_campus extends block_base {
                    ) en ON (en.courseid = c.id)  
            $ccjoin
              WHERE $wheres            
-          order by  cc.idnumber is not null and position('archive' in cc.idnumber) > 0, shortname asc";
+          order by  (cc.idnumber is not null and position('archive' in cc.idnumber) > 0)$intString, shortname asc";
         $params['userid']  = $USER->id;
         $params['active']  = ENROL_USER_ACTIVE;
         $params['enabled'] = ENROL_INSTANCE_ENABLED;
@@ -353,6 +359,19 @@ class block_course_overview_campus extends block_base {
             foreach ($courses as $c) {
                 // Remember course ID for YUI processing
                 $yui_courseslist .= $c->id.' ';
+                
+                if( !$isArchivedHeadingRendered && ( $manage == true || $c->hidecourse == 0)  && $c->archived == true)
+                {
+                    $isArchivedHeadingRendered = true;
+                    echo $OUTPUT->box_start('coursebox');
+                    
+                    echo $OUTPUT->heading( "Archived Courses", 1);
+                    
+                    echo $OUTPUT->box_end();
+                    
+                }
+                
+                
 
                 // Start course div as visible if it isn't hidden or if hidden courses are currently shwon
                 if (($c->hidecourse == 0) || $manage == true) {
@@ -364,16 +383,7 @@ class block_course_overview_campus extends block_base {
                 }
 
                 
-                if( !$isArchivedHeadingRendered  && $c->archived == true)
-                {
-                    $isArchivedHeadingRendered = true;
-                    echo $OUTPUT->box_start('coursebox');
                 
-                    echo $OUTPUT->heading( "Archived Courses", 1);
-                
-                    echo $OUTPUT->box_end();
-                
-                }
 
 
                 // Start standard course overview coursebox
