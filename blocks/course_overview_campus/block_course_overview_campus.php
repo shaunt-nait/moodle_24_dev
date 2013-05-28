@@ -196,10 +196,6 @@ class block_course_overview_campus extends block_base {
         // Get block config
         $config = get_config('block_course_overview_campus');
 
-        // Check if the configured term dates make sense, if not disable term filter
-        if (!check_term_config($config)) {
-            $config->termcoursefilter = false;
-        }
 
 
         // Process GET parameters
@@ -208,9 +204,7 @@ class block_course_overview_campus extends block_base {
         $hidenews = optional_param('hidenews', 0, PARAM_INT);
         $shownews = optional_param('shownews', 0, PARAM_INT);
         $manage = optional_param('manage', 0, PARAM_BOOL);
-        $term = optional_param('term', null, PARAM_TEXT);
-        $category = optional_param('category', null, PARAM_TEXT);
-        $teacher = optional_param('teacher', null, PARAM_TEXT);
+
 
 
         // Set displaying preferences when set by GET parameters
@@ -228,46 +222,6 @@ class block_course_overview_campus extends block_base {
         }
 
 
-        // Set and remember term filter if GET parameter is present
-        if ($term != null) {
-            $selectedterm = $term;
-            set_user_preference('block_course_overview_campus-selectedterm', $term);
-        }
-        // Or set term filter based on user preference with default term fallback if activated
-        else if ($config->defaultterm == true) {
-            $selectedterm = get_user_preferences('block_course_overview_campus-selectedterm', 'currentterm');
-        }
-        // Or set term filter based on user preference with 'all' terms fallback
-        else {
-            $selectedterm = get_user_preferences('block_course_overview_campus-selectedterm', 'all');
-        }
-
-
-        // Set and remember category filter if GET parameter is present
-        if ($category != null) {
-            $selectedcategory = $category;
-            set_user_preference('block_course_overview_campus-selectedcategory', $category);
-        }
-        // Or set category filter based on user preference with 'all' categories fallback
-        else {
-            $selectedcategory = get_user_preferences('block_course_overview_campus-selectedcategory', 'all');
-        }
-
-
-        // Set and remember teacher filter if GET parameter is present
-        if ($teacher != null) {
-            $selectedteacher = $teacher;
-            set_user_preference('block_course_overview_campus-selectedteacher', $teacher);
-        }
-        // Or set teacher filter based on user preference with 'all' teachers fallback
-        else {
-            $selectedteacher = get_user_preferences('block_course_overview_campus-selectedteacher', 'all');
-        }
-
-
-        // Get my courses in alphabetical order
-        
-        //echo $this->enrol_get_my_courses_mark();
 
         $courses = $this->enrol_get_my_courses_mark('id, shortname, modinfo, sectioncache', 'fullname ASC');
 
@@ -307,8 +261,7 @@ class block_course_overview_campus extends block_base {
             $coursenews = array();
             
             function isNotArchived($c)
-            {
-                
+            {               
                 return($c->archived == 0);
             }
             
@@ -332,30 +285,6 @@ class block_course_overview_campus extends block_base {
             
 
 
-            //// Get course categories for later use
-            //$coursecategories = $DB->get_records('course_categories');
-
-            //// Get teacher roles for later use
-            //$CFG->coursecontact = trim($CFG->coursecontact);
-            //if (!empty($CFG->coursecontact)) {
-            //    $teacherroles = explode(',', $CFG->coursecontact);
-            //}
-            //else {
-            //    $teacherroles = array();
-            //}
-
-
-            //// Create empty filter for activated filters
-            //if ($config->termcoursefilter == true) {
-            //    $filterterms = array();
-            //}
-            //if ($config->categorycoursefilter == true) {
-            //    $filtercategories = array();
-            //}
-            //if ($config->teachercoursefilter == true) {
-            //    $filterteachers = array();
-            //}
-
             // Create counter for hidden courses
             $hiddencourses = 0;
 
@@ -366,177 +295,7 @@ class block_course_overview_campus extends block_base {
 
             // Now iterate over courses and collect data about my courses
             foreach ($courses as $c) {
-                // Populate filters with data about my courses
-                // Term filter
-                //if ($config->termcoursefilter == true) {
-                //    // Create object for bufferung course term information
-                //    $courseterm = new stdClass();
-
-                //    // If course start date is undefined, set course term to "other"
-                //    if ($c->startdate == 0) {
-                //        $courseterm->id = 'other';
-                //        $courseterm->name = 'other';
-                //    }
-
-                //    // If course start date is available, if timeless courses are enabled and if course start date is before timeless course threshold, set course term to "timeless"
-                //    else if ($config->timelesscourses == true && date('Y', $c->startdate) < $config->timelesscoursesthreshold) {
-                //        $courseterm->id = 'timeless';
-                //        $courseterm->name = 'timeless';
-                //    }
-
-                //    // If course start date is available, distinguish between term modes
-                //    // "Academic year" mode
-                //    else if ($config->termmode == 1) {
-                //        // If term starts on January 1st, set course term to course start date's year
-                //        if ($config->term1startday == 1) {
-                //            $courseterm->id = $courseterm->name = date('Y', $c->startdate);
-                //        }
-                //        // If term doesn't start on January 1st and course start date's day comes on or after term start day, set course term to course start date's year + next year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday)))) {
-                //            $courseterm->id = $courseterm->name = date('Y', $c->startdate).'-'.(date('Y', $c->startdate)+1);
-                //        }
-                //        // If term doesn't start on January 1st and course start date's day comes before term start day, set course term to course start date's year + former year
-                //        else {
-                //            $courseterm->id = $courseterm->name = (date('Y', $c->startdate)-1).'-'.date('Y', $c->startdate);
-                //        }
-                //    }
-                //    // "Semester" mode
-                //    else if ($config->termmode == 2) {
-                //        // If course start date's day comes before first term start day, set course term to second term of former year
-                //        if (intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday)))) {
-                //            $courseterm->id = (date('Y', $c->startdate)-1).'-2';
-                //            $courseterm->name = $config->term2name.' '.(date('Y', $c->startdate)-1).'/'.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after first term start day but before second term start day, set course term to first term of current year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) &&
-                //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday)))) {
-                //            $courseterm->id = date('Y', $c->startdate).'-1';
-                //            $courseterm->name = $config->term1name.' '.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after second term start day, set course term to second term of current year
-                //        else {
-                //            $courseterm->id = date('Y', $c->startdate).'-2';
-                //            // If first term does start on January 1st, suffix name with single year, otherwise suffix name with double year
-                //            if ($config->term1startday == '1') {
-                //                $courseterm->name = $config->term2name.' '.date('Y', $c->startdate);
-                //            }
-                //            else {
-                //                $courseterm->name = $config->term2name.' '.date('Y', $c->startdate).'/'.(date('Y', $c->startdate)+1);
-                //            }
-                //        }
-                //    }
-                //    // "Tertial" mode
-                //    else if ($config->termmode == 3) {
-                //        // If course start date's day comes before first term start day, set course term to third term of former year
-                //        if (intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday)))) {
-                //            $courseterm->id = (date('Y', $c->startdate)-1).'-3';
-                //            $courseterm->name = $config->term3name.' '.(date('Y', $c->startdate)-1).'/'.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after first term start day but before second term start day, set course term to first term of current year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) &&
-                //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday)))) {
-                //            $courseterm->id = date('Y', $c->startdate).'-1';
-                //            $courseterm->name = $config->term1name.' '.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after second term start day but before third term start day, set course term to second term of current year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-                //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term3startday)))) {
-                //            $courseterm->id = date('Y', $c->startdate).'-2';
-                //            $courseterm->name = $config->term2name.' '.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after third term start day, set course term to third term of current year
-                //        else {
-                //            $courseterm->id = date('Y', $c->startdate).'-3';
-                //            // If first term does start on January 1st, suffix name with single year, otherwise suffix name with double year
-                //            if ($config->term1startday == '1') {
-                //                $courseterm->name = $config->term3name.' '.date('Y', $c->startdate);
-                //            }
-                //            else {
-                //                $courseterm->name = $config->term3name.' '.date('Y', $c->startdate).'/'.(date('Y', $c->startdate)+1);
-                //            }
-                //        }
-                //    }
-                //    // "Trimester" mode
-                //    else if ($config->termmode == 4) {
-                //        // If course start date's day comes before first term start day, set course term to fourth term of former year
-                //        if (intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday)))) {
-                //            $courseterm->id = (date('Y', $c->startdate)-1).'-4';
-                //            $courseterm->name = $config->term4name.' '.(date('Y', $c->startdate)-1).'/'.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after first term start day but before second term start day, set course term to first term of current year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) &&
-                //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday)))) {
-                //            $courseterm->id = date('Y', $c->startdate).'-1';
-                //            $courseterm->name = $config->term1name.' '.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after second term start day but before third term start day, set course term to second term of current year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-                //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term3startday)))) {
-                //            $courseterm->id = date('Y', $c->startdate).'-2';
-                //            $courseterm->name = $config->term2name.' '.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after third term start day but before fourth term start day, set course term to third term of current year
-                //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term3startday))) &&
-                //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term4startday)))) {
-                //            $courseterm->id = date('Y', $c->startdate).'-3';
-                //            $courseterm->name = $config->term3name.' '.date('Y', $c->startdate);
-                //        }
-                //        // If course start date's day comes on or after fourth term start day, set course term to fourth term of current year
-                //        else {
-                //            $courseterm->id = date('Y', $c->startdate).'-4';
-                //            // If first term does start on January 1st, suffix name with single year, otherwise suffix name with double year
-                //            if ($config->term1startday == '1') {
-                //                $courseterm->name = $config->term4name.' '.date('Y', $c->startdate);
-                //            }
-                //            else {
-                //                $courseterm->name = $config->term4name.' '.date('Y', $c->startdate).'/'.(date('Y', $c->startdate)+1);
-                //            }
-                //        }
-                //    }
-                //    // This should never happen
-                //    else {
-                //        print_error('error');
-                //    }
-
-                //    // Remember course term for later use
-                //    $c->term = $courseterm->id;
-
-                //    // Add course term to filter list
-                //    $filterterms[$courseterm->id] = $courseterm->name;
-
-                //    // Cleanup
-                //    unset ($courseterm);
-                //}
-
-                //// Category filter
-                //if ($config->categorycoursefilter == true) {
-                //    // Get course category name from array of all category names
-                //    $coursecategory = $coursecategories[$c->category];
-
-                //    // Remember course category name for later use
-                //    $c->categoryname = format_string($coursecategory->name);
-                //    $c->categoryid = $coursecategory->id;
-
-                //    // Add course category name and classname to filter list
-                //    $filtercategories[$c->categoryid] = $c->categoryname;
-                //}
-
-                //// Teacher filter
-                //if ($config->teachercoursefilter == true) {
-                //    // Get course context
-                //    $context = context_course::instance($c->id);
-
-                //    // Get course teachers based on global teacher roles
-                //    $courseteachers = get_role_users($teacherroles, $context, true);
-
-                //    // Remember course teachers for later use
-                //    $c->teachers = $courseteachers;
-
-                //    // Add all course teacher's names to filter list
-                //    foreach ($courseteachers as $ct) {
-                //        $filterteachers[$ct->id] = $ct->lastname.', '.$ct->firstname;
-                //    }
-                //}
+                
 
 
                 // Check if this course should be shown or not
@@ -548,338 +307,6 @@ class block_course_overview_campus extends block_base {
                 // Check if this course should show news or not
                 $courses[$c->id]->hidenews = get_user_preferences('block_course_overview_campus-hidenews-'.$c->id, 0);
             }
-
-
-            // Replace and remember currentterm placeholder with precise term based on my courses
-            //if ($config->termcoursefilter == true && $selectedterm == 'currentterm') {
-            //    // Distinguish between term modes
-            //    // "Academic year" mode
-            //    if ($config->termmode == '1') {
-            //        // If term starts on January 1st and there are courses this year, set selected term to this year
-            //        if ($config->term1startday == '1' && isset($filterterms[date('Y')])) {
-            //            $selectedterm = date('Y');
-            //        }
-            //        // If term doesn't start on January 1st and current day comes on or after term start day and there are courses this term, set selected term to this year + next year
-            //        else if (intval(date('z')) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) && isset($filterterms[date('Y').'-'.(date('Y')+1)])) {
-            //            $selectedterm = date('Y').'-'.(date('Y')+1);
-            //        }
-            //        // If term doesn't start on January 1st and current day comes before term start day and there are courses this term, set selected term to this year + former year
-            //        else if (isset($filterterms[(date('Y')-1).'-'.date('Y')])) {
-            //            $selectedterm = (date('Y')-1).'-'.date('Y');
-            //        }
-            //        // Otherwise set selected term to the latest (but not future) term possible
-            //        else {
-            //            $selectedterm = 'all';
-            //            arsort($filterterms);
-            //            foreach ($filterterms as $t) {
-            //                if ($t != 'other' && $t != 'timeless' && intval(substr($t, 0, 4)) <= intval(date('Y'))) {
-            //                    $selectedterm = $t;
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //    // "Semester" mode
-            //    else if ($config->termmode == '2') {
-            //        // If current day comes before first term start day and there are courses this term, set selected term to second term of former year
-            //        if (intval(date('z')) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) && isset($filterterms[(date('Y')-1).'-2'])) {
-            //            $selectedterm = (date('Y')-1).'-2';
-            //        }
-            //        // If current day comes on or after first term start day but before second term start day and there are courses this term, set selected term to first term of current year
-            //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) &&
-            //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-            //                isset($filterterms[date('Y').'-1'])) {
-            //            $selectedterm = date('Y').'-1';
-            //        }
-            //        // If course start date's day comes on or after second term start day and there are courses this term, set selected term to second term of current year
-            //        else if (isset($filterterms[date('Y').'-2'])) {
-            //            $selectedterm = date('Y').'-2';
-            //        }
-            //        // Otherwise set selected term to the latest (but not future) term possible
-            //        else {
-            //            $selectedterm = 'all';
-            //            krsort($filterterms);
-            //            foreach ($filterterms as $t => $n) {
-            //                if ($t != 'other' && $t != 'timeless' && intval(substr($t, 0, 4)) <= intval(date('Y'))) {
-            //                    $selectedterm = $t;
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //    // "Tertial" mode
-            //    else if ($config->termmode == '3') {
-            //        // If current day comes before first term start day and there are courses this term, set selected term to third term of former year
-            //        if (intval(date('z')) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) && isset($filterterms[(date('Y')-1).'-3'])) {
-            //            $selectedterm = (date('Y')-1).'-2';
-            //        }
-            //        // If current day comes on or after first term start day but before second term start day and there are courses this term, set selected term to first term of current year
-            //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) &&
-            //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-            //                isset($filterterms[date('Y').'-1'])) {
-            //            $selectedterm = date('Y').'-1';
-            //        }
-            //        // If current day comes on or after second term start day but before third term start day and there are courses this term, set selected term to second term of current year
-            //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-            //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term3startday))) &&
-            //                isset($filterterms[date('Y').'-2'])) {
-            //            $selectedterm = date('Y').'-2';
-            //        }
-            //        // If course start date's day comes on or after third term start day and there are courses this term, set selected term to third term of current year
-            //        else if (isset($filterterms[date('Y').'-3'])) {
-            //            $selectedterm = date('Y').'-3';
-            //        }
-            //        // Otherwise set selected term to the latest (but not future) term possible
-            //        else {
-            //            $selectedterm = 'all';
-            //            krsort($filterterms);
-            //            foreach ($filterterms as $t => $n) {
-            //                if ($t != 'other' && $t != 'timeless' && intval(substr($t, 0, 4)) <= intval(date('Y'))) {
-            //                    $selectedterm = $t;
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //    // "Trimester" mode
-            //    else if ($config->termmode == '4') {
-            //        // If current day comes before first term start day and there are courses this term, set selected term to fourth term of former year
-            //        if (intval(date('z')) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) && isset($filterterms[(date('Y')-1).'-4'])) {
-            //            $selectedterm = (date('Y')-1).'-2';
-            //        }
-            //        // If current day comes on or after first term start day but before second term start day and there are courses this term, set selected term to first term of current year
-            //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term1startday))) &&
-            //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-            //                isset($filterterms[date('Y').'-1'])) {
-            //            $selectedterm = date('Y').'-1';
-            //        }
-            //        // If current day comes on or after second term start day but before third term start day and there are courses this term, set selected term to second term of current year
-            //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term2startday))) &&
-            //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term3startday))) &&
-            //                isset($filterterms[date('Y').'-2'])) {
-            //            $selectedterm = date('Y').'-2';
-            //        }
-            //        // If current day comes on or after third term start day but before fourth term start day and there are courses this term, set selected term to third term of current year
-            //        else if (intval(date('z', $c->startdate)) >= intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term3startday))) &&
-            //                intval(date('z', $c->startdate)) < intval(date('z', strtotime(date('Y', $c->startdate).'-'.$config->term4startday))) &&
-            //                isset($filterterms[date('Y').'-3'])) {
-            //            $selectedterm = date('Y').'-3';
-            //        }
-            //        // If course start date's day comes on or after fourth term start day and there are courses this term, set selected term to fourth term of current year
-            //        else if (isset($filterterms[date('Y').'-4'])) {
-            //            $selectedterm = date('Y').'-4';
-            //        }
-            //        // Otherwise set selected term to the latest (but not future) term possible
-            //        else {
-            //            $selectedterm = 'all';
-            //            krsort($filterterms);
-            //            foreach ($filterterms as $t => $n) {
-            //                if ($t != 'other' && $t != 'timeless' && intval(substr($t, 0, 4)) <= intval(date('Y'))) {
-            //                    $selectedterm = $t;
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //    // This should never happen
-            //    else {
-            //        print_error('error');
-            //    }
-
-            //    // Remember selected term
-            //    set_user_preference('block_course_overview_campus-selectedterm', $selectedterm);
-            //}
-
-
-
-            /********************************************************************************/
-            /***                        GENERATE OUTPUT FOR FILTER                        ***/
-            /********************************************************************************/
-
-            // Show filter form if any filter is activated
-            //if ($config->categorycoursefilter == true || $config->termcoursefilter == true || $config->teachercoursefilter == true) {
-            //    // Start section and form
-            //    echo '<div id="coc-filterlist"><form method="post" action="">';
-
-            //    // Show term filter
-            //    if ($config->termcoursefilter == true) {
-            //        echo '<div class="coc-filter">';
-
-            //        // Show filter description
-            //        echo format_string($config->termcoursefilterdisplayname);
-            //        if ($config->termcoursefilterdisplayname != '')
-            //            echo '<br />';
-
-            //        echo '<select name="term" id="filterTerm">';
-
-            //        // Remember in this variable if selected term was displayed or not
-            //        $selectedtermdisplayed = false;
-
-            //        // Sort term filter alphabetically in reverse order
-            //        krsort($filterterms);
-
-            //        // Print "All terms" option
-            //        if ($selectedterm == 'all') {
-            //            echo '<option value="all" selected>'.get_string('all', 'block_course_overview_campus').'</option> ';
-            //            $selectedtermdisplayed = true;
-            //        }
-            //        else {
-            //            echo '<option value="all">'.get_string('all', 'block_course_overview_campus').'</option> ';
-            //        }
-
-            //        // Print each term in filter as an option item and select selected term
-            //        foreach ($filterterms as $t => $n) {
-            //            // If iterated term is selected term
-            //            if ($selectedterm == $t) {
-            //                // Handle "other" term option
-            //                if ($selectedterm == 'other') {
-            //                    echo '<option selected value="other">'.get_string('other', 'block_course_overview_campus').'</option> ';
-            //                    $selectedtermdisplayed = true;
-            //                }
-            //                // Handle "timeless" term option
-            //                else if ($selectedterm == 'timeless') {
-            //                    echo '<option selected value="timeless">'.format_string($config->timelesscoursesname).'</option> ';
-            //                    $selectedtermdisplayed = true;
-            //                }
-            //                else {
-            //                    echo '<option selected value="'.$t.'">'.format_string($n).'</option> ';
-            //                    $selectedtermdisplayed = true;
-            //                }
-            //            }
-            //            // If iterated term isn't selected term
-            //            else {
-            //                // Handle "other" term option
-            //                if ($t == 'other') {
-            //                    echo '<option value="other">'.get_string('other', 'block_course_overview_campus').'</option> ';
-            //                }
-            //                // Handle "timeless" term option
-            //                else if ($t == 'timeless') {
-            //                    echo '<option value="timeless">'.format_string($config->timelesscoursesname).'</option> ';
-            //                }
-            //                else {
-            //                    echo '<option value="'.$t.'">'.format_string($n).'</option> ';
-            //                }
-            //            }
-            //        }
-
-            //        echo '</select>';
-
-            //        // If selected term couldn't be displayed, select all terms and save the new selection. In this case, no option item is marked as selected, but that's ok as the "all" item is at the top
-            //        if (!$selectedtermdisplayed) {
-            //            $selectedterm = 'all';
-            //            set_user_preference('block_course_overview_campus-selectedterm', $selectedterm);
-            //        }
-
-            //        echo '</div>';
-            //    }
-
-            //    // Show category filter
-            //    if ($config->categorycoursefilter == true) {
-            //        echo '<div class="coc-filter">';
-
-            //        // Show filter description
-            //        echo format_string($config->categorycoursefilterdisplayname);
-            //        if ($config->categorycoursefilterdisplayname != '') {
-            //            echo '<br />';
-            //        }
-
-            //        echo '<select name="category" id="filterCategory">';
-
-            //        // Remember in this variable if selected category was displayed or not
-            //        $selectedcategorydisplayed = false;
-
-            //        // Sort category filter alphabetically
-            //        natcasesort($filtercategories);
-
-            //        // Print "All categories" option
-            //        if ($selectedcategory == 'all') {
-            //            echo '<option value="all" selected>'.get_string('all', 'block_course_overview_campus').'</option> ';
-            //            $selectedcategorydisplayed = true;
-            //        }
-            //        else {
-            //            echo '<option value="all">'.get_string('all', 'block_course_overview_campus').'</option> ';
-            //        }
-
-            //        // Print each category in filter as an option item and select selected category
-            //        foreach ($filtercategories as $value => $cat) {
-            //            // If iterated category is selected category
-            //            if ($selectedcategory == $value) {
-            //                echo '<option selected value="'.$value.'">'.$cat.'</option> ';
-            //                $selectedcategorydisplayed = true;
-            //            }
-            //            // If iterated category isn't selected category
-            //            else {
-            //                echo '<option value="'.$value.'">'.$cat.'</option> ';
-            //            }
-            //        }
-
-            //        echo '</select>';
-
-            //        // If selected category couldn't be displayed, select all categories and save the new selection. In this case, no option item is marked as selected, but that's ok as the "all" item is at the top
-            //        if (!$selectedcategorydisplayed) {
-            //            $selectedcategory = 'all';
-            //            set_user_preference('block_course_overview_campus-selectedcategory', $selectedcategory);
-            //        }
-
-            //        echo '</div>';
-            //    }
-
-            //    // Show teacher filter
-            //    if ($config->teachercoursefilter == true) {
-            //        echo '<div class="coc-filter">';
-
-            //        // Show filter description
-            //        echo format_string($config->teachercoursefilterdisplayname);
-            //        if ($config->teachercoursefilterdisplayname != '') {
-            //            echo '<br />';
-            //        }
-
-            //        echo '<select name="teacher" id="filterTeacher">';
-
-            //        // Remember in this variable if selected teacher was displayed or not
-            //        $selectedteacherdisplayed = false;
-
-            //        // Sort teacher filter alphabetically
-            //        natcasesort($filterteachers);
-
-            //        // Print "All teachers" option
-            //        if ($selectedteacher == 'all') {
-            //            echo '<option value="all" selected>'.get_string('all', 'block_course_overview_campus').'</option> ';
-            //            $selectedteacherdisplayed = true;
-            //        }
-            //        else {
-            //            echo '<option value="all">'.get_string('all', 'block_course_overview_campus').'</option> ';
-            //        }
-
-            //        // Print each teacher in filter as an option item and select selected teacher
-            //        foreach ($filterteachers as $id => $t) {
-            //            // If iterated teacher is selected teacher
-            //            if ($selectedteacher == $id) {
-            //                echo '<option selected value="'.$id.'">'.$t.'</option> ';
-            //                $selectedteacherdisplayed = true;
-            //            }
-            //            else {
-            //                echo '<option value="'.$id.'">'.$t.'</option> ';
-            //            }
-            //        }
-
-            //        echo '</select>';
-
-            //        // If selected teacher couldn't be displayed, select all teachers and save the new selection. In this case, no option item is marked as selected, but that's ok as the "all" item is at the top
-            //        if (!$selectedteacherdisplayed) {
-            //            $selectedteacher = 'all';
-            //            set_user_preference('block_course_overview_campus-selectedteacher', $selectedteacher);
-            //        }
-
-            //        echo '</div>';
-            //    }
-
-            //    // Show submit button for Non-JavaScript interaction
-            //    echo '<div id="coc-filtersubmit"><input type="submit" value="'.get_string('submitfilter', 'block_course_overview_campus').'" /></div>';
-
-            //    // End section and form
-            //    echo '</form></div>';
-            //}
 
 
 
@@ -934,49 +361,6 @@ class block_course_overview_campus extends block_base {
                     echo '<div id="coc-course-'.$c->id.'" class="coc-course coc-hidden">';
                 }
 
-                // Start filter by term div - later we use this div to filter the course
-                //if ($config->termcoursefilter == true) {
-                //    // Show course if it is within selected term or all terms are selected
-                //    if ($c->term == $selectedterm || $selectedterm == 'all') {
-                //        echo '<div class="termdiv coc-term-'.$c->term.'">';
-                //    }
-                //    // Otherwise hide the course with CSS
-                //    else {
-                //        echo '<div class="termdiv coc-term-'.$c->term.' coc-hidden">';
-                //    }
-                //}
-
-                // Start filter by category div - later we use this div to filter the course
-                //if ($config->categorycoursefilter == true) {
-                //    // Show course if it is within selected category or all categories are selected
-                //    if ($c->categoryid == $selectedcategory || $selectedcategory == 'all') {
-                //        echo '<div class="categorydiv coc-category-'.$c->categoryid.'">';
-                //    }
-                //    // Otherwise hide the course with CSS
-                //    else {
-                //        echo '<div class="categorydiv coc-category-'.$c->categoryid.' coc-hidden">';
-                //    }
-                //}
-
-                //// Start filter by teacher div - later we use this div to filter the course
-                //if ($config->teachercoursefilter == true) {
-                //    // Start teacher div
-                //    echo '<div class="teacherdiv';
-
-                //    // Add all teachers
-                //    foreach ($c->teachers as $id => $t) {
-                //        echo ' coc-teacher-'.$id;
-                //    }
-
-                //    // Show course if it has the selected teacher or all teachers are selected
-                //    if (isset($c->teachers[$selectedteacher]) || $selectedteacher=='all') {
-                //        echo '">';
-                //    }
-                //    // Otherwise hide the course with CSS
-                //    else {
-                //        echo ' coc-hidden">';
-                //    }
-                //}
                 
                 if( !$isArchivedHeadingRendered  && $c->archived == true)
                 {
@@ -1049,22 +433,6 @@ class block_course_overview_campus extends block_base {
                 if (empty($c->visible)) {
                     $attributes['class'] = 'dimmed';
                 }
-
-                // Get teachers' names for use with course link
-                //$teachernames = get_teachername_string($c->teachers);
-
-
-                //// Output course link (show shortname and teacher name if configured)
-                //if ($config->showshortname == true && $config->showteachername == true && $teachernames != '') {
-                //    echo $OUTPUT->heading(html_writer::link(new moodle_url('/course/view.php', array('id' => $c->id)), format_string($c->fullname).'<br /><span class="coc-metainfo">('.$c->shortname.'&nbsp;&nbsp;|&nbsp;&nbsp;'.$teachernames.')</span>', $attributes), 3);
-                //}
-                //else if ($config->showshortname == true) {
-                //    echo $OUTPUT->heading(html_writer::link(new moodle_url('/course/view.php', array('id' => $c->id)), format_string($c->fullname).'<br /><span class="coc-metainfo">('.$c->shortname.')</span>', $attributes), 3);
-                //}
-                //else if ($config->showteachername == true && $teachernames != '') {
-                //    echo $OUTPUT->heading(html_writer::link(new moodle_url('/course/view.php', array('id' => $c->id)), format_string($c->fullname).'<br /><span class="coc-metainfo">('.$teachernames.')</span>', $attributes), 3);
-                //}
-                //else {
                 
                 if($c->archived)
                 {         
@@ -1109,21 +477,6 @@ class block_course_overview_campus extends block_base {
 
                 // End standard course overview coursebox
                 echo $OUTPUT->box_end();
-
-                // End filter by term div
-                //if ($config->termcoursefilter == true) {
-                //    echo '</div>';
-                //}
-
-                //// End filter by category div
-                //if ($config->categorycoursefilter == true) {
-                //    echo '</div>';
-                //}
-
-                //// End filter by teacher div
-                //if ($config->teachercoursefilter == true) {
-                //    echo '</div>';
-                //}
 
                 // End course div
                 echo '</div>';
