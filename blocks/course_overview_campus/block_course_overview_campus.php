@@ -268,8 +268,10 @@ class block_course_overview_campus extends block_base {
             $nonArchivedCourses = array_filter($courses, "isNotArchived");
             
             
+            //IF NONARCHIVED COURSES ARE 20 or more do not load site news.
             
-            if ($modules = $DB->get_records('modules')) {
+            
+            if (count( $nonArchivedCourses) < 20 && $modules = $DB->get_records('modules')) {
                 foreach ($modules as $mod) {
                 
                 
