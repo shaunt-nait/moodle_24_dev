@@ -108,7 +108,7 @@ class block_course_overview_campus extends block_base {
 
         //note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why we have the subselect there
         $sql = "SELECT  $coursefields $ccselect 
-  , cc.idnumber is not null and position('archive' in cc.idnumber) > 0 as archived
+  , (cc.idnumber is not null and position('archive' in cc.idnumber) > 0)::int as archived
               FROM {course} c
               JOIN {course_categories} cc ON (cc.id = c.category )
               JOIN (SELECT DISTINCT e.courseid
