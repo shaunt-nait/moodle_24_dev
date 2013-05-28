@@ -332,29 +332,29 @@ class block_course_overview_campus extends block_base {
             
 
 
-            // Get course categories for later use
-            $coursecategories = $DB->get_records('course_categories');
+            //// Get course categories for later use
+            //$coursecategories = $DB->get_records('course_categories');
 
-            // Get teacher roles for later use
-            $CFG->coursecontact = trim($CFG->coursecontact);
-            if (!empty($CFG->coursecontact)) {
-                $teacherroles = explode(',', $CFG->coursecontact);
-            }
-            else {
-                $teacherroles = array();
-            }
+            //// Get teacher roles for later use
+            //$CFG->coursecontact = trim($CFG->coursecontact);
+            //if (!empty($CFG->coursecontact)) {
+            //    $teacherroles = explode(',', $CFG->coursecontact);
+            //}
+            //else {
+            //    $teacherroles = array();
+            //}
 
 
-            // Create empty filter for activated filters
-            if ($config->termcoursefilter == true) {
-                $filterterms = array();
-            }
-            if ($config->categorycoursefilter == true) {
-                $filtercategories = array();
-            }
-            if ($config->teachercoursefilter == true) {
-                $filterteachers = array();
-            }
+            //// Create empty filter for activated filters
+            //if ($config->termcoursefilter == true) {
+            //    $filterterms = array();
+            //}
+            //if ($config->categorycoursefilter == true) {
+            //    $filtercategories = array();
+            //}
+            //if ($config->teachercoursefilter == true) {
+            //    $filterteachers = array();
+            //}
 
             // Create counter for hidden courses
             $hiddencourses = 0;
@@ -917,6 +917,8 @@ class block_course_overview_campus extends block_base {
 
             // Start section
             echo '<div id="coc-courselist">';
+            
+             $isArchivedHeadingRendered = false;
 
             // Show courses
             foreach ($courses as $c) {
@@ -975,6 +977,17 @@ class block_course_overview_campus extends block_base {
                 //        echo ' coc-hidden">';
                 //    }
                 //}
+                
+                if( !$isArchivedHeadingRendered  && $c->archived == true)
+                {
+                    $isArchivedHeadingRendered = true;
+                    echo $OUTPUT->box_start('coursebox');
+                
+                    echo $OUTPUT->heading( "Archived Courses", 1);
+                
+                    echo $OUTPUT->box_end();
+                
+                }
 
 
                 // Start standard course overview coursebox
@@ -1141,16 +1154,16 @@ class block_course_overview_campus extends block_base {
                 user_preference_allow_ajax_update('block_course_overview_campus-hidenews-'.$c->id, PARAM_INT);
             }
 
-            // Verify that filter parameters are updatable by AJAX
-            if ($config->termcoursefilter == true) {
-                user_preference_allow_ajax_update('block_course_overview_campus-selectedterm', PARAM_TEXT);
-            }
-            if ($config->teachercoursefilter == true) {
-                user_preference_allow_ajax_update('block_course_overview_campus-selectedteacher', PARAM_TEXT);
-            }
-            if ($config->categorycoursefilter == true) {
-                user_preference_allow_ajax_update('block_course_overview_campus-selectedcategory', PARAM_TEXT);
-            }
+            //// Verify that filter parameters are updatable by AJAX
+            //if ($config->termcoursefilter == true) {
+            //    user_preference_allow_ajax_update('block_course_overview_campus-selectedterm', PARAM_TEXT);
+            //}
+            //if ($config->teachercoursefilter == true) {
+            //    user_preference_allow_ajax_update('block_course_overview_campus-selectedteacher', PARAM_TEXT);
+            //}
+            //if ($config->categorycoursefilter == true) {
+            //    user_preference_allow_ajax_update('block_course_overview_campus-selectedcategory', PARAM_TEXT);
+            //}
 
             // Include YUI for hiding courses and news with AJAX
             $PAGE->requires->yui_module('moodle-block_course_overview_campus-hidenews', 'M.block_course_overview_campus.initHideNews', array(array('courses'=>trim($yui_coursenewslist))));
