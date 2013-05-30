@@ -1432,6 +1432,11 @@ class server {
                     
                     if( $oldcourse->category != $course->category)
                     {
+                        //this makes moodle reconfigure the course permissions based on new category
+                        $context   = context_course::instance($oldcourse->id);                        
+                        $newparent = context_coursecat::instance($course->category);
+                        context_moved($context, $newparent);                        
+                    
                         //if category changed then this will fix the category course counts
                         fix_course_sortorder();
                     }
