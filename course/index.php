@@ -302,16 +302,23 @@ function print_category_edit($category, $displaylist, $parentslist, $depth=-1, $
         $str->spacer = $OUTPUT->spacer().' ';
     }
 
+    // maxcategorydepth == 0 meant no limit
+    if (!empty($CFG->maxcategorydepth) && $depth >= $CFG->maxcategorydepth) {
+        return;
+    }
+
+    
     if (!empty($category)) {
 
         if (!isset($category->context)) {
             $category->context = context_coursecat::instance($category->id);
         }
 
-        echo '<tr><td align="left" class="name">';
-        for ($i=0; $i<$depth;$i++) {
-            echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-        }
+        $padding = ($depth * 20) + 5;
+        echo '<tr><td align="left" class="name" style="padding-left:'. $padding  .'px">';
+        //for ($i=0; $i<$depth;$i++) {
+        //    echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        //}
         $linkcss = $category->visible ? '' : ' class="dimmed" ';
         echo '<a '.$linkcss.' title="'.$str->edit.'" '.
              ' href="category.php?id='.$category->id.'&amp;categoryedit=on&amp;sesskey='.sesskey().'">'.
