@@ -479,11 +479,11 @@
     <part name="return" type="xsd:string" />
   </message>
 
-  <message name="count_unread_messagesRequest">
+  <message name="CountUnreadMessagesRequest">
     <part name="passphrase" type="xsd:string"/>
     <part name="username" type="xsd:string"/>
   </message>
-  <message name="count_unread_messagesResponse">
+  <message name="CountUnreadMessagesResponse">
     <part name="return" type="xsd:int"/>
   </message>
   
