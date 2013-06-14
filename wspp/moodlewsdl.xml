@@ -688,10 +688,10 @@
       <output message="tns:GetUserProfileBase64ImageResponse" />
     </operation>
     
-    <operation name="count_unread_messages">
+    <operation name="CountUnreadMessages">
       <documentation>MoodleWS: Get number of unread user messages</documentation>
-      <input message="tns:count_unread_messagesRequest"/>
-      <output message="tns:count_unread_messagesResponse"/>
+      <input message="tns:CountUnreadMessagesRequest"/>
+      <output message="tns:CountUnreadMessagesResponse"/>
     </operation>
 
     <operation name="getOnlineUserCount">
@@ -854,8 +854,8 @@
       </output>
     </operation>
 
-    <operation name="count_unread_messages">
-      <soap:operation soapAction="http://www.nait.ca/moodle/wspp/wsdl#count_unread_messages" style="rpc"/>
+    <operation name="CountUnreadMessages">
+      <soap:operation soapAction="http://www.nait.ca/moodle/wspp/wsdl#CountUnreadMessages" style="rpc"/>
       <input>
         <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
       </input>
