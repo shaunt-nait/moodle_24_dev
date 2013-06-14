@@ -2029,17 +2029,14 @@ class server {
         }
 
 
-    public function count_unread_messages($passphrase, $username) {
+    function count_unread_messages($passphrase, $username) {
         global $CFG;
 
 	if ($passphrase != "tellmehowmany!@#")
-		return "invalid passphrase";
-     
-	if (empty ($CFG->messaging))
-            return $this->error(get_string('ws_messaingdisabled', 'local_wspp'));
+		return -1;
         
-        if (!$user = ws_get_record("user", "username", $username)) {
-            return $this->error(get_string('ws_userunknown', 'local_wspp', "username". '=' . $username));
+        if (!$user = ws_get_record("user", "username", strtolower($username))) {
+            return -2; //$this->error(get_string('ws_userunknown', 'local_wspp', "username". '=' . $username));
         }
 
         if ($ret = ws_get_records('message', 'useridto', $user->id, 'timecreated DESC')) {
