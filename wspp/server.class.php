@@ -2029,7 +2029,7 @@ class server {
         }
 
 
-    public function count_unread_messages($username, $passphrase) {
+    public function count_unread_messages($passphrase, $username) {
         global $CFG;
 
 	if ($passphrase != "tellmehowmany!@#")

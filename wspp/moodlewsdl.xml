@@ -689,6 +689,7 @@
     </operation>
     
     <operation name="count_unread_messages">
+      <documentation>MoodleWS: Get number of unread user messages</documentation>
       <input message="tns:count_unread_messagesRequest"/>
       <output message="tns:count_unread_messagesResponse"/>
     </operation>
