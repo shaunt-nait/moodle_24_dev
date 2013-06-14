@@ -87,6 +87,7 @@ abstract class backup_plan_dbops extends backup_dbops {
               FROM {course_modules} cm
               JOIN {modules} m ON m.id = cm.module
              WHERE cm.course = ?
+	       AND m.name != 'adobeconnect'
                AND cm.section = ?", array($courseid, $sectionid));
         foreach (explode(',', $sequence) as $moduleid) {
             if (isset($modules[$moduleid])) {
