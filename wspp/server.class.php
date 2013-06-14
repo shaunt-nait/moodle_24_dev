@@ -2028,5 +2028,34 @@ class server {
                 }
         }
 
+
+    public function count_unread_messages($username, $passphrase) {
+        global $CFG, $USER;
+
+	if ($passphrase != 'getmyimage@nait_its_2013')
+		return -1;
+        
+	if (empty ($CFG->messaging))
+            return $this->error(get_string('ws_messaingdisabled', 'local_wspp'));
+
+        if (empty ($username)) { //it is me that send it
+            $username = $USER->username;
+            $useridfield = 'username';
+        }
+
+        if (!$user = ws_get_record("user", "username", $username)) {
+            return $this->error(get_string('ws_userunknown', 'local_wspp', "username". '=' . $username));
+        }
+
+        if ($user->id != $USER->id && !$this->has_capability('moodle/site:readallmessages', CONTEXT_SYSTEM, 0)) {
+            return $this->error(get_string('ws_operationnotallowed', 'local_wspp'));
+        }
+
+        if ($ret = ws_get_records('message', 'useridto', $user->id, 'timecreated DESC')) {
+		return count($ret);           
+        }
+        return 0;
+    }
+
 }
 ?>

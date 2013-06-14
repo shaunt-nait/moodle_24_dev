@@ -478,6 +478,14 @@
   <message name="GetUserProfileBase64ImageResponse">
     <part name="return" type="xsd:string" />
   </message>
+
+  <message name="count_unread_messagesRequest">
+    <part name="passphrase" type="xsd:string"/>
+    <part name="username" type="xsd:string"/>
+  </message>
+  <message name="count_unread_messagesResponse">
+    <part name="return" type="xsd:int"/>
+  </message>
   
   <message name="getOnlineUserCountRequest">
     <part name="client" type="xsd:int" />
@@ -680,6 +688,11 @@
       <output message="tns:GetUserProfileBase64ImageResponse" />
     </operation>
     
+    <operation name="count_unread_messages">
+      <input message="tns:count_unread_messagesRequest"/>
+      <output message="tns:count_unread_messagesResponse"/>
+    </operation>
+
     <operation name="getOnlineUserCount">
       <documentation>MoodleWS: Get number of online user in the specified interval</documentation>
       <input message="tns:getOnlineUserCountRequest" />
@@ -837,6 +850,16 @@
         <soap:body use="encoded"
         namespace="http://www.nait.ca/moodle/wspp/wsdl"
         encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="count_unread_messages">
+      <soap:operation soapAction="http://www.nait.ca/moodle/wspp/wsdl#count_unread_messages" style="rpc"/>
+      <input>
+        <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://www.nait.ca/moodle/wspp/wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
       </output>
     </operation>
 
