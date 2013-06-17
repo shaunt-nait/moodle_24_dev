@@ -50,8 +50,8 @@ if (!$batchnum) {
     print_error('invalidrequest');
     die();
 }
-$to = $batchnum * 1000;
-$from = $to - 1000;
+$to = $batchnum * 2000;
+$from = $to - 2000;
 
 if ($batchnum == 9999) {
 	$from = 0;
