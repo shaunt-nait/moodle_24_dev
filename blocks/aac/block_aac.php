@@ -33,9 +33,9 @@ class block_aac extends block_base {
     function init() {
         global $CFG, $COURSE, $USER;
 
-        if (!isloggedin() or isguestuser()) {
-            return;
-        }
+        //if (!isloggedin() or isguestuser()) {
+        //    return;
+        //}
         
         $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
         $isStudent = false;
