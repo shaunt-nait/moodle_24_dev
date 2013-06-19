@@ -12,6 +12,8 @@ $removeUser = optional_param('removeUser', null, PARAM_TEXT);
 $action = optional_param('action', null, PARAM_TEXT);
 $users = optional_param_array('user', null, PARAM_TEXT);
 $roles = optional_param_array('role', null, PARAM_TEXT);
+
+
 $fullNames = optional_param_array('fullName', null, PARAM_TEXT);
 $title = "Add or remove a colleague";
 
@@ -109,7 +111,8 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
     
     $html .= '</div>';
     $html .= '</form>';
-    $html .= getEndOfFormAAC();
+  
+    $html .= getEndOfFormAACAddRemoveColleague();
     return $html;
 
 }

@@ -19,7 +19,7 @@ else
 {
     echo getHTML( $course, $title);
 }
-echo getEndOfFormAAC();
+echo getEndOfFormAACRemoveMe();
 echo $html .= '</div>'; 
 echo $OUTPUT->footer();
 

@@ -948,23 +948,21 @@ div.aac_main_div ul li
 
 div.aac_main_div ul
 {
-    width: 400px;
+    width: 350px;
     float: left;
+    padding-right:5px;
 }
 
-    div.aac_main_div ul li table
-    {
-        margin-bottom:0px;
-    }
+div.aac_main_div ul li table
+{
+    margin-bottom:0px;
+}
 
-    div.aac_main_div ul li table tr td
-    {
-        padding: 1px  10px 1px 1px !important;
-        
-        font-size: 10pt;
-
-
-    }
+div.aac_main_div ul li table tr td
+{
+    padding: 1px  10px 1px 1px !important;        
+    font-size: 10pt;
+}
 
 div#aac_page_div 
 {

@@ -33,18 +33,41 @@ function get_ws_client(){
 	$client = new SoapClient( $CFG->academicToolsURL. "/Services/ServiceRequestServices.svc?singleWsdl");
     return $client;
 }
-function getEndOfFormAAC()
+function getEndOfFormAACRemoveMe()
 {
     $html = '<h3>What happens when I submit this form?</h3>';
     $html .= '<ol>';
     $html .= '    <li>When you submit this form, a request is created in the Academic Tools LMS Administration system. This is the same system that your Local Area Expert uses to administer your courses.</li>'; 
-    $html .= '    <li>The Academic Tools LMS Administration system will process your request removing you from this course in Moodle. It may take several minutes.</li>';
+    $html .= '    <li>The Academic Tools LMS Administration system will process your request, removing you from this course in Moodle. It may take several minutes.</li>';
     $html .= '    <li>You will be notified when the request is complete via email.</li>';
     $html .= '</ol>';
     $html .= '<img src="removemechart.png"/>';  
 
     return $html;
 }
+function getEndOfFormAACModifyDates()
+{
+    $html = '<h3>What happens when I submit this form?</h3>';
+    $html .= '<ol>';
+    $html .= '    <li>When you submit this form, a request is created in the Academic Tools LMS Administration system. This is the same system that your Local Area Expert uses to administer your courses.</li>'; 
+    $html .= '    <li>The Academic Tools LMS Administration system will process your request modifying the dates. It may take several minutes.</li>';
+    $html .= '    <li>You will be notified when the request is complete via email.</li>';
+    $html .= '</ol>';
+    $html .= '<img src="modifydates.png"/>';  
 
+    return $html;
+}
+function getEndOfFormAACAddRemoveColleague()
+{
+    $html = '<h3>What happens when I submit this form?</h3>';
+    $html .= '<ol>';
+    $html .= '    <li>When you submit this form, a request is created in the Academic Tools LMS Administration system. This is the same system that your Local Area Expert uses to administer your courses.</li>'; 
+    $html .= '    <li>The Academic Tools LMS Administration system will process your request, removing you from this course in Moodle. It may take several minutes.</li>';
+    $html .= '    <li>You will be notified when the request is complete via email.</li>';
+    $html .= '</ol>';
+    $html .= '<img src="addremovecolleague.png"/>';  
+
+    return $html;
+}
 ?>
 

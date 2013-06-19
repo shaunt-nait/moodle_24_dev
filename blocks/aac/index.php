@@ -95,36 +95,49 @@ function GetMoodleAACPageViewData($courseId)
     $html .='                </ul>';
     $html .='            </li>';
     $html .='        </ul>';
-    $html .='        <ul >';
-    $html .='            <li class="aac_head">dates</li>';
-    $html .='            <li>';
-    $html .='                <table  class="innerItem">';
-    $html .='                    <tr>';
-    $html .='                        <td>' .$moodleAACPageViewData->StudentAccess. '</td>';
-    $html .='                        <td class="aac_tdDates">Student Access</td>';
-    $html .='                    </tr>';
-    //$html .='                    <tr>';
-    //$html .='                        <td>' .$moodleAACPageViewData->StudentReadonly. '</td>';
-    //$html .='                        <td class="aac_tdDates">Student Readonly</td>';
-    //$html .='                    </tr>';
-    $html .='                    <tr>';
-    $html .='                        <td>' .$moodleAACPageViewData->StudentAccessRemoved. '</td>';
-    $html .='                        <td class="aac_tdDates">Student Access Removed</td>';
-    $html .='                    </tr>';
-    //$html .='                    <tr>';
-    //$html .='                        <td>' .$moodleAACPageViewData->InstructorAccessRemoved. '</td>';
-    //$html .='                        <td class="aac_tdDates">Instructor Access Removed</td>';
-    //$html .='                    </tr>';
-    //$html .='                    <tr>';
-    //$html .='                        <td>' .$moodleAACPageViewData->CourseArchivedandRemoved. '</td>';
-    //$html .='                        <td class="aac_tdDates">Course Archived and Removed</td>';
-    //$html .='                    </tr>';
-    $html .='                </table>';
-    $html .='            </li>';
-    $html .='            <li>';
-    $html .='                <ul class="aac_actions"><li><a class="icon_gear" href="aac_ModifyDates.php?id=' .$courseId. '">modify dates</a></li></ul>';
-    $html .='            </li>';
-    $html .='        </ul>';
+    
+    if($moodleAACPageViewData->ShowStudentAccessDate == true || $moodleAACPageViewData->ShowArchivedDate == true || $moodleAACPageViewData->ShowDeletedDate == true  )
+    {       
+   
+    
+        $html .='        <ul >';
+        $html .='            <li class="aac_head">dates</li>';
+        $html .='            <li>';
+        $html .='                <table  class="innerItem">';
+        if($moodleAACPageViewData->ShowStudentAccessDate == true  )
+        {  
+        
+            $html .='                    <tr>';
+            $html .='                        <td>' .$moodleAACPageViewData->StudentAccessDate. '</td>';
+            $html .='                        <td class="aac_tdDates">Student Access</td>';
+            $html .='                    </tr>';
+        
+        }
+        if($moodleAACPageViewData->ShowArchivedDate == true  )
+        {  
+            
+            $html .='                    <tr>';
+            $html .='                        <td>' .$moodleAACPageViewData->ArchivedDate. '</td>';
+            $html .='                        <td class="aac_tdDates">Course Archived</td>';
+            $html .='                    </tr>';
+            
+        }
+        if($moodleAACPageViewData->ShowDeletedDate == true  )
+        {  
+            
+            $html .='                    <tr>';
+            $html .='                        <td>' .$moodleAACPageViewData->DeletedDate. '</td>';
+            $html .='                        <td class="aac_tdDates">Course Deleted</td>';
+            $html .='                    </tr>';
+            
+        }
+        $html .='                </table>';
+        $html .='            </li>';
+        $html .='            <li>';
+        $html .='                <ul class="aac_actions"><li><a class="icon_gear" href="aac_ModifyDates.php?id=' .$courseId. '">modify dates</a></li></ul>';
+        $html .='            </li>';
+        $html .='        </ul>';    
+    }
     $html .='        <div style="clear: both"></div>';
     $html .='    </div>';
     $html .='    <div class="aac_row" style="margin-top:20px">';
