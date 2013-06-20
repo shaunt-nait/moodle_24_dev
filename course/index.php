@@ -256,7 +256,11 @@ make_categories_list($displaylist, $parentlist);
 echo '<table class="generaltable editcourse boxaligncenter"><tr class="header">';
 echo '<th class="header" scope="col">'.$strcategories.'</th>';
 echo '<th class="header" scope="col">'.$strcourses.'</th>';
+
+if( $CFG->maxcategorydepth != 0 )
+{
 echo '<th class="header" scope="col">Sub-Categories</th>';
+}
 echo '<th class="header" scope="col">'.$stredit.'</th>';
 echo '<th class="header" scope="col">'.$strmovecategoryto.'</th>';
 echo '</tr>';
@@ -327,8 +331,11 @@ function print_category_edit($category, $displaylist, $parentslist, $depth=-1, $
         echo '</td>';
 
         echo '<td class="count">'.$category->coursecount.'</td>';
+        
+        if( $CFG->maxcategorydepth != 0 )
+{
         echo '<td class="count">'.$category->subcategorycount.'</td>';
-
+}
         echo '<td class="icons">';    /// Print little icons
 
         if (has_capability('moodle/category:manage', $category->context)) {
