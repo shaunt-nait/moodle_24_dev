@@ -90,15 +90,15 @@ function getHTML($course, $userName, $StudentAccessDate, $ArchivedDate, $Deleted
     $html .= '      <table>';
     if($courseDates->StudentAccessDate != "N/A")
     {
-        $html .= '          <tr><td><b>Student Access</b><p>This is a description.</p></td><td><input type="text" name="StudentAccessDate"  class="datePicker" id="dateStudentAccess" readonly="readonly" value="' .$courseDates->StudentAccessDate.'"  /></td></tr>';
+        $html .= '          <tr><td><b>Student Access</b><p>The date students will have access to this course. Student enrollment is handled by a batch process that runs hourly. </p></td><td><input type="text" name="StudentAccessDate"  class="datePicker" id="dateStudentAccess" readonly="readonly" value="' .$courseDates->StudentAccessDate.'"  /></td></tr>';
     }
     if($courseDates->ArchivedDate != "N/A")
     {
-        $html .= '          <tr><td><b>Course Archived</b><p>This is a description.</p></td><td><input type="text" name="ArchivedDate" class="datePicker" id="dateArchivedDate" readonly="readonly" value="' .$courseDates->ArchivedDate.'" /></td></tr>';
+        $html .= '          <tr><td><b>Course Archived</b><p>The date the course is changed to archived status. When a course is in archived status, students will only get read-only access. They will not be able take quizzes, join discussions, edit wikis etc.</p></td><td><input type="text" name="ArchivedDate" class="datePicker" id="dateArchivedDate" readonly="readonly" value="' .$courseDates->ArchivedDate.'" /></td></tr>';
     }
     if($courseDates->DeletedDate != "N/A")
     {
-        $html .= '          <tr><td><b>Course Deletion</b><p>This is a description.</p></td><td><input type="text" name="DeletedDate"  class="datePicker" id="dateDeletedDate" readonly="readonly" value="' .$courseDates->DeletedDate.'" /></td></tr>';
+        $html .= '          <tr><td><b>Course Deletion</b><p>The date the course is deleted from the server. It may take up to 7 days from this date for the course to be deleted. Once a course is deleted it is not recoverable. </p></td><td><input type="text" name="DeletedDate"  class="datePicker" id="dateDeletedDate" readonly="readonly" value="' .$courseDates->DeletedDate.'" /></td></tr>';
     }
     $html .= '      </table>';
     $html .=  '    <input type="submit" name="action" value="save" />';   

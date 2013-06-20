@@ -53,12 +53,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
     }
     else
     {
+    
         $html .=  '<h1>error</h1>';
         $html .=  '<p>Ticket has not been created.</p>';
         $html .=  '<p>Server Error Message:' .$response->ServiceNowStudentDoesNotHaveAccessResult->ErrorMessage.  '</p>';
         $html .=  '<p>Please email the help desk at helpline@nait.ca.</p>';
     }
-    $html .= '      <a class="btnCancel" href="/">ok</a>';  
+    $html .= '      <a class="btnCancel" href="index.php?id=' .$courseId. '">ok</a>';  
     $html .= '  </div>';
     echo $html;
 }

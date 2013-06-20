@@ -33,7 +33,7 @@ include 'aac_common.php';
 if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
     $response = servicenow_moodlebroken($USER->username, $courseId, $problem_description, $type == "broken" || $type == null );
     $html = getStartOfForm();
-    $html .=  ShowPostBackForm($response->ServiceNowMoodleBrokenResult->IsErrored, $response->ServiceNowMoodleBrokenResult->ErrorMessage , $title,  $course->shortname, $response->ServiceNowMoodleBrokenResult->IncidentNumber);
+    $html .=  ShowPostBackForm($response->ServiceNowMoodleBrokenResult->IsErrored, $response->ServiceNowMoodleBrokenResult->ErrorMessage , $title,  $course->shortname, $response->ServiceNowMoodleBrokenResult->IncidentNumber, $courseId);
     $html .= getEndOfForm();
     echo $html;
 }

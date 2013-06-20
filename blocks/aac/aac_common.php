@@ -1,6 +1,6 @@
 
 <?php
-function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $incidentNumber)
+function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $incidentNumber, $courseId)
 {
     
     if($errored  != "1")
@@ -23,7 +23,7 @@ function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $inciden
         $html .=  '<p>Server Error Message:' .$errorMessage.  '</p>';
         $html .=  '<p>Please email the help desk at <a href="mailto:helpline@nait.ca">helpline@nait.ca</a>.</p>';
     }
-    $html .= '      <a class="btnCancel" href="/">ok</a>';  
+    $html .= '      <a class="btnCancel" href="index.php?id=' .$courseId. '">ok</a>';  
     $html .= '  </div>';
     
     return $html;
