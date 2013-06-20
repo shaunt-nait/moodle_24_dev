@@ -961,7 +961,9 @@ function get_categories($parent='none', $sort=NULL, $shallow=true) {
     }
 
     list($ccselect, $ccjoin) = context_instance_preload_sql('cc.id', CONTEXT_COURSECAT, 'ctx');
-
+    
+    $ccselect = $ccselect.', (select count(id) from mdl_course_categories cc2 where cc2.parent = cc.id) as subcategorycount';
+    
     if ($parent === 'none') {
         $sql = "SELECT cc.* $ccselect
                   FROM {course_categories} cc
