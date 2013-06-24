@@ -22,6 +22,9 @@ if (!$course) {
 require_login();
 
 $context = get_context_instance(CONTEXT_COURSE, $course->id);
+
+
+
 if (!$course->visible and !has_capability('moodle/course:viewhiddencourses', $context)) {
     print_error('coursehidden', '', $CFG->wwwroot .'/');
 }
@@ -35,7 +38,13 @@ $PAGE->set_course($course);
 $PAGE->navbar->add('Course Administration');
 
 echo $OUTPUT->header();
-echo GetMoodleAACPageViewData($courseId);
+if (has_capability('moodle/course:update', $context)) {
+    echo GetMoodleAACPageViewData($courseId);
+}
+else
+{
+    echo "<h1>Unauthorized access</h1>";
+}
 echo $OUTPUT->footer();
 
 function GetMoodleAACPageViewData($courseId)

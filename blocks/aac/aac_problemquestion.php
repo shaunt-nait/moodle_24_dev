@@ -99,7 +99,7 @@ function servicenow_moodlebroken($userName, $courseid, $problem_description, $is
     
 	$client = get_ws_client();
 	$param->moodleCourseId = $courseid;
-	$param->userNameRequestingData =  $userName;
+	$param->userNameRequestedFor =  $userName;
     $param->description = $problem_description;
     $param->isSomethingBroken = $isSomethingBroken;
 	$response = $client->ServiceNowMoodleBroken($param);

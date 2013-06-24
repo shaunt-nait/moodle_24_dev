@@ -1,8 +1,7 @@
 
 <?php
 function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $incidentNumber, $courseId)
-{
-    
+{    
     if($errored  != "1")
     {    
         $html .= '      <h1 class="large_gear">' .$title. '</h1>';
@@ -13,7 +12,7 @@ function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $inciden
         }
         else
         {
-            $html .= '      <p  style="margin-top:10px;font-size:13pt">The request has been submitted.</p>';
+            $html .= '  <p style="margin-top:10px;font-size:13pt">The request has been submitted.</p>';
         }
     }
     else
@@ -24,8 +23,7 @@ function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $inciden
         $html .=  '<p>Please email the help desk at <a href="mailto:helpline@nait.ca">helpline@nait.ca</a>.</p>';
     }
     $html .= '      <a class="btnCancel" href="index.php?id=' .$courseId. '">ok</a>';  
-    $html .= '  </div>';
-    
+    $html .= '  </div>';    
     return $html;
 }
 function get_ws_client(){
@@ -42,7 +40,6 @@ function getEndOfFormAACRemoveMe()
     $html .= '    <li>You will be notified when the request is complete via email.</li>';
     $html .= '</ol>';
     $html .= '<img src="removemechart.png"/>';  
-
     return $html;
 }
 function getEndOfFormAACModifyDates()
@@ -54,7 +51,6 @@ function getEndOfFormAACModifyDates()
     $html .= '    <li>You will be notified when the request is complete via email.</li>';
     $html .= '</ol>';
     $html .= '<img src="modifydates.png"/>';  
-
     return $html;
 }
 function getEndOfFormAACAddRemoveColleague()
@@ -62,11 +58,10 @@ function getEndOfFormAACAddRemoveColleague()
     $html = '<h3>What happens when I submit this form?</h3>';
     $html .= '<ol>';
     $html .= '    <li>When you submit this form, a request is created in the Academic Tools LMS Administration system. This is the same system that your Local Area Expert uses to administer your courses.</li>'; 
-    $html .= '    <li>The Academic Tools LMS Administration system will process your request, removing you from this course in Moodle. It may take several minutes.</li>';
+    $html .= '    <li>The Academic Tools LMS Administration system will process your request, modifying the list of staff that access to this course. It may take several minutes.</li>';
     $html .= '    <li>You will be notified when the request is complete via email.</li>';
     $html .= '</ol>';
-    $html .= '<img src="addremovecolleague.png"/>';  
-
+    $html .= '<img src="AddRemoveColleague.png"/>';  
     return $html;
 }
 ?>

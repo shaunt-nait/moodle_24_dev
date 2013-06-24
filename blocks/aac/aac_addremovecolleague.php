@@ -20,7 +20,15 @@ $title = "Add or remove a colleague";
 include 'aac_common_headers.php';
 include 'aac_common.php';
 
-echo getHTML($USER->username, $courseId, $action, $course, $searchText, $addedUser, $removeUser, $users, $roles, $fullNames);
+if (has_capability('moodle/course:update', $context)) {
+    echo getHTML($USER->username, $courseId, $action, $course, $searchText, $addedUser, $removeUser, $users, $roles, $fullNames);
+}
+else
+{
+    echo "<h1>Unauthorized access</h1>";
+}
+
+
 echo $OUTPUT->footer();
 
 function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser, $removeUser, $users, $roles, $fullNames )
@@ -78,7 +86,6 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
     $html .= '</div>';
     
     if($action == "search" || $action == "+ Add User" )
-
     {
         $html .=  '<div id="aac_staffSearch"  class="aac_form">';
         $html .=  '    <h1>Staff Search</h1>';
@@ -98,20 +105,14 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
         else if ($searchUsers != null)
         {
             $html .= RenderSearchUserTD($searchUsers);
-        }
-        
+        }       
 
-        $html .=  '    </table>';
-        
+        $html .=  '    </table>';        
         $html .=  '    <input type="submit" name="action" value="cancel" />';    
         $html .= '</div>'; 
-    
-    
-    }
-    
+    }    
     $html .= '</div>';
-    $html .= '</form>';
-  
+    $html .= '</form>';  
     $html .= getEndOfFormAACAddRemoveColleague();
     return $html;
 

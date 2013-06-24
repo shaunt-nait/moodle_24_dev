@@ -103,16 +103,15 @@ class block_aac extends block_base {
         //$content  .= "test:" .$isStudent. "  isEdit:" .$isEditingTeacher. "</br>";
         $content = '';
         if($isStudent == true)
-        {
-        
+        {        
             $content .= '<ul>
-						<li><a href="http://www.nait.ca/39042.htm" target="_blank">Ask for support.</a></li>
-						<li><a href="http://www.nait.ca/studentservices.htm?utm_source=nait&utm_medium=template&utm_campaign=navigation&utm_content=studentservices" target="_blank">Student Services</a></li>
-						<li><a href="http://www.nait.ca/programsandcourses.htm?utm_source=nait&utm_medium=template&utm_campaign=navigation&utm_content=programscourses" target="_blank">NAIT Programs and Courses</a></li>
+						    <li><a href="http://www.nait.ca/39042.htm" target="_blank">Ask for support.</a></li>
+						    <li><a href="http://www.nait.ca/studentservices.htm?utm_source=nait&utm_medium=template&utm_campaign=navigation&utm_content=studentservices" target="_blank">Student Services</a></li>
+						    <li><a href="http://www.nait.ca/programsandcourses.htm?utm_source=nait&utm_medium=template&utm_campaign=navigation&utm_content=programscourses" target="_blank">NAIT Programs and Courses</a></li>
 						</ul>'; 
 		}
-        else if ($isEditingTeacher == true){
-                 
+        else if ($isEditingTeacher == true)
+        {                 
               $content .= '<ul style="list-style-type: none;margin-left:0px">								
                                 <li style="background-image:url(\'/theme/image.php?theme=nait&image=i%2Fedit\');background-repeat:no-repeat;padding-left:20px;margin-top:8px;margin-bottom:8px;font-weight:bold"><a href="'.$CFG->wwwroot.'/blocks/aac/index.php?id='.$COURSE->id.'"  />Course Admin Page...</a></li>
 						        <li style="padding-left:20px"><hr/></li>

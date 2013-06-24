@@ -17,9 +17,19 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
 }
 else
 {
-    echo getHTML( $course, $title);
+    if (has_capability('moodle/course:update', $context)) {
+        echo getHTML( $course, $title);
+        echo getEndOfFormAACRemoveMe();
+    }
+    else
+    {
+        echo "<h1>Unauthorized access</h1>";        
+    }
 }
-echo getEndOfFormAACRemoveMe();
+
+
+    
+
 echo $html .= '</div>'; 
 echo $OUTPUT->footer();
 
