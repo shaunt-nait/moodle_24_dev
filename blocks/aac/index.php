@@ -84,9 +84,16 @@ function GetMoodleAACPageViewData($courseId)
     }
     $html .='                     <li>';
     $html .='                         <ul class="aac_studentList" >';
-    foreach($moodleAACPageViewData->StudentSections as $section)
+    
+
+    foreach($moodleAACPageViewData->StudentSections->StudentSection as $section)
     {
+    
+        
         $html .='                             <li class="aac_studentList_section">' .$section->Section .'</li>';
+        
+       
+        
         foreach($section->NameUserNameRoleViews->NameUserNameRoleView as $student)
         {
             $html .='                             <li>' .$student->Name. ' <span>(' .$student->UserName.   ')</span></li>';

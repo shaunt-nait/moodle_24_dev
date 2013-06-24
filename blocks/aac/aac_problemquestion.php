@@ -31,7 +31,7 @@ include 'aac_common_headers.php';
 include 'aac_common.php';
 
 if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
-    $response = servicenow_moodlebroken($USER->username, $courseId, $problem_description, $type == "broken" || $type == null );
+    $response = servicenow_moodlebroken($USER->username, $courseId, $problem_description, $type);
     $html = getStartOfForm();
     $html .=  ShowPostBackForm($response->ServiceNowMoodleBrokenResult->IsErrored, $response->ServiceNowMoodleBrokenResult->ErrorMessage , $title,  $course->shortname, $response->ServiceNowMoodleBrokenResult->IncidentNumber, $courseId);
     $html .= getEndOfForm();
@@ -94,14 +94,14 @@ function getHTML($courseId, $course,  $heading, $descriptionLabel) {
 }
 
 
-function servicenow_moodlebroken($userName, $courseid, $problem_description, $isSomethingBroken) {
+function servicenow_moodlebroken($userName, $courseid, $problem_description, $type) {
     //   global $CFG, $USER;
     
 	$client = get_ws_client();
 	$param->moodleCourseId = $courseid;
 	$param->userNameRequestedFor =  $userName;
     $param->description = $problem_description;
-    $param->isSomethingBroken = $isSomethingBroken;
+    $param->type = $type;
 	$response = $client->ServiceNowMoodleBroken($param);
     
     return $response;    

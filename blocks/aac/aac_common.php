@@ -8,7 +8,7 @@ function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $inciden
         $html .= '      <div style="font-size:13pt"><label>Course:</label> ' .$shortName. '<b></b></div>';
         if($incidentNumber != null)
         {
-            $html .= '  <p>Ticket <b>' .$incidentNumber. '</b> has been created. You should recieve an email shortly.</p>';
+            $html .= '  <p style="padding-top:10px">Ticket <b>' .$incidentNumber. '</b> has been created. You should recieve an email shortly.</p>';
         }
         else
         {

@@ -8,6 +8,16 @@ $title = "remove me";
 include 'aac_common_headers.php';
 include 'aac_common.php';
 
+
+$isStudent = false;
+$roles = get_user_roles($context, $USER->id);
+foreach($roles as $role)
+{
+    if($role->shortname == "student")
+        $isStudent = true;
+}
+
+
 if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
     $response = removeMe($USER->username, $courseId);   
 
@@ -17,13 +27,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
 }
 else
 {
-    if (has_capability('moodle/course:update', $context)) {
-        echo getHTML( $course, $title);
-        echo getEndOfFormAACRemoveMe();
+    if ($isStudent) {
+        echo "<h1>Unauthorized access</h1>";  
     }
     else
     {
-        echo "<h1>Unauthorized access</h1>";        
+        echo getHTML( $course, $title);
+        echo getEndOfFormAACRemoveMe();
     }
 }
 
