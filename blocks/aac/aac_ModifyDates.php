@@ -38,14 +38,30 @@ $PAGE->set_title($course->shortname.': Modify Dates');
 $PAGE->set_heading($course->shortname.': Modify Dates');
 $PAGE->set_course($course);
 $PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php?id=' .$courseId));
-$PAGE->navbar->add('Course Administration', new moodle_url('index.php?id=' .$courseId));
+$PAGE->navbar->add('Manage My Course', new moodle_url('index.php?id=' .$courseId));
 $PAGE->navbar->add('Modify Dates');
 
 
 
 echo $OUTPUT->header();
-echo getHTML($course, $USER->username, $StudentAccessDate, $ArchivedDate, $DeletedDate, $action);
-echo getEndOfFormAACModifyDates();
+
+if (has_capability('moodle/course:update', $context)) {
+    try
+    {
+        echo getHTML($course, $USER->username, $StudentAccessDate, $ArchivedDate, $DeletedDate, $action);
+        echo getEndOfFormAACModifyDates();
+    }
+    catch(Exception $e)
+    {
+        echo showFriendlyErrorMessage($e);
+    }
+}
+else
+{
+    echo "<h1>Unauthorized access</h1>";
+}
+
+
 echo $OUTPUT->footer();
 
 
@@ -68,7 +84,7 @@ function getHTML($course, $userName, $StudentAccessDate, $ArchivedDate, $Deleted
     {
         $html .= '<div class="aac_head" style="margin-bottom:10px">Request Submitted</div>';
         $html .= '<p>You request has been submitted</p>';
-        $html .= '<a  href="index.php?id=' .$course->id. '">Return to Course Administration</a>';
+        $html .= '<a  href="index.php?id=' .$course->id. '">Return to Manage My Course</a>';
         return $html;
     }   
     

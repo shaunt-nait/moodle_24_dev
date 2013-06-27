@@ -35,40 +35,46 @@ $PAGE->set_title($course->shortname.': ' .$title);
 $PAGE->set_heading($course->shortname.': ' .$title);
 $PAGE->set_course($course);
 $PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php?id=' .$courseId));
-$PAGE->navbar->add('Course Administration', new moodle_url('index.php?id=' .$courseId));
+$PAGE->navbar->add('Manage My Course', new moodle_url('index.php?id=' .$courseId));
 $PAGE->navbar->add($title);
 
 echo $OUTPUT->header();
-if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
+try
+{
+    if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
     
 
-    $response = studentDoesNotHaveAccess($USER->username, $courseId, $studentName, $studentId, $description);
-    $html .= '<div id="aac_page_div">';
-    $html .= '  <div class="aac_form">';
-    if($response->ServiceNowStudentDoesNotHaveAccessResult->IsErrored != "1")
-    {    
-        $html .=  '<h1>submitted</h1>';
-        $html .=  '<p>Ticket <b>' .$response->ServiceNowStudentDoesNotHaveAccessResult->IncidentNumber. '</b> has been created. You should recieve an email shortly.</p>';
+        $response = studentDoesNotHaveAccess($USER->username, $courseId, $studentName, $studentId, $description);
+        $html .= '<div id="aac_page_div">';
+        $html .= '  <div class="aac_form">';
+        if($response->ServiceNowStudentDoesNotHaveAccessResult->IsErrored != "1")
+        {    
+            $html .=  '<h1>submitted</h1>';
+            $html .=  '<p>Ticket <b>' .$response->ServiceNowStudentDoesNotHaveAccessResult->IncidentNumber. '</b> has been created. You should recieve an email shortly.</p>';
         
+        }
+        else
+        {
+    
+            $html .=  '<h1>error</h1>';
+            $html .=  '<p>Ticket has not been created.</p>';
+            $html .=  '<p>Server Error Message:' .$response->ServiceNowStudentDoesNotHaveAccessResult->ErrorMessage.  '</p>';
+            $html .=  '<p>Please email the help desk at helpline@nait.ca.</p>';
+        }
+        $html .= '      <a class="btnCancel" href="index.php?id=' .$courseId. '">ok</a>';  
+        $html .= '  </div>';
+        echo $html;
     }
     else
     {
-    
-        $html .=  '<h1>error</h1>';
-        $html .=  '<p>Ticket has not been created.</p>';
-        $html .=  '<p>Server Error Message:' .$response->ServiceNowStudentDoesNotHaveAccessResult->ErrorMessage.  '</p>';
-        $html .=  '<p>Please email the help desk at helpline@nait.ca.</p>';
+        echo getHTML( $course, $title);
     }
-    $html .= '      <a class="btnCancel" href="index.php?id=' .$courseId. '">ok</a>';  
-    $html .= '  </div>';
-    echo $html;
+    echo getEndOfForm();
 }
-else
+catch(Exception $e)
 {
-    echo getHTML( $course, $title);
+    echo showFriendlyErrorMessage($e);
 }
-echo getEndOfForm();
-
 echo $OUTPUT->footer();
 
 
@@ -100,7 +106,7 @@ function getEndOfForm()
 
     $html .= '<h3>What happens when I submit this form?</h3>';
     $html .= '<ol>';
-    $html .= '    <li>When you submit this form, a ticket is created in NAIT\'s Service Management System.</li>'; 
+    $html .= '    <li>When you submit this form, a ticket is created in NAIT\'s IT Service Management System.</li>'; 
     $html .= '    <li>You will be notified via email that the ticket has been created.</li>';
     $html .= '    <li>The ticket will be assigned to an ITS Helpdesk analyst.</li>';
     $html .= '    <li>If the analyst can\'t help you, they will forward the call to either your Local Area Expert (LAE) or to Academic IT Services (AITS). The analyst or expert may call or email you to get more information.</li>';

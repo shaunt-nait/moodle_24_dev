@@ -22,7 +22,14 @@ function ShowPostBackForm($errored, $errorMessage,  $title, $shortName, $inciden
         $html .=  '<p>Server Error Message:' .$errorMessage.  '</p>';
         $html .=  '<p>Please email the help desk at <a href="mailto:helpline@nait.ca">helpline@nait.ca</a>.</p>';
     }
+    if($courseId == null)
+    {
+    $html .= '      <a class="btnCancel" href="/">ok</a>';  
+    }
+    else
+    {
     $html .= '      <a class="btnCancel" href="index.php?id=' .$courseId. '">ok</a>';  
+    }
     $html .= '  </div>';    
     return $html;
 }
@@ -58,11 +65,25 @@ function getEndOfFormAACAddRemoveColleague()
     $html = '<h3>What happens when I submit this form?</h3>';
     $html .= '<ol>';
     $html .= '    <li>When you submit this form, a request is created in the Academic Tools LMS Administration system. This is the same system that your Local Area Expert uses to administer your courses.</li>'; 
-    $html .= '    <li>The Academic Tools LMS Administration system will process your request, modifying the list of staff that access to this course. It may take several minutes.</li>';
+    $html .= '    <li>The Academic Tools LMS Administration system will process your request, modifying the list of staff that have access to this course. It may take several minutes.</li>';
     $html .= '    <li>You will be notified when the request is complete via email.</li>';
     $html .= '</ol>';
     $html .= '<img src="AddRemoveColleague.png"/>';  
     return $html;
 }
+function showFriendlyErrorMessage(Exception $e)
+{
+    $html = '<h3>Error</h3>';
+    $html .= '<p>An error has occurred with the "Manage My Course" tools. If this problem persists, please call or email the NAIT help desk.</p>';
+    
+    
+     $html .= '<p><font color="#262a64"  size="2"><strong>Contact the ITS Help Desk</strong></font> 
+	    <br><font  size="1">Email: </font><a href="mailto:Helpline@nait.ca"><font color="#2767b0" face="verdana" size="1">helpline@nait.ca</font></a> 
+	    <br><font  size="1">Phone: 780.471.8624</font></p>'; 
+
+    $html .= '<p style="font-size:9pt;color:#ddd">' .$e. '</p>';
+    return $html;
+}
+
 ?>
 

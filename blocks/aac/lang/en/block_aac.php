@@ -23,5 +23,5 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Course Administration';
-
+$string['pluginname'] = 'Manage My Course';
+$string['blockname'] = 'AcadTools Block';

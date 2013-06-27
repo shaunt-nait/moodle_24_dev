@@ -35,6 +35,9 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
 {
     $response = addRemoveCollegue($userName, $courseId, $action, $searchText, $addedUser, $removeUser, $users, $roles, $fullNames );    
     $isSaved =  $response->GetAddRemoveColleaguePageViewResult->IsSaved;
+    $errorMessage = $response->GetAddRemoveColleaguePageViewResult->ErrorMessage;
+    
+    
     
     $html = '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>';
     $html .='<script type="text/javascript" src="aac_moodle.1.1.js"></script>';    
@@ -42,7 +45,7 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
     {
         $html .= '<div class="aac_head" style="margin-bottom:10px">Request Submitted</div>';
         $html .= '<p>You request has been submitted</p>';
-        $html .= '<a  href="index.php?id=' .$courseId. '">Return to Course Administration</a>';
+        $html .= '<a  href="index.php?id=' .$courseId. '">Return to Manage My Courses</a>';
        return $html;
     }   
     
@@ -62,6 +65,12 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
     }
         
     $html .=  '<h1>Staff</h1>';
+    
+    if($errorMessage != null)
+    {
+        $html .= '<p style="color:red">' .$errorMessage. '</p>';
+    }
+    
     $html .=  '<table>';
     $courseUsers = $response->GetAddRemoveColleaguePageViewResult->CourseUsers->NameUserNameRoleView;
 

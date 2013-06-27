@@ -32,14 +32,23 @@ if (!$course->visible and !has_capability('moodle/course:viewhiddencourses', $co
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('course');
 $PAGE->set_pagetype('course-view-' . $course->format);
-$PAGE->set_title($course->shortname.': Course Administration');
-$PAGE->set_heading($course->shortname.': Course Administration');
+$PAGE->set_title($course->shortname.': Manage My Course');
+$PAGE->set_heading($course->shortname.': Manage My Course');
 $PAGE->set_course($course);
-$PAGE->navbar->add('Course Administration');
+$PAGE->navbar->add('Manage My Course');
 
 echo $OUTPUT->header();
 if (has_capability('moodle/course:update', $context)) {
-    echo GetMoodleAACPageViewData($courseId);
+
+    try
+    {
+        echo GetMoodleAACPageViewData($courseId);
+    }
+    catch (Exception $e)
+    {
+        echo showFriendlyErrorMessage($e);
+    }
+        
 }
 else
 {
@@ -56,7 +65,7 @@ function GetMoodleAACPageViewData($courseId)
     $html ='<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>';
     $html .='<script type="text/javascript" src="aac_moodle.1.1.js"></script>';
     $html .='<div id="aac_page_div" class="aac_main_div">';
-    $html .='    <h1>Course Administration</h1>';
+    $html .='    <h1>Manage My Course</h1>';
     $html .='    <p style="font-size:12pt">' .$moodleAACPageViewData->Title. '</p>';
     $html .='    <div class="aac_row">';
     $html .='        <ul class="aac_requestgroup">';
@@ -85,6 +94,8 @@ function GetMoodleAACPageViewData($courseId)
     $html .='                     <li>';
     $html .='                         <ul class="aac_studentList" >';
     
+    
+    
 
     foreach($moodleAACPageViewData->StudentSections->StudentSection as $section)
     {
@@ -92,12 +103,18 @@ function GetMoodleAACPageViewData($courseId)
         
         $html .='                             <li class="aac_studentList_section">' .$section->Section .'</li>';
         
-       
-        
-        foreach($section->NameUserNameRoleViews->NameUserNameRoleView as $student)
-        {
-            $html .='                             <li>' .$student->Name. ' <span>(' .$student->UserName.   ')</span></li>';
+        if(count($section->NameUserNameRoleViews->NameUserNameRoleView) > 0)
+        {        
+            foreach($section->NameUserNameRoleViews->NameUserNameRoleView as $student)
+            {
+                $html .='                             <li>' .$student->Name. ' <span>(' .$student->UserName.   ')</span></li>';
+            }
         }
+        else
+        {
+            $html .='                             <li><span>No students enrolled</span></li>';
+        }
+        
     }
     $html .='                         </ul>';
     $html .='                     </li>';
@@ -128,6 +145,15 @@ function GetMoodleAACPageViewData($courseId)
             $html .='                        <td class="aac_tdDates">Student Access</td>';
             $html .='                    </tr>';
         
+        }
+        if($moodleAACPageViewData->ShowEnrollmentEndDate == true  )
+        {  
+            
+            $html .='                    <tr>';
+            $html .='                        <td>' .$moodleAACPageViewData->EnrollmentEndDate. '</td>';
+            $html .='                        <td class="aac_tdDates">Course End Date</td>';
+            $html .='                    </tr>';
+            
         }
         if($moodleAACPageViewData->ShowArchivedDate == true  )
         {  
@@ -172,7 +198,7 @@ function GetMoodleAACPageViewData($courseId)
     //$html .='                <ul class="aac_actions">';
     //$html .='                    <li><a class="icon_gear" href="#remove">clone this course</a></li>';
     //$html .='                    <li><a class="icon_gear" href="#remove">archive this course</a></li>';
-    $html .='                    <li><a class="icon_gear" href="aac_problemquestion.php?id=' .$courseId. '&type=admin">get admin support</a></li>';
+    $html .='                    <li><a class="icon_gear" href="aac_problemquestion.php?id=' .$courseId. '&type=admin">get Moodle support</a></li>';
     $html .='                </ul>';
     $html .='            </li>';
     $html .='        </ul>';

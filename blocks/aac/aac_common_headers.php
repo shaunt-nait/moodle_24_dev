@@ -22,7 +22,7 @@ $PAGE->set_title($course->shortname.': ' .$title);
 $PAGE->set_heading($course->shortname.': ' .$title);
 $PAGE->set_course($course);
 $PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php?id=' .$courseId));
-$PAGE->navbar->add('Course Administration', new moodle_url('index.php?id=' .$courseId));
+$PAGE->navbar->add('Manage My Course', new moodle_url('index.php?id=' .$courseId));
 $PAGE->navbar->add($title);
 echo $OUTPUT->header();
 

@@ -33,26 +33,10 @@ class block_aac extends block_base {
     function init() {
         global $CFG, $COURSE, $USER;
 
-        //if (!isloggedin() or isguestuser()) {
-        //    return;
-        //}
+        $this->title = get_string('pluginname', 'block_aac');
+
         
-        $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
-        $isStudent = false;
-        $roles = get_user_roles($context, $USER->id);
-        foreach($roles as $role)
-        {
-            if($role->name == "Student")
-                $isStudent = true;
-        }
-        
-        if($isStudent){        
-            $this->title = "Useful Links";
-        }
-        else
-        {
-            $this->title = "Course Administration";           
-        }
+
     }
 
     function instance_allow_multiple() {
@@ -91,10 +75,15 @@ class block_aac extends block_base {
         $roles = get_user_roles($context, $USER->id);
         foreach($roles as $role)
         {
+            
             //$content  .= "test:" .$role->name.  "</br>";
-            if($role->name == "Student")
+            if($role->shortname == "student")
                 $isStudent = true;
         }
+        
+
+        
+        $this->title =  $isStudent ? "Useful Links" :  get_string('pluginname', 'block_aac'); 
 		
         if(has_capability('moodle/grade:manage', $context) ) {
             $isEditingTeacher = true;
@@ -113,7 +102,7 @@ class block_aac extends block_base {
         else if ($isEditingTeacher == true)
         {                 
               $content .= '<ul style="list-style-type: none;margin-left:0px">								
-                                <li style="background-image:url(\'/theme/image.php?theme=nait&image=i%2Fedit\');background-repeat:no-repeat;padding-left:20px;margin-top:8px;margin-bottom:8px;font-weight:bold"><a href="'.$CFG->wwwroot.'/blocks/aac/index.php?id='.$COURSE->id.'"  />Course Admin Page...</a></li>
+                                <li style="background-image:url(\'/theme/image.php?theme=nait&image=i%2Fedit\');background-repeat:no-repeat;padding-left:20px;margin-top:8px;margin-bottom:8px;font-weight:bold"><a href="'.$CFG->wwwroot.'/blocks/aac/index.php?id='.$COURSE->id.'"  />Manage My Course...</a></li>
 						        <li style="padding-left:20px"><hr/></li>
                                 <li style="background-image:url(\'/theme/image.php?theme=nait&image=i%2Fuser\');background-repeat:no-repeat;padding-left:20px;margin-bottom:8px"><a href="'.$CFG->wwwroot.'/blocks/aac/aac_removeme.php?id='.$COURSE->id.'" >Remove me from this course</a></li>
                                 <li style="background-image:url(\'/theme/image.php?theme=nait&image=i%2Fusers\');background-repeat:no-repeat;padding-left:20px;margin-bottom:8px"><a href="'.$CFG->wwwroot.'/blocks/aac/aac_addremovecolleague.php?id='.$COURSE->id.'" >Add/remove staff</a></li>

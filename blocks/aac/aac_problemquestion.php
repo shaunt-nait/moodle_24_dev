@@ -12,7 +12,7 @@ if($type == "broken")
 {
     $title = "Something is broken";
     $heading = '<h1 class="large_warning">Something is broken!</h1>';
-    $descriptionLabel = "Describe the problem";
+    $descriptionLabel = "<b>Describe the problem in detail.</b> By outlining when and how the problem occurs, NAIT support staff can better identify the problem and help you.";
 }
 else if($type == "question")
 {
@@ -22,29 +22,32 @@ else if($type == "question")
 }
 else //admin
 {
-    $title = "Get admin support";
-    $heading = '<h1 class="large_gear">Get admin support</h1>';
+    $title = "Get Moodle support";
+    $heading = '<h1 class="large_gear">Get Moodle support</h1>';
     $descriptionLabel = "What support do you need?";
 }
 
 include 'aac_common_headers.php';
 include 'aac_common.php';
-
-if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
-    $response = servicenow_moodlebroken($USER->username, $courseId, $problem_description, $type);
-    $html = getStartOfForm();
-    $html .=  ShowPostBackForm($response->ServiceNowMoodleBrokenResult->IsErrored, $response->ServiceNowMoodleBrokenResult->ErrorMessage , $title,  $course->shortname, $response->ServiceNowMoodleBrokenResult->IncidentNumber, $courseId);
-    $html .= getEndOfForm();
-    echo $html;
-}
-else
+try
 {
-
-    
-    echo getHTML($courseId, $course,  $heading, $descriptionLabel  );
+    if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
+        $response = servicenow_moodlebroken($USER->username, $courseId, $problem_description, $type);
+        $html = getStartOfForm();
+        $html .=  ShowPostBackForm($response->ServiceNowMoodleBrokenResult->IsErrored, $response->ServiceNowMoodleBrokenResult->ErrorMessage , $title,  $course->shortname, $response->ServiceNowMoodleBrokenResult->IncidentNumber, $courseId);
+        $html .= getEndOfForm();
+        echo $html;
+    }
+    else
+    {    
+        echo getHTML($courseId, $course,  $heading, $descriptionLabel  );
+    }
+    echo $OUTPUT->footer();
 }
-
-echo $OUTPUT->footer();
+catch(Exception $e)
+{
+    echo showFriendlyErrorMessage($e);
+}
 
 
 function getStartOfForm()
@@ -60,7 +63,7 @@ function getEndOfForm()
 {
     $html .= '<h3>What happens when I submit this form?</h3>';
     $html .= '<ol>';
-    $html .= '    <li>When you submit this form, a ticket is created in NAIT\'s Service Management System.</li>'; 
+    $html .= '    <li>When you submit this form, a ticket is created in NAIT\'s IT Service Management System.</li>'; 
     $html .= '    <li>You will be notified via email that the ticket has been created.</li>';
     $html .= '    <li>The ticket will be assigned to an ITS Helpdesk analyst.</li>';
     $html .= '    <li>If the analyst can\'t help you, they will forward the call to either your Local Area Expert (LAE) or to Academic IT Services (AITS). The analyst or expert may call or email you to get more information.</li>';
