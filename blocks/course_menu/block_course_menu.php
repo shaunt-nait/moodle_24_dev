@@ -57,7 +57,7 @@ class block_course_menu extends block_base
     }
 
     function applicable_formats() {
-        return array('my' => false);
+        return array('all' => true, 'my' => false);
     }
 
     function instance_allow_config()
