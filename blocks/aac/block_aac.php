@@ -64,7 +64,7 @@ class block_aac extends block_base {
     }
 
     function applicable_formats() {
-        return array('all' => true, 'my' => true, 'tag' => false);
+        return array('all' => true, 'my' => false, 'tag' => false);
     }
 
     function instance_allow_config() {
