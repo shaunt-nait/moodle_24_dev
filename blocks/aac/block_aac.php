@@ -94,7 +94,7 @@ class block_aac extends block_base {
         if($isStudent == true)
         {        
             $content .= '<ul>
-						    <li><a href="/blocks/aac/studentmoodlesupport.php?id='.$COURSE->id.'" target="_blank">Moodle Support</a></li>
+						    <li><a href="/blocks/aac/studentmoodlesupport.php?id='.$COURSE->id.'">Moodle Support</a></li>
 						    <li><a href="https://mynait.nait.ca/student-services.htm" target="_blank">Student Services</a></li>
 						    <li><a href="https://mynait.nait.ca" target="_blank">myNAIT Portal</a></li>
 						</ul>'; 
