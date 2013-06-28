@@ -3265,6 +3265,20 @@ class restore_create_question_files extends restore_execution_step {
                                                JOIN {question} q ON q.id = bi.newitemid
                                               WHERE bi.backupid = ?
                                                 AND bi.itemname = 'question_created'", array($this->get_restoreid()));
+                                                
+                                                
+      $processedcontext = array();
+        $componentcache = array();
+
+
+        // To ensure query plans are up to date on PostgreSQL for large temp tables, we must analyze (MDL-29439)
+        if ($DB->get_dbfamily() == 'postgres') { 
+            $DB->execute("ANALYZE {backup_ids_temp}");
+            $DB->execute("ANALYZE {backup_files_temp}");
+        }
+
+
+                                                
         foreach ($questionsrs as $question) {
             // Get question_category mapping, it contains the target context for the question
             if (!$qcatmapping = restore_dbops::get_backup_ids_record($this->get_restoreid(), 'question_category', $question->parentitemid)) {
@@ -3276,33 +3290,45 @@ class restore_create_question_files extends restore_execution_step {
             $oldctxid = $qcatmapping->info->contextid;
             $newctxid = $qcatmapping->parentitemid;
 
-            // Add common question files (question and question_answer ones)
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'questiontext',
-                                              $oldctxid, $this->task->get_userid(), 'question_created', $question->itemid, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'generalfeedback',
-                                              $oldctxid, $this->task->get_userid(), 'question_created', $question->itemid, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'answer',
-                                              $oldctxid, $this->task->get_userid(), 'question_answer', null, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'answerfeedback',
-                                              $oldctxid, $this->task->get_userid(), 'question_answer', null, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'hint',
-                                              $oldctxid, $this->task->get_userid(), 'question_hint', null, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'correctfeedback',
-                                              $oldctxid, $this->task->get_userid(), 'question_created', $question->itemid, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'partiallycorrectfeedback',
-                                              $oldctxid, $this->task->get_userid(), 'question_created', $question->itemid, $newctxid, true);
-            restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'incorrectfeedback',
-                                              $oldctxid, $this->task->get_userid(), 'question_created', $question->itemid, $newctxid, true);
-            // Add qtype dependent files
-            $components = backup_qtype_plugin::get_components_and_fileareas($question->qtype);
-            foreach ($components as $component => $fileareas) {
+            // If this context has had the files processed, then we skip reprocessing them as we will just re-add the same files.
+            if (!isset($processedcontext[$oldctxid][$newctxid])) {
+                $processedcontext[$oldctxid][$newctxid] = true;
+
+
+                // Add common question files (question and question_answer ones)
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'questiontext',
+                                                  $oldctxid, $this->task->get_userid(), 'question_created', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'generalfeedback',
+                                                  $oldctxid, $this->task->get_userid(), 'question_created', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'answer',
+                                                  $oldctxid, $this->task->get_userid(), 'question_answer', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'answerfeedback',
+                                                  $oldctxid, $this->task->get_userid(), 'question_answer', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'hint',
+                                                  $oldctxid, $this->task->get_userid(), 'question_hint', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'correctfeedback',
+                                                  $oldctxid, $this->task->get_userid(), 'question_created', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'partiallycorrectfeedback',
+                                                  $oldctxid, $this->task->get_userid(), 'question_created', null, $newctxid, true);
+                restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), 'question', 'incorrectfeedback',
+                                                  $oldctxid, $this->task->get_userid(), 'question_created', null, $newctxid, true);
+            }
+
+
+            // Add qtype dependent files for this question.  We cache the lookup of question types for performance.
+            // TODO: Without understanding why we use $question->itemid under some circumstances, we can't easily improve the performance.
+            if (!isset($componentcache[$question->qtype])) {
+                $componentcache[$question->qtype] = backup_qtype_plugin::get_components_and_fileareas($question->qtype);
+            }
+            foreach ($componentcache[$question->qtype] as $component => $fileareas) {
                 foreach ($fileareas as $filearea => $mapping) {
-                    // Use itemid only if mapping is question_created
+                    // Use itemid only if mapping is question_created. WHY???
                     $itemid = ($mapping == 'question_created') ? $question->itemid : null;
                     restore_dbops::send_files_to_pool($this->get_basepath(), $this->get_restoreid(), $component, $filearea,
                                                       $oldctxid, $this->task->get_userid(), $mapping, $itemid, $newctxid, true);
                 }
             }
+
         }
         $questionsrs->close();
     }
