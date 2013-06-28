@@ -95,26 +95,19 @@ function GetMoodleAACPageViewData($courseId)
     $html .='                         <ul class="aac_studentList" >';
     
     
-    
-
-    foreach($moodleAACPageViewData->StudentSections->StudentSection as $section)
+    if( count($moodleAACPageViewData->StudentSections->StudentSection) == 1 )
     {
-    
-        
-        $html .='                             <li class="aac_studentList_section">' .$section->Section .'</li>';
-        
-        if(count($section->NameUserNameRoleViews->NameUserNameRoleView) > 0)
-        {        
-            foreach($section->NameUserNameRoleViews->NameUserNameRoleView as $student)
-            {
-                $html .='                             <li>' .$student->Name. ' <span>(' .$student->UserName.   ')</span></li>';
-            }
-        }
-        else
+        $html .= RenderSection($moodleAACPageViewData->StudentSections->StudentSection);
+    }
+    else
+    {
+
+        foreach($moodleAACPageViewData->StudentSections->StudentSection as $section)
         {
-            $html .='                             <li><span>No students enrolled</span></li>';
+   
+            $html .= RenderSection($section);
+
         }
-        
     }
     $html .='                         </ul>';
     $html .='                     </li>';
@@ -211,4 +204,35 @@ function GetMoodleAACPageViewData($courseId)
 function RenderStaff($user)
 {
     return '                     <li>' .$user->Name. ' <span>(' .$user->UserName. ') '.$user->Role.  '</span></li>';
+}
+function RenderStudent($student)
+{
+    return '                             <li>' .$student->Name. ' <span>(' .$student->UserName.   ')</span></li>';
+}
+
+function RenderSection($section)
+{
+
+    $html2 ='                             <li class="aac_studentList_section">' .$section->Section .'</li>';       
+    
+    
+    if(count($section->NameUserNameRoleViews->NameUserNameRoleView) == 0)
+    {
+        
+        $html2 .='                             <li><span>No students enrolled</span></li>';
+    }
+    else if(count($section->NameUserNameRoleViews->NameUserNameRoleView) == 1)
+    {        
+        $html2 .=RenderStudent($section->NameUserNameRoleViews->NameUserNameRoleView);
+    }
+    else
+    {
+        foreach($section->NameUserNameRoleViews->NameUserNameRoleView as $student)
+        {
+            $html2 .=RenderStudent($student);               
+            
+        }
+    }
+
+    return $html2;
 }

@@ -94,9 +94,9 @@ class block_aac extends block_base {
         if($isStudent == true)
         {        
             $content .= '<ul>
-						    <li><a href="http://www.nait.ca/39042.htm" target="_blank">Ask for support.</a></li>
-						    <li><a href="http://www.nait.ca/studentservices.htm?utm_source=nait&utm_medium=template&utm_campaign=navigation&utm_content=studentservices" target="_blank">Student Services</a></li>
-						    <li><a href="http://www.nait.ca/programsandcourses.htm?utm_source=nait&utm_medium=template&utm_campaign=navigation&utm_content=programscourses" target="_blank">NAIT Programs and Courses</a></li>
+						    <li><a href="/blocks/aac/studentmoodlesupport.php?id='.$COURSE->id.'" target="_blank">Moodle Support</a></li>
+						    <li><a href="https://mynait.nait.ca/student-services.htm" target="_blank">Student Services</a></li>
+						    <li><a href="https://mynait.nait.ca" target="_blank">myNAIT Portal</a></li>
 						</ul>'; 
 		}
         else if ($isEditingTeacher == true)
