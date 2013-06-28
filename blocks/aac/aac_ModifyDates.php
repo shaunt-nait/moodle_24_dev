@@ -108,6 +108,10 @@ function getHTML($course, $userName, $StudentAccessDate, $ArchivedDate, $Deleted
     {
         $html .= '          <tr><td><b>Student Access</b><p>The date students will have access to this course. Student enrollment is handled by a batch process that runs hourly. </p></td><td><input type="text" name="StudentAccessDate"  class="datePicker" id="dateStudentAccess" readonly="readonly" value="' .$courseDates->StudentAccessDate.'"  /></td></tr>';
     }
+    if($courseDates->EnrollmentEndDate != "N/A")
+    {
+        $html .= '          <tr><td><b>Course End Date</b><p>This is the last day of classes for students. You cannot edit this date. If the date is incorrect, please contact your admin support.</p></td><td>' .$courseDates->EnrollmentEndDate.'</td></tr>';
+    }
     if($courseDates->ArchivedDate != "N/A")
     {
         $html .= '          <tr><td><b>Course Archived</b><p>The date the course is changed to archived status. When a course is in archived status, students will only get read-only access. They will not be able take quizzes, join discussions, edit wikis etc.</p></td><td><input type="text" name="ArchivedDate" class="datePicker" id="dateArchivedDate" readonly="readonly" value="' .$courseDates->ArchivedDate.'" /></td></tr>';
