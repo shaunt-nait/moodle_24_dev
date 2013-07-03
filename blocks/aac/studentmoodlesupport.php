@@ -52,7 +52,24 @@ echo $OUTPUT->footer();
 
 function GetHTML($courseId)
 {
-    $html = "<h1>Moodle Support</h1>";
+    $html = '<div id="aac_page_div" >';
+    $html .= '  <h1>Who Should I contact for Support?</h1>';
+    $html .= '  <h2>Instructor:</h2>';
+    $html .= '  <p>Instructors are your first point of contact for Moodle support. You can find their contact information in the course syllabus. They can help you with:</p>';
+    $html .= '      <ul style="float:none">';
+    $html .= '          <li>Enrollment issues</li>';
+    $html .= '          <li>Course related content</li>';
+    $html .= '          <li>Functional - Submitting assignments, taking quizzes, etc.</li>';
+    $html .= '      </ul>';
+    $html .= '  <h2>Student Success Contact Centre (SSCC) (<a href="http://www.nait.ca/39042.htm">link</a>)</h2>';
+    $html .= '  <p>The SSCC can provide limited technical support:</p> ';
+    $html .= '  <ul style="float:none">';
+    $html .= '      <li>Login Issues/Password Reset</li>';
+    $html .= '      <li>Browser Troubleshooting</li>';
+    $html .= '      <li>Escalate major technical issues to Help Desk</li>';
+    $html .= '  </ul>';
+    $html .= '</div>';    
+    
 
 	return $html;   
 }
