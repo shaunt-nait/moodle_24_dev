@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'NAIT';
+$string['pluginname'] = 'NAIT Archive';
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 $string['choosereadme'] = 'NAIT, a Moodle 2.0 parent theme by Lambda Solutions Inc. - Ben Young.';
