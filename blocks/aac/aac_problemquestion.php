@@ -7,7 +7,6 @@ $courseId   = required_param('id', PARAM_INT); // Course id
 $type   = optional_param('type', null, PARAM_TEXT);
 $problem_description = optional_param('description', null, PARAM_TEXT); 
 
-
 if($type == "broken")
 {
     $title = "Something is broken";
@@ -76,11 +75,12 @@ function getEndOfForm()
 }
 
 function getHTML($courseId, $course,  $heading, $descriptionLabel) {
+	global $USER;
 
     $html = getStartOfForm();
     $html .= $heading;
     $html .= '<ul>';
-    $html .= '    <li><span style="color:#777">Opened by: </span>Mark Kitz (markk@nait.ca)</li>';
+    $html .= '    <li><span style="color:#777">Opened by: </span>'.$USER->firstname.' '.$USER->lastname.' ('.$USER->email.')</li>';
     $html .= '    <li><span style="color:#777">Course: </span>' .$course->shortname. ' - ' .$course->fullname. '</li>';
     $html .= '</ul>';
     
