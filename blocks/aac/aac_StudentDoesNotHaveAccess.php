@@ -81,7 +81,7 @@ echo $OUTPUT->footer();
 function getHTML($course, $title)
 {
     $html ='<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>';
-    $html .='<script type="text/javascript" src="aac_moodle.1.1.js"></script>';
+    $html .='<script type="text/javascript" src="aac_moodle.1.1.js?a=1"></script>';
     $html .='<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>';
     $html .= '<div id="aac_page_div">';
     $html .= '  <div class="aac_form" >';

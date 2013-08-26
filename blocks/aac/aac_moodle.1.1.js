@@ -54,7 +54,18 @@ var aac_moodle = function () {
 }();
 
 
-$(function() {
+$(function () {
     $("#showhideStudentsLink").click(aac_moodle.ShowHideStudents);
- 
+
+
+    $("form").submit(function () {
+        if (submitted) {
+            return false;
+        }
+        submitted = true;
+        return true;
+    });
+
 });
+
+submitted = false;

@@ -80,17 +80,19 @@ function getHTML($course, $userName, $StudentAccessDate, $ArchivedDate, $Deleted
     
     $courseDates = $client->GetCourseDates($param)->GetCourseDatesResult;
     $isSaved =  $courseDates->IsSaved;
+    $errorMessage =  $courseDates->ErrorMessage;
     if($isSaved == "1")
     {
         $html .= '<div class="aac_head" style="margin-bottom:10px">Request Submitted</div>';
         $html .= '<p>You request has been submitted</p>';
         $html .= '<a  href="index.php?id=' .$course->id. '">Return to Manage My Course</a>';
         return $html;
-    }   
+    }  
+
     
 
     $html ='<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>';
-    $html .='<script type="text/javascript" src="aac_moodle.1.1.js"></script>';
+    $html .='<script type="text/javascript" src="aac_moodle.1.1.js?a=1"></script>';
     $html .='<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>';
     $html .='<script>';
     $html .='    $(function() {';
@@ -103,6 +105,13 @@ function getHTML($course, $userName, $StudentAccessDate, $ArchivedDate, $Deleted
     $html .= '<div id="aac_page_div">';
     $html .= '  <div class="aac_form">';
     $html .= '      <h1 class="large_gear">modify dates</h1>';
+    
+    
+    if( $errorMessage != "" )
+    {
+        $html .= '      <p style="color:red;">' . $errorMessage . '</p>';
+    }
+    
     $html .= '      <table>';
     if($courseDates->StudentAccessDate != "N/A")
     {

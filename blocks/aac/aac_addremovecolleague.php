@@ -40,7 +40,7 @@ function getHTML($userName, $courseId, $action, $course, $searchText, $addedUser
     
     
     $html = '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>';
-    $html .='<script type="text/javascript" src="aac_moodle.1.1.js"></script>';    
+    $html .='<script type="text/javascript" src="aac_moodle.1.1.js?a=1"></script>';    
     if($isSaved == "1")
     {
         $html .= '<div class="aac_head" style="margin-bottom:10px">Request Submitted</div>';
