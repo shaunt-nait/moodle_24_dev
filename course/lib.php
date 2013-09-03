@@ -3033,6 +3033,12 @@ function move_section_to($course, $section, $destination) {
         return true;
     }
 
+	if ($section == $destination) {
+        return true;
+    }
+
+
+
     // compartibility with course formats using field 'numsections'
     $courseformatoptions = course_get_format($course)->get_format_options();
     if ((array_key_exists('numsections', $courseformatoptions) &&
