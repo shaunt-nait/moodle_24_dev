@@ -2357,3 +2357,7 @@ body .ui-tooltip {
 	border-radius: 8px/*{cornerRadiusShadow}*/;
 }
 
+.yui3-menu-content {
+	background: whitesmoke !important;
+}
+
